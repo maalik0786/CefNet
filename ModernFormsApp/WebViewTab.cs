@@ -1,8 +1,7 @@
-﻿using CefNet;
+﻿using System;
+using System.ComponentModel;
+using CefNet;
 using Modern.Forms;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using WinFormsCoreApp;
 
 namespace ModernFormsApp
@@ -12,13 +11,11 @@ namespace ModernFormsApp
 		public WebViewTab()
 			: this(new CustomWebView())
 		{
-
 		}
 
 		public WebViewTab(CefBrowserSettings settings, CefRequestContext requestContext)
-			: this(new CustomWebView { RequestContext = requestContext, BrowserSettings = settings })
+			: this(new CustomWebView {RequestContext = requestContext, BrowserSettings = settings})
 		{
-
 		}
 
 		private WebViewTab(CustomWebView webview)
@@ -27,43 +24,42 @@ namespace ModernFormsApp
 			//device.Rotate();
 			//webview.SimulateDevice(device);
 
-			this.Text = "about:blank";
+			Text = "about:blank";
 			webview.Dock = DockStyle.Fill;
 			webview.CreateWindow += Webview_CreateWindow;
 			webview.DocumentTitleChanged += HandleDocumentTitleChanged;
 			webview.Closing += Webview_Closing;
 			webview.Closed += Webview_Closed;
-			this.WebView = webview;
-			this.Controls.Add(webview);
+			WebView = webview;
+			Controls.Add(webview);
 		}
+
+		public IChromiumWebView WebView { get; protected set; }
 
 		private void Webview_Closed(object sender, EventArgs e)
 		{
 			this.FindTabControl()?.TabPages.Remove(this);
 		}
 
-		private void Webview_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		private void Webview_Closing(object sender, CancelEventArgs e)
 		{
-
 		}
 
 		private void HandleDocumentTitleChanged(object sender, DocumentTitleChangedEventArgs e)
 		{
-			this.Text = e.Title + "    ";
+			Text = e.Title + "    ";
 		}
-
-		public IChromiumWebView WebView { get; protected set; }
 
 		private void Webview_CreateWindow(object sender, CreateWindowEventArgs e)
 		{
-			TabControl tabs = this.FindTabControl();
+			var tabs = this.FindTabControl();
 			if (tabs == null)
 			{
 				e.Cancel = true;
 				return;
 			}
 
-			var webview = new CustomWebView((CustomWebView)this.WebView);
+			var webview = new CustomWebView((CustomWebView) WebView);
 			e.WindowInfo.SetAsWindowless(IntPtr.Zero);
 			e.Client = webview.Client;
 			OnCreateWindow(webview);

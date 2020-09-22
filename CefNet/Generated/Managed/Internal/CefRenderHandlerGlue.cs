@@ -12,26 +12,16 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet.Internal
 {
-	sealed partial class CefRenderHandlerGlue: CefRenderHandler, ICefRenderHandlerPrivate
+	internal sealed class CefRenderHandlerGlue : CefRenderHandler, ICefRenderHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefRenderHandlerGlue(WebViewGlue impl)
 		{
 			_implementation = impl;
-		}
-
-		protected internal unsafe override CefAccessibilityHandler GetAccessibilityHandler()
-		{
-			return _implementation.GetAccessibilityHandler();
 		}
 
 		bool ICefRenderHandlerPrivate.AvoidGetRootScreenRect()
@@ -39,19 +29,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidGetRootScreenRect();
 		}
 
-		protected internal unsafe override bool GetRootScreenRect(CefBrowser browser, ref CefRect rect)
-		{
-			return _implementation.GetRootScreenRect(browser, ref rect);
-		}
-
 		bool ICefRenderHandlerPrivate.AvoidGetViewRect()
 		{
 			return _implementation.AvoidGetViewRect();
-		}
-
-		protected internal unsafe override void GetViewRect(CefBrowser browser, ref CefRect rect)
-		{
-			_implementation.GetViewRect(browser, ref rect);
 		}
 
 		bool ICefRenderHandlerPrivate.AvoidGetScreenPoint()
@@ -59,19 +39,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidGetScreenPoint();
 		}
 
-		protected internal unsafe override bool GetScreenPoint(CefBrowser browser, int viewX, int viewY, ref int screenX, ref int screenY)
-		{
-			return _implementation.GetScreenPoint(browser, viewX, viewY, ref screenX, ref screenY);
-		}
-
 		bool ICefRenderHandlerPrivate.AvoidGetScreenInfo()
 		{
 			return _implementation.AvoidGetScreenInfo();
-		}
-
-		protected internal unsafe override bool GetScreenInfo(CefBrowser browser, ref CefScreenInfo screenInfo)
-		{
-			return _implementation.GetScreenInfo(browser, ref screenInfo);
 		}
 
 		bool ICefRenderHandlerPrivate.AvoidOnPopupShow()
@@ -79,19 +49,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnPopupShow();
 		}
 
-		protected internal unsafe override void OnPopupShow(CefBrowser browser, bool show)
-		{
-			_implementation.OnPopupShow(browser, show);
-		}
-
 		bool ICefRenderHandlerPrivate.AvoidOnPopupSize()
 		{
 			return _implementation.AvoidOnPopupSize();
-		}
-
-		protected internal unsafe override void OnPopupSize(CefBrowser browser, CefRect rect)
-		{
-			_implementation.OnPopupSize(browser, rect);
 		}
 
 		bool ICefRenderHandlerPrivate.AvoidOnPaint()
@@ -99,19 +59,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnPaint();
 		}
 
-		protected internal unsafe override void OnPaint(CefBrowser browser, CefPaintElementType type, CefRect[] dirtyRects, IntPtr buffer, int width, int height)
-		{
-			_implementation.OnPaint(browser, type, dirtyRects, buffer, width, height);
-		}
-
 		bool ICefRenderHandlerPrivate.AvoidOnAcceleratedPaint()
 		{
 			return _implementation.AvoidOnAcceleratedPaint();
-		}
-
-		protected internal unsafe override void OnAcceleratedPaint(CefBrowser browser, CefPaintElementType type, CefRect[] dirtyRects, IntPtr sharedHandle)
-		{
-			_implementation.OnAcceleratedPaint(browser, type, dirtyRects, sharedHandle);
 		}
 
 		bool ICefRenderHandlerPrivate.AvoidOnCursorChange()
@@ -119,19 +69,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnCursorChange();
 		}
 
-		protected internal unsafe override void OnCursorChange(CefBrowser browser, IntPtr cursor, CefCursorType type, CefCursorInfo customCursorInfo)
-		{
-			_implementation.OnCursorChange(browser, cursor, type, customCursorInfo);
-		}
-
 		bool ICefRenderHandlerPrivate.AvoidStartDragging()
 		{
 			return _implementation.AvoidStartDragging();
-		}
-
-		protected internal unsafe override bool StartDragging(CefBrowser browser, CefDragData dragData, CefDragOperationsMask allowedOps, int x, int y)
-		{
-			return _implementation.StartDragging(browser, dragData, allowedOps, x, y);
 		}
 
 		bool ICefRenderHandlerPrivate.AvoidUpdateDragCursor()
@@ -139,19 +79,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidUpdateDragCursor();
 		}
 
-		protected internal unsafe override void UpdateDragCursor(CefBrowser browser, CefDragOperationsMask operation)
-		{
-			_implementation.UpdateDragCursor(browser, operation);
-		}
-
 		bool ICefRenderHandlerPrivate.AvoidOnScrollOffsetChanged()
 		{
 			return _implementation.AvoidOnScrollOffsetChanged();
-		}
-
-		protected internal unsafe override void OnScrollOffsetChanged(CefBrowser browser, double x, double y)
-		{
-			_implementation.OnScrollOffsetChanged(browser, x, y);
 		}
 
 		bool ICefRenderHandlerPrivate.AvoidOnImeCompositionRangeChanged()
@@ -159,19 +89,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnImeCompositionRangeChanged();
 		}
 
-		protected internal unsafe override void OnImeCompositionRangeChanged(CefBrowser browser, CefRange selectedRange, CefRect[] characterBounds)
-		{
-			_implementation.OnImeCompositionRangeChanged(browser, selectedRange, characterBounds);
-		}
-
 		bool ICefRenderHandlerPrivate.AvoidOnTextSelectionChanged()
 		{
 			return _implementation.AvoidOnTextSelectionChanged();
-		}
-
-		protected internal unsafe override void OnTextSelectionChanged(CefBrowser browser, string selectedText, CefRange selectedRange)
-		{
-			_implementation.OnTextSelectionChanged(browser, selectedText, selectedRange);
 		}
 
 		bool ICefRenderHandlerPrivate.AvoidOnVirtualKeyboardRequested()
@@ -179,10 +99,91 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnVirtualKeyboardRequested();
 		}
 
-		protected internal unsafe override void OnVirtualKeyboardRequested(CefBrowser browser, CefTextInputMode inputMode)
+		protected internal override CefAccessibilityHandler GetAccessibilityHandler()
+		{
+			return _implementation.GetAccessibilityHandler();
+		}
+
+		protected internal override bool GetRootScreenRect(CefBrowser browser, ref CefRect rect)
+		{
+			return _implementation.GetRootScreenRect(browser, ref rect);
+		}
+
+		protected internal override void GetViewRect(CefBrowser browser, ref CefRect rect)
+		{
+			_implementation.GetViewRect(browser, ref rect);
+		}
+
+		protected internal override bool GetScreenPoint(CefBrowser browser, int viewX, int viewY, ref int screenX,
+			ref int screenY)
+		{
+			return _implementation.GetScreenPoint(browser, viewX, viewY, ref screenX, ref screenY);
+		}
+
+		protected internal override bool GetScreenInfo(CefBrowser browser, ref CefScreenInfo screenInfo)
+		{
+			return _implementation.GetScreenInfo(browser, ref screenInfo);
+		}
+
+		protected internal override void OnPopupShow(CefBrowser browser, bool show)
+		{
+			_implementation.OnPopupShow(browser, show);
+		}
+
+		protected internal override void OnPopupSize(CefBrowser browser, CefRect rect)
+		{
+			_implementation.OnPopupSize(browser, rect);
+		}
+
+		protected internal override void OnPaint(CefBrowser browser, CefPaintElementType type, CefRect[] dirtyRects,
+			IntPtr buffer, int width, int height)
+		{
+			_implementation.OnPaint(browser, type, dirtyRects, buffer, width, height);
+		}
+
+		protected internal override void OnAcceleratedPaint(CefBrowser browser, CefPaintElementType type,
+			CefRect[] dirtyRects, IntPtr sharedHandle)
+		{
+			_implementation.OnAcceleratedPaint(browser, type, dirtyRects, sharedHandle);
+		}
+
+		protected internal override void OnCursorChange(CefBrowser browser, IntPtr cursor, CefCursorType type,
+			CefCursorInfo customCursorInfo)
+		{
+			_implementation.OnCursorChange(browser, cursor, type, customCursorInfo);
+		}
+
+		protected internal override bool StartDragging(CefBrowser browser, CefDragData dragData,
+			CefDragOperationsMask allowedOps, int x, int y)
+		{
+			return _implementation.StartDragging(browser, dragData, allowedOps, x, y);
+		}
+
+		protected internal override void UpdateDragCursor(CefBrowser browser, CefDragOperationsMask operation)
+		{
+			_implementation.UpdateDragCursor(browser, operation);
+		}
+
+		protected internal override void OnScrollOffsetChanged(CefBrowser browser, double x, double y)
+		{
+			_implementation.OnScrollOffsetChanged(browser, x, y);
+		}
+
+		protected internal override void OnImeCompositionRangeChanged(CefBrowser browser, CefRange selectedRange,
+			CefRect[] characterBounds)
+		{
+			_implementation.OnImeCompositionRangeChanged(browser, selectedRange, characterBounds);
+		}
+
+		protected internal override void OnTextSelectionChanged(CefBrowser browser, string selectedText,
+			CefRange selectedRange)
+		{
+			_implementation.OnTextSelectionChanged(browser, selectedText, selectedRange);
+		}
+
+		protected internal override void OnVirtualKeyboardRequested(CefBrowser browser, CefTextInputMode inputMode)
 		{
 			_implementation.OnVirtualKeyboardRequested(browser, inputMode);
 		}
-
 	}
 }

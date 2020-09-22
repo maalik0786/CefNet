@@ -11,76 +11,47 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing a rectangle.
+	///  Structure representing a rectangle.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefRect
+	public partial struct CefRect
 	{
 		private cef_rect_t _instance;
 
 		public int X
 		{
-			get
-			{
-				return _instance.x;
-			}
-			set
-			{
-				_instance.x = value;
-			}
+			get => _instance.x;
+			set => _instance.x = value;
 		}
 
 		public int Y
 		{
-			get
-			{
-				return _instance.y;
-			}
-			set
-			{
-				_instance.y = value;
-			}
+			get => _instance.y;
+			set => _instance.y = value;
 		}
 
 		public int Width
 		{
-			get
-			{
-				return _instance.width;
-			}
-			set
-			{
-				_instance.width = value;
-			}
+			get => _instance.width;
+			set => _instance.width = value;
 		}
 
 		public int Height
 		{
-			get
-			{
-				return _instance.height;
-			}
-			set
-			{
-				_instance.height = value;
-			}
+			get => _instance.height;
+			set => _instance.height = value;
 		}
 
 		public static implicit operator CefRect(cef_rect_t instance)
 		{
-			return new CefRect { _instance = instance };
+			return new CefRect {_instance = instance};
 		}
 
 		public static implicit operator cef_rect_t(CefRect instance)

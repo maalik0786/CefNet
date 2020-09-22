@@ -12,22 +12,21 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Implement this structure to handle events related to browser display state.
-	/// The functions of this structure will be called on the UI thread.
+	///  Implement this structure to handle events related to browser display state.
+	///  The functions of this structure will be called on the UI thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefDisplayHandler : CefBaseRefCounted<cef_display_handler_t>, ICefDisplayHandlerPrivate
+	public unsafe class CefDisplayHandler : CefBaseRefCounted<cef_display_handler_t>, ICefDisplayHandlerPrivate
 	{
 		private static readonly OnAddressChangeDelegate fnOnAddressChange = OnAddressChangeImpl;
 
@@ -47,277 +46,305 @@ namespace CefNet
 
 		private static readonly OnLoadingProgressChangeDelegate fnOnLoadingProgressChange = OnLoadingProgressChangeImpl;
 
-		internal static unsafe CefDisplayHandler Create(IntPtr instance)
-		{
-			return new CefDisplayHandler((cef_display_handler_t*)instance);
-		}
-
 		public CefDisplayHandler()
 		{
-			cef_display_handler_t* self = this.NativeInstance;
-			self->on_address_change = (void*)Marshal.GetFunctionPointerForDelegate(fnOnAddressChange);
-			self->on_title_change = (void*)Marshal.GetFunctionPointerForDelegate(fnOnTitleChange);
-			self->on_favicon_urlchange = (void*)Marshal.GetFunctionPointerForDelegate(fnOnFaviconUrlChange);
-			self->on_fullscreen_mode_change = (void*)Marshal.GetFunctionPointerForDelegate(fnOnFullscreenModeChange);
-			self->on_tooltip = (void*)Marshal.GetFunctionPointerForDelegate(fnOnTooltip);
-			self->on_status_message = (void*)Marshal.GetFunctionPointerForDelegate(fnOnStatusMessage);
-			self->on_console_message = (void*)Marshal.GetFunctionPointerForDelegate(fnOnConsoleMessage);
-			self->on_auto_resize = (void*)Marshal.GetFunctionPointerForDelegate(fnOnAutoResize);
-			self->on_loading_progress_change = (void*)Marshal.GetFunctionPointerForDelegate(fnOnLoadingProgressChange);
+			var self = NativeInstance;
+			self->on_address_change = (void*) Marshal.GetFunctionPointerForDelegate(fnOnAddressChange);
+			self->on_title_change = (void*) Marshal.GetFunctionPointerForDelegate(fnOnTitleChange);
+			self->on_favicon_urlchange = (void*) Marshal.GetFunctionPointerForDelegate(fnOnFaviconUrlChange);
+			self->on_fullscreen_mode_change = (void*) Marshal.GetFunctionPointerForDelegate(fnOnFullscreenModeChange);
+			self->on_tooltip = (void*) Marshal.GetFunctionPointerForDelegate(fnOnTooltip);
+			self->on_status_message = (void*) Marshal.GetFunctionPointerForDelegate(fnOnStatusMessage);
+			self->on_console_message = (void*) Marshal.GetFunctionPointerForDelegate(fnOnConsoleMessage);
+			self->on_auto_resize = (void*) Marshal.GetFunctionPointerForDelegate(fnOnAutoResize);
+			self->on_loading_progress_change = (void*) Marshal.GetFunctionPointerForDelegate(fnOnLoadingProgressChange);
 		}
 
 		public CefDisplayHandler(cef_display_handler_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefDisplayHandlerPrivate.AvoidOnAddressChange();
 
-		/// <summary>
-		/// Called when a frame&apos;s address has changed.
-		/// </summary>
-		protected internal unsafe virtual void OnAddressChange(CefBrowser browser, CefFrame frame, string url)
-		{
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnAddressChangeDelegate(cef_display_handler_t* self, cef_browser_t* browser, cef_frame_t* frame, cef_string_t* url);
-
-		// void (*)(_cef_display_handler_t* self, _cef_browser_t* browser, _cef_frame_t* frame, const cef_string_t* url)*
-		private static unsafe void OnAddressChangeImpl(cef_display_handler_t* self, cef_browser_t* browser, cef_frame_t* frame, cef_string_t* url)
-		{
-			var instance = GetInstance((IntPtr)self) as CefDisplayHandler;
-			if (instance == null || ((ICefDisplayHandlerPrivate)instance).AvoidOnAddressChange())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				ReleaseIfNonNull((cef_base_ref_counted_t*)frame);
-				return;
-			}
-			instance.OnAddressChange(CefBrowser.Wrap(CefBrowser.Create, browser), CefFrame.Wrap(CefFrame.Create, frame), CefString.Read(url));
-		}
-
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefDisplayHandlerPrivate.AvoidOnTitleChange();
-
-		/// <summary>
-		/// Called when the page title changes.
-		/// </summary>
-		protected internal unsafe virtual void OnTitleChange(CefBrowser browser, string title)
-		{
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnTitleChangeDelegate(cef_display_handler_t* self, cef_browser_t* browser, cef_string_t* title);
-
-		// void (*)(_cef_display_handler_t* self, _cef_browser_t* browser, const cef_string_t* title)*
-		private static unsafe void OnTitleChangeImpl(cef_display_handler_t* self, cef_browser_t* browser, cef_string_t* title)
-		{
-			var instance = GetInstance((IntPtr)self) as CefDisplayHandler;
-			if (instance == null || ((ICefDisplayHandlerPrivate)instance).AvoidOnTitleChange())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				return;
-			}
-			instance.OnTitleChange(CefBrowser.Wrap(CefBrowser.Create, browser), CefString.Read(title));
-		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefDisplayHandlerPrivate.AvoidOnFaviconUrlChange();
 
-		/// <summary>
-		/// Called when the page icon changes.
-		/// </summary>
-		protected internal unsafe virtual void OnFaviconUrlChange(CefBrowser browser, CefStringList iconUrls)
-		{
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnFaviconUrlChangeDelegate(cef_display_handler_t* self, cef_browser_t* browser, cef_string_list_t icon_urls);
-
-		// void (*)(_cef_display_handler_t* self, _cef_browser_t* browser, cef_string_list_t icon_urls)*
-		private static unsafe void OnFaviconUrlChangeImpl(cef_display_handler_t* self, cef_browser_t* browser, cef_string_list_t icon_urls)
-		{
-			var instance = GetInstance((IntPtr)self) as CefDisplayHandler;
-			if (instance == null || ((ICefDisplayHandlerPrivate)instance).AvoidOnFaviconUrlChange())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				return;
-			}
-			instance.OnFaviconUrlChange(CefBrowser.Wrap(CefBrowser.Create, browser), CefStringList.Wrap(icon_urls));
-		}
-
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefDisplayHandlerPrivate.AvoidOnFullscreenModeChange();
-
-		/// <summary>
-		/// Called when web content in the page has toggled fullscreen mode. If
-		/// |fullscreen| is true (1) the content will automatically be sized to fill
-		/// the browser content area. If |fullscreen| is false (0) the content will
-		/// automatically return to its original size and position. The client is
-		/// responsible for resizing the browser if desired.
-		/// </summary>
-		protected internal unsafe virtual void OnFullscreenModeChange(CefBrowser browser, bool fullscreen)
-		{
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnFullscreenModeChangeDelegate(cef_display_handler_t* self, cef_browser_t* browser, int fullscreen);
-
-		// void (*)(_cef_display_handler_t* self, _cef_browser_t* browser, int fullscreen)*
-		private static unsafe void OnFullscreenModeChangeImpl(cef_display_handler_t* self, cef_browser_t* browser, int fullscreen)
-		{
-			var instance = GetInstance((IntPtr)self) as CefDisplayHandler;
-			if (instance == null || ((ICefDisplayHandlerPrivate)instance).AvoidOnFullscreenModeChange())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				return;
-			}
-			instance.OnFullscreenModeChange(CefBrowser.Wrap(CefBrowser.Create, browser), fullscreen != 0);
-		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefDisplayHandlerPrivate.AvoidOnTooltip();
 
+		[MethodImpl(MethodImplOptions.ForwardRef)]
+		extern bool ICefDisplayHandlerPrivate.AvoidOnStatusMessage();
+
+		[MethodImpl(MethodImplOptions.ForwardRef)]
+		extern bool ICefDisplayHandlerPrivate.AvoidOnConsoleMessage();
+
+		[MethodImpl(MethodImplOptions.ForwardRef)]
+		extern bool ICefDisplayHandlerPrivate.AvoidOnAutoResize();
+
+		[MethodImpl(MethodImplOptions.ForwardRef)]
+		extern bool ICefDisplayHandlerPrivate.AvoidOnLoadingProgressChange();
+
+		internal static CefDisplayHandler Create(IntPtr instance)
+		{
+			return new CefDisplayHandler((cef_display_handler_t*) instance);
+		}
+
 		/// <summary>
-		/// Called when the browser is about to display a tooltip. |text| contains the
-		/// text that will be displayed in the tooltip. To handle the display of the
-		/// tooltip yourself return true (1). Otherwise, you can optionally modify
-		/// |text| and then return false (0) to allow the browser to display the
-		/// tooltip. When window rendering is disabled the application is responsible
-		/// for drawing tooltips and the return value is ignored.
+		///  Called when a frame&apos;s address has changed.
 		/// </summary>
-		protected internal unsafe virtual bool OnTooltip(CefBrowser browser, ref string text)
+		protected internal virtual void OnAddressChange(CefBrowser browser, CefFrame frame, string url)
+		{
+		}
+
+		// void (*)(_cef_display_handler_t* self, _cef_browser_t* browser, _cef_frame_t* frame, const cef_string_t* url)*
+		private static void OnAddressChangeImpl(cef_display_handler_t* self, cef_browser_t* browser, cef_frame_t* frame,
+			cef_string_t* url)
+		{
+			var instance = GetInstance((IntPtr) self) as CefDisplayHandler;
+			if (instance == null || ((ICefDisplayHandlerPrivate) instance).AvoidOnAddressChange())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) frame);
+				return;
+			}
+
+			instance.OnAddressChange(CefBrowser.Wrap(CefBrowser.Create, browser), CefFrame.Wrap(CefFrame.Create, frame),
+				CefString.Read(url));
+		}
+
+		/// <summary>
+		///  Called when the page title changes.
+		/// </summary>
+		protected internal virtual void OnTitleChange(CefBrowser browser, string title)
+		{
+		}
+
+		// void (*)(_cef_display_handler_t* self, _cef_browser_t* browser, const cef_string_t* title)*
+		private static void OnTitleChangeImpl(cef_display_handler_t* self, cef_browser_t* browser, cef_string_t* title)
+		{
+			var instance = GetInstance((IntPtr) self) as CefDisplayHandler;
+			if (instance == null || ((ICefDisplayHandlerPrivate) instance).AvoidOnTitleChange())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				return;
+			}
+
+			instance.OnTitleChange(CefBrowser.Wrap(CefBrowser.Create, browser), CefString.Read(title));
+		}
+
+		/// <summary>
+		///  Called when the page icon changes.
+		/// </summary>
+		protected internal virtual void OnFaviconUrlChange(CefBrowser browser, CefStringList iconUrls)
+		{
+		}
+
+		// void (*)(_cef_display_handler_t* self, _cef_browser_t* browser, cef_string_list_t icon_urls)*
+		private static void OnFaviconUrlChangeImpl(cef_display_handler_t* self, cef_browser_t* browser,
+			cef_string_list_t icon_urls)
+		{
+			var instance = GetInstance((IntPtr) self) as CefDisplayHandler;
+			if (instance == null || ((ICefDisplayHandlerPrivate) instance).AvoidOnFaviconUrlChange())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				return;
+			}
+
+			instance.OnFaviconUrlChange(CefBrowser.Wrap(CefBrowser.Create, browser), CefStringList.Wrap(icon_urls));
+		}
+
+		/// <summary>
+		///  Called when web content in the page has toggled fullscreen mode. If
+		///  |fullscreen| is true (1) the content will automatically be sized to fill
+		///  the browser content area. If |fullscreen| is false (0) the content will
+		///  automatically return to its original size and position. The client is
+		///  responsible for resizing the browser if desired.
+		/// </summary>
+		protected internal virtual void OnFullscreenModeChange(CefBrowser browser, bool fullscreen)
+		{
+		}
+
+		// void (*)(_cef_display_handler_t* self, _cef_browser_t* browser, int fullscreen)*
+		private static void OnFullscreenModeChangeImpl(cef_display_handler_t* self, cef_browser_t* browser,
+			int fullscreen)
+		{
+			var instance = GetInstance((IntPtr) self) as CefDisplayHandler;
+			if (instance == null || ((ICefDisplayHandlerPrivate) instance).AvoidOnFullscreenModeChange())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				return;
+			}
+
+			instance.OnFullscreenModeChange(CefBrowser.Wrap(CefBrowser.Create, browser), fullscreen != 0);
+		}
+
+		/// <summary>
+		///  Called when the browser is about to display a tooltip. |text| contains the
+		///  text that will be displayed in the tooltip. To handle the display of the
+		///  tooltip yourself return true (1). Otherwise, you can optionally modify
+		///  |text| and then return false (0) to allow the browser to display the
+		///  tooltip. When window rendering is disabled the application is responsible
+		///  for drawing tooltips and the return value is ignored.
+		/// </summary>
+		protected internal virtual bool OnTooltip(CefBrowser browser, ref string text)
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int OnTooltipDelegate(cef_display_handler_t* self, cef_browser_t* browser, cef_string_t* text);
-
 		// int (*)(_cef_display_handler_t* self, _cef_browser_t* browser, cef_string_t* text)*
-		private static unsafe int OnTooltipImpl(cef_display_handler_t* self, cef_browser_t* browser, cef_string_t* text)
+		private static int OnTooltipImpl(cef_display_handler_t* self, cef_browser_t* browser, cef_string_t* text)
 		{
-			var instance = GetInstance((IntPtr)self) as CefDisplayHandler;
-			if (instance == null || ((ICefDisplayHandlerPrivate)instance).AvoidOnTooltip())
+			var instance = GetInstance((IntPtr) self) as CefDisplayHandler;
+			if (instance == null || ((ICefDisplayHandlerPrivate) instance).AvoidOnTooltip())
 			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
 				return default;
 			}
-			string s_text = CefString.Read(text);
-			string s_orig_text = s_text;
-			int rv = instance.OnTooltip(CefBrowser.Wrap(CefBrowser.Create, browser), ref s_text) ? 1 : 0;
+
+			var s_text = CefString.Read(text);
+			var s_orig_text = s_text;
+			var rv = instance.OnTooltip(CefBrowser.Wrap(CefBrowser.Create, browser), ref s_text) ? 1 : 0;
 			if (s_text != s_orig_text)
 				CefString.Replace(text, s_text);
 			return rv;
 		}
 
-		[MethodImpl(MethodImplOptions.ForwardRef)]
-		extern bool ICefDisplayHandlerPrivate.AvoidOnStatusMessage();
-
 		/// <summary>
-		/// Called when the browser receives a status message. |value| contains the
-		/// text that will be displayed in the status message.
+		///  Called when the browser receives a status message. |value| contains the
+		///  text that will be displayed in the status message.
 		/// </summary>
-		protected internal unsafe virtual void OnStatusMessage(CefBrowser browser, string value)
+		protected internal virtual void OnStatusMessage(CefBrowser browser, string value)
 		{
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnStatusMessageDelegate(cef_display_handler_t* self, cef_browser_t* browser, cef_string_t* value);
-
 		// void (*)(_cef_display_handler_t* self, _cef_browser_t* browser, const cef_string_t* value)*
-		private static unsafe void OnStatusMessageImpl(cef_display_handler_t* self, cef_browser_t* browser, cef_string_t* value)
+		private static void OnStatusMessageImpl(cef_display_handler_t* self, cef_browser_t* browser,
+			cef_string_t* value)
 		{
-			var instance = GetInstance((IntPtr)self) as CefDisplayHandler;
-			if (instance == null || ((ICefDisplayHandlerPrivate)instance).AvoidOnStatusMessage())
+			var instance = GetInstance((IntPtr) self) as CefDisplayHandler;
+			if (instance == null || ((ICefDisplayHandlerPrivate) instance).AvoidOnStatusMessage())
 			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
 				return;
 			}
+
 			instance.OnStatusMessage(CefBrowser.Wrap(CefBrowser.Create, browser), CefString.Read(value));
 		}
 
-		[MethodImpl(MethodImplOptions.ForwardRef)]
-		extern bool ICefDisplayHandlerPrivate.AvoidOnConsoleMessage();
-
 		/// <summary>
-		/// Called to display a console message. Return true (1) to stop the message
-		/// from being output to the console.
+		///  Called to display a console message. Return true (1) to stop the message
+		///  from being output to the console.
 		/// </summary>
-		protected internal unsafe virtual bool OnConsoleMessage(CefBrowser browser, CefLogSeverity level, string message, string source, int line)
+		protected internal virtual bool OnConsoleMessage(CefBrowser browser, CefLogSeverity level, string message,
+			string source, int line)
 		{
 			return default;
 		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int OnConsoleMessageDelegate(cef_display_handler_t* self, cef_browser_t* browser, CefLogSeverity level, cef_string_t* message, cef_string_t* source, int line);
 
 		// int (*)(_cef_display_handler_t* self, _cef_browser_t* browser, cef_log_severity_t level, const cef_string_t* message, const cef_string_t* source, int line)*
-		private static unsafe int OnConsoleMessageImpl(cef_display_handler_t* self, cef_browser_t* browser, CefLogSeverity level, cef_string_t* message, cef_string_t* source, int line)
+		private static int OnConsoleMessageImpl(cef_display_handler_t* self, cef_browser_t* browser,
+			CefLogSeverity level, cef_string_t* message, cef_string_t* source, int line)
 		{
-			var instance = GetInstance((IntPtr)self) as CefDisplayHandler;
-			if (instance == null || ((ICefDisplayHandlerPrivate)instance).AvoidOnConsoleMessage())
+			var instance = GetInstance((IntPtr) self) as CefDisplayHandler;
+			if (instance == null || ((ICefDisplayHandlerPrivate) instance).AvoidOnConsoleMessage())
 			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
 				return default;
 			}
-			return instance.OnConsoleMessage(CefBrowser.Wrap(CefBrowser.Create, browser), level, CefString.Read(message), CefString.Read(source), line) ? 1 : 0;
+
+			return instance.OnConsoleMessage(CefBrowser.Wrap(CefBrowser.Create, browser), level,
+				CefString.Read(message), CefString.Read(source), line)
+				? 1
+				: 0;
 		}
 
-		[MethodImpl(MethodImplOptions.ForwardRef)]
-		extern bool ICefDisplayHandlerPrivate.AvoidOnAutoResize();
-
 		/// <summary>
-		/// Called when auto-resize is enabled via
-		/// cef_browser_host_t::SetAutoResizeEnabled and the contents have auto-
-		/// resized. |new_size| will be the desired size in view coordinates. Return
-		/// true (1) if the resize was handled or false (0) for default handling.
+		///  Called when auto-resize is enabled via
+		///  cef_browser_host_t::SetAutoResizeEnabled and the contents have auto-
+		///  resized. |new_size| will be the desired size in view coordinates. Return
+		///  true (1) if the resize was handled or false (0) for default handling.
 		/// </summary>
-		protected internal unsafe virtual bool OnAutoResize(CefBrowser browser, CefSize newSize)
+		protected internal virtual bool OnAutoResize(CefBrowser browser, CefSize newSize)
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int OnAutoResizeDelegate(cef_display_handler_t* self, cef_browser_t* browser, cef_size_t* new_size);
-
 		// int (*)(_cef_display_handler_t* self, _cef_browser_t* browser, const cef_size_t* new_size)*
-		private static unsafe int OnAutoResizeImpl(cef_display_handler_t* self, cef_browser_t* browser, cef_size_t* new_size)
+		private static int OnAutoResizeImpl(cef_display_handler_t* self, cef_browser_t* browser, cef_size_t* new_size)
 		{
-			var instance = GetInstance((IntPtr)self) as CefDisplayHandler;
-			if (instance == null || ((ICefDisplayHandlerPrivate)instance).AvoidOnAutoResize())
+			var instance = GetInstance((IntPtr) self) as CefDisplayHandler;
+			if (instance == null || ((ICefDisplayHandlerPrivate) instance).AvoidOnAutoResize())
 			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
 				return default;
 			}
-			return instance.OnAutoResize(CefBrowser.Wrap(CefBrowser.Create, browser), *(CefSize*)new_size) ? 1 : 0;
+
+			return instance.OnAutoResize(CefBrowser.Wrap(CefBrowser.Create, browser), *(CefSize*) new_size) ? 1 : 0;
 		}
 
-		[MethodImpl(MethodImplOptions.ForwardRef)]
-		extern bool ICefDisplayHandlerPrivate.AvoidOnLoadingProgressChange();
-
 		/// <summary>
-		/// Called when the overall page loading progress has changed. |progress|
-		/// ranges from 0.0 to 1.0.
+		///  Called when the overall page loading progress has changed. |progress|
+		///  ranges from 0.0 to 1.0.
 		/// </summary>
-		protected internal unsafe virtual void OnLoadingProgressChange(CefBrowser browser, double progress)
+		protected internal virtual void OnLoadingProgressChange(CefBrowser browser, double progress)
 		{
+		}
+
+		// void (*)(_cef_display_handler_t* self, _cef_browser_t* browser, double progress)*
+		private static void OnLoadingProgressChangeImpl(cef_display_handler_t* self, cef_browser_t* browser,
+			double progress)
+		{
+			var instance = GetInstance((IntPtr) self) as CefDisplayHandler;
+			if (instance == null || ((ICefDisplayHandlerPrivate) instance).AvoidOnLoadingProgressChange())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				return;
+			}
+
+			instance.OnLoadingProgressChange(CefBrowser.Wrap(CefBrowser.Create, browser), progress);
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnLoadingProgressChangeDelegate(cef_display_handler_t* self, cef_browser_t* browser, double progress);
+		private delegate void OnAddressChangeDelegate(cef_display_handler_t* self, cef_browser_t* browser,
+			cef_frame_t* frame, cef_string_t* url);
 
-		// void (*)(_cef_display_handler_t* self, _cef_browser_t* browser, double progress)*
-		private static unsafe void OnLoadingProgressChangeImpl(cef_display_handler_t* self, cef_browser_t* browser, double progress)
-		{
-			var instance = GetInstance((IntPtr)self) as CefDisplayHandler;
-			if (instance == null || ((ICefDisplayHandlerPrivate)instance).AvoidOnLoadingProgressChange())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				return;
-			}
-			instance.OnLoadingProgressChange(CefBrowser.Wrap(CefBrowser.Create, browser), progress);
-		}
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnTitleChangeDelegate(cef_display_handler_t* self, cef_browser_t* browser,
+			cef_string_t* title);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnFaviconUrlChangeDelegate(cef_display_handler_t* self, cef_browser_t* browser,
+			cef_string_list_t icon_urls);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnFullscreenModeChangeDelegate(cef_display_handler_t* self, cef_browser_t* browser,
+			int fullscreen);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int OnTooltipDelegate(cef_display_handler_t* self, cef_browser_t* browser, cef_string_t* text);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnStatusMessageDelegate(cef_display_handler_t* self, cef_browser_t* browser,
+			cef_string_t* value);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int OnConsoleMessageDelegate(cef_display_handler_t* self, cef_browser_t* browser,
+			CefLogSeverity level, cef_string_t* message, cef_string_t* source, int line);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int OnAutoResizeDelegate(cef_display_handler_t* self, cef_browser_t* browser,
+			cef_size_t* new_size);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnLoadingProgressChangeDelegate(cef_display_handler_t* self, cef_browser_t* browser,
+			double progress);
 	}
 }

@@ -11,63 +11,60 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Represents a source from which media can be routed. Instances of this object
-	/// are retrieved via cef_media_router_t::GetSource. The functions of this
-	/// structure may be called on any browser process thread unless otherwise
-	/// indicated.
+	///  Represents a source from which media can be routed. Instances of this object
+	///  are retrieved via cef_media_router_t::GetSource. The functions of this
+	///  structure may be called on any browser process thread unless otherwise
+	///  indicated.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_media_source_t
+	public unsafe struct cef_media_source_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_media_source_t* self)*
+		///  cef_string_userfree_t (*)(_cef_media_source_t* self)*
 		/// </summary>
 		public void* get_id;
 
 		/// <summary>
-		/// Returns the ID (media source URN or URL) for this source.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the ID (media source URN or URL) for this source.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_id")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetId();
+		public extern cef_string_userfree_t GetId();
 
 		/// <summary>
-		/// int (*)(_cef_media_source_t* self)*
+		///  int (*)(_cef_media_source_t* self)*
 		/// </summary>
 		public void* is_cast_source;
 
 		/// <summary>
-		/// Returns true (1) if this source outputs its content via Cast.
+		///  Returns true (1) if this source outputs its content via Cast.
 		/// </summary>
 		[NativeName("is_cast_source")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsCastSource();
+		public extern int IsCastSource();
 
 		/// <summary>
-		/// int (*)(_cef_media_source_t* self)*
+		///  int (*)(_cef_media_source_t* self)*
 		/// </summary>
 		public void* is_dial_source;
 
 		/// <summary>
-		/// Returns true (1) if this source outputs its content via DIAL.
+		///  Returns true (1) if this source outputs its content via DIAL.
 		/// </summary>
 		[NativeName("is_dial_source")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsDialSource();
+		public extern int IsDialSource();
 	}
 }
-

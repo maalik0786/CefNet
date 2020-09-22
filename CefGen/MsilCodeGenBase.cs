@@ -4,39 +4,20 @@
 // See the licence file in the project root for full license information.
 // --------------------------------------------------------------------------------------------
 
-using CefGen.CodeDom;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using CefGen.CodeDom;
 
 namespace CefGen
 {
-	abstract class MsilCodeGenBase : CefCodeGenBase
+	internal abstract class MsilCodeGenBase : CefCodeGenBase
 	{
-		private Stack<string> _namespaces = new Stack<string>();
-		private Stack<string> _classes = new Stack<string>();
-
-		public MsilCodeGenBase()
-		{
-
-		}
+		private readonly Stack<string> _classes = new Stack<string>();
+		private readonly Stack<string> _namespaces = new Stack<string>();
 
 
-		protected virtual string Namespace
-		{
-			get
-			{
-				return string.Join(".", _namespaces);
-			}
-		}
+		protected virtual string Namespace => string.Join(".", _namespaces);
 
-		protected virtual string ClassName
-		{
-			get
-			{
-				return string.Join(".", _classes);
-			}
-		}
+		protected virtual string ClassName => string.Join(".", _classes);
 
 		protected override void GenerateCommentCode(CodeComment commentDecl)
 		{
@@ -48,7 +29,7 @@ namespace CefGen
 
 		protected virtual void GenerateCommentCode(string commentText)
 		{
-			foreach (string line in commentText.Split('\n'))
+			foreach (var line in commentText.Split('\n'))
 			{
 				WriteIndent();
 				Output.Write("// ");
@@ -59,17 +40,10 @@ namespace CefGen
 		protected virtual void WriteAttributes(CodeAttributes attributes)
 		{
 			if (attributes.HasFlag(CodeAttributes.Public))
-			{
 				Output.Write("public ");
-			}
 			else if (attributes.HasFlag(CodeAttributes.Private))
-			{
 				Output.Write("private ");
-			}
-			else if (attributes.HasFlag(CodeAttributes.Internal))
-			{
-				Output.Write("internal ");
-			}
+			else if (attributes.HasFlag(CodeAttributes.Internal)) Output.Write("internal ");
 		}
 
 		protected override void GenerateNamespaceCode(CodeNamespace namespaceDecl)
@@ -80,8 +54,8 @@ namespace CefGen
 			WriteBlockStart(CodeGenBlockType.Namespace);
 			_namespaces.Push(namespaceDecl.Name);
 
-			bool insertLine = false;
-			foreach (CodeType typeDecl in namespaceDecl.Types)
+			var insertLine = false;
+			foreach (var typeDecl in namespaceDecl.Types)
 			{
 				if (insertLine)
 					Output.WriteLine();
@@ -98,10 +72,7 @@ namespace CefGen
 		{
 			typeRef = typeRef + "." + typeDecl.Name;
 
-			foreach (CodeComment commentDecl in typeDecl.Comments)
-			{
-				GenerateCommentCode(commentDecl);
-			}
+			foreach (var commentDecl in typeDecl.Comments) GenerateCommentCode(commentDecl);
 
 			WriteIndent();
 			Output.Write(".class ");
@@ -110,8 +81,8 @@ namespace CefGen
 			WriteBlockStart(CodeGenBlockType.Type);
 			_classes.Push(typeDecl.Name);
 
-			bool insertLine = false;
-			foreach (CodeTypeMember memberDecl in typeDecl.Members)
+			var insertLine = false;
+			foreach (var memberDecl in typeDecl.Members)
 			{
 				if (insertLine)
 					Output.WriteLine();
@@ -132,11 +103,12 @@ namespace CefGen
 					insertLine = false;
 					continue;
 				}
+
 				insertLine = true;
 			}
+
 			_classes.Pop();
 			WriteBlockEnd(CodeGenBlockType.Type);
-
 		}
 
 		protected abstract bool GenerateMethodCode(CodeMethod methodDecl, string typeRef);
@@ -145,20 +117,16 @@ namespace CefGen
 		{
 			if (!c.IsXml)
 				return true;
-			string s = c.Text;
+			var s = c.Text;
 			return !(s.StartsWith('<') && s.EndsWith('>'));
 		}
 
 		protected static string GetName(string name)
 		{
-			int lastDot = name.LastIndexOf('.');
-			int lastSemi = name.LastIndexOf("::");
-			if (lastSemi > lastDot)
-			{
-				return name.Substring(lastSemi + 2);
-			}
+			var lastDot = name.LastIndexOf('.');
+			var lastSemi = name.LastIndexOf("::");
+			if (lastSemi > lastDot) return name.Substring(lastSemi + 2);
 			return name.Substring(lastDot + 1);
 		}
-
 	}
 }

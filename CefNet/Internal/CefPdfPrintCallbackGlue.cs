@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CefNet.Internal
+﻿namespace CefNet.Internal
 {
 	/// <summary>
-	/// Represents a callback class for WebView.PrintToPdf().
+	///  Represents a callback class for WebView.PrintToPdf().
 	/// </summary>
-	public partial class CefPdfPrintCallbackGlue { }
+	public partial class CefPdfPrintCallbackGlue
+	{
+	}
 }

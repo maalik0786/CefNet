@@ -12,17 +12,12 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet.Internal
 {
-	sealed partial class CefAudioHandlerGlue: CefAudioHandler, ICefAudioHandlerPrivate
+	internal sealed class CefAudioHandlerGlue : CefAudioHandler, ICefAudioHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefAudioHandlerGlue(WebViewGlue impl)
 		{
@@ -34,19 +29,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidGetAudioParameters();
 		}
 
-		protected internal unsafe override bool GetAudioParameters(CefBrowser browser, ref CefAudioParameters @params)
-		{
-			return _implementation.GetAudioParameters(browser, ref @params);
-		}
-
 		bool ICefAudioHandlerPrivate.AvoidOnAudioStreamStarted()
 		{
 			return _implementation.AvoidOnAudioStreamStarted();
-		}
-
-		protected internal unsafe override void OnAudioStreamStarted(CefBrowser browser, CefAudioParameters @params, int channels)
-		{
-			_implementation.OnAudioStreamStarted(browser, @params, channels);
 		}
 
 		bool ICefAudioHandlerPrivate.AvoidOnAudioStreamPacket()
@@ -54,19 +39,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnAudioStreamPacket();
 		}
 
-		protected internal unsafe override void OnAudioStreamPacket(CefBrowser browser, IntPtr data, int frames, long pts)
-		{
-			_implementation.OnAudioStreamPacket(browser, data, frames, pts);
-		}
-
 		bool ICefAudioHandlerPrivate.AvoidOnAudioStreamStopped()
 		{
 			return _implementation.AvoidOnAudioStreamStopped();
-		}
-
-		protected internal unsafe override void OnAudioStreamStopped(CefBrowser browser)
-		{
-			_implementation.OnAudioStreamStopped(browser);
 		}
 
 		bool ICefAudioHandlerPrivate.AvoidOnAudioStreamError()
@@ -74,10 +49,30 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnAudioStreamError();
 		}
 
-		protected internal unsafe override void OnAudioStreamError(CefBrowser browser, string message)
+		protected internal override bool GetAudioParameters(CefBrowser browser, ref CefAudioParameters @params)
+		{
+			return _implementation.GetAudioParameters(browser, ref @params);
+		}
+
+		protected internal override void OnAudioStreamStarted(CefBrowser browser, CefAudioParameters @params,
+			int channels)
+		{
+			_implementation.OnAudioStreamStarted(browser, @params, channels);
+		}
+
+		protected internal override void OnAudioStreamPacket(CefBrowser browser, IntPtr data, int frames, long pts)
+		{
+			_implementation.OnAudioStreamPacket(browser, data, frames, pts);
+		}
+
+		protected internal override void OnAudioStreamStopped(CefBrowser browser)
+		{
+			_implementation.OnAudioStreamStopped(browser);
+		}
+
+		protected internal override void OnAudioStreamError(CefBrowser browser, string message)
 		{
 			_implementation.OnAudioStreamError(browser, message);
 		}
-
 	}
 }

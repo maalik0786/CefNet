@@ -11,75 +11,71 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing touch event information.
+	///  Structure representing touch event information.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_touch_event_t
+	public struct cef_touch_event_t
 	{
 		/// <summary>
-		/// Id of a touch point. Must be unique per touch, can be any number except -1.
-		/// Note that a maximum of 16 concurrent touches will be tracked; touches
-		/// beyond that will be ignored.
+		///  Id of a touch point. Must be unique per touch, can be any number except -1.
+		///  Note that a maximum of 16 concurrent touches will be tracked; touches
+		///  beyond that will be ignored.
 		/// </summary>
 		public int id;
 
 		/// <summary>
-		/// X coordinate relative to the left side of the view.
+		///  X coordinate relative to the left side of the view.
 		/// </summary>
 		public float x;
 
 		/// <summary>
-		/// Y coordinate relative to the top side of the view.
+		///  Y coordinate relative to the top side of the view.
 		/// </summary>
 		public float y;
 
 		/// <summary>
-		/// X radius in pixels. Set to 0 if not applicable.
+		///  X radius in pixels. Set to 0 if not applicable.
 		/// </summary>
 		public float radius_x;
 
 		/// <summary>
-		/// Y radius in pixels. Set to 0 if not applicable.
+		///  Y radius in pixels. Set to 0 if not applicable.
 		/// </summary>
 		public float radius_y;
 
 		/// <summary>
-		/// Rotation angle in radians. Set to 0 if not applicable.
+		///  Rotation angle in radians. Set to 0 if not applicable.
 		/// </summary>
 		public float rotation_angle;
 
 		/// <summary>
-		/// The normalized pressure of the pointer input in the range of [0,1].
-		/// Set to 0 if not applicable.
+		///  The normalized pressure of the pointer input in the range of [0,1].
+		///  Set to 0 if not applicable.
 		/// </summary>
 		public float pressure;
 
 		/// <summary>
-		/// The state of the touch point. Touches begin with one CEF_TET_PRESSED event
-		/// followed by zero or more CEF_TET_MOVED events and finally one
-		/// CEF_TET_RELEASED or CEF_TET_CANCELLED event. Events not respecting this
-		/// order will be ignored.
+		///  The state of the touch point. Touches begin with one CEF_TET_PRESSED event
+		///  followed by zero or more CEF_TET_MOVED events and finally one
+		///  CEF_TET_RELEASED or CEF_TET_CANCELLED event. Events not respecting this
+		///  order will be ignored.
 		/// </summary>
 		public CefTouchEventType type;
 
 		/// <summary>
-		/// Bit flags describing any pressed modifier keys. See
-		/// cef_event_flags_t for values.
+		///  Bit flags describing any pressed modifier keys. See
+		///  cef_event_flags_t for values.
 		/// </summary>
 		public uint modifiers;
 
 		/// <summary>
-		/// The device type that caused the event.
+		///  The device type that caused the event.
 		/// </summary>
 		public CefPointerType pointer_type;
 	}
 }
-

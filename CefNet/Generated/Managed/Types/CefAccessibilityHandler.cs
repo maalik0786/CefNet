@@ -12,95 +12,102 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Implement this structure to receive accessibility notification when
-	/// accessibility events have been registered. The functions of this structure
-	/// will be called on the UI thread.
+	///  Implement this structure to receive accessibility notification when
+	///  accessibility events have been registered. The functions of this structure
+	///  will be called on the UI thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefAccessibilityHandler : CefBaseRefCounted<cef_accessibility_handler_t>, ICefAccessibilityHandlerPrivate
+	public unsafe class CefAccessibilityHandler : CefBaseRefCounted<cef_accessibility_handler_t>,
+		ICefAccessibilityHandlerPrivate
 	{
-		private static readonly OnAccessibilityTreeChangeDelegate fnOnAccessibilityTreeChange = OnAccessibilityTreeChangeImpl;
+		private static readonly OnAccessibilityTreeChangeDelegate fnOnAccessibilityTreeChange =
+			OnAccessibilityTreeChangeImpl;
 
-		private static readonly OnAccessibilityLocationChangeDelegate fnOnAccessibilityLocationChange = OnAccessibilityLocationChangeImpl;
-
-		internal static unsafe CefAccessibilityHandler Create(IntPtr instance)
-		{
-			return new CefAccessibilityHandler((cef_accessibility_handler_t*)instance);
-		}
+		private static readonly OnAccessibilityLocationChangeDelegate fnOnAccessibilityLocationChange =
+			OnAccessibilityLocationChangeImpl;
 
 		public CefAccessibilityHandler()
 		{
-			cef_accessibility_handler_t* self = this.NativeInstance;
-			self->on_accessibility_tree_change = (void*)Marshal.GetFunctionPointerForDelegate(fnOnAccessibilityTreeChange);
-			self->on_accessibility_location_change = (void*)Marshal.GetFunctionPointerForDelegate(fnOnAccessibilityLocationChange);
+			var self = NativeInstance;
+			self->on_accessibility_tree_change =
+				(void*) Marshal.GetFunctionPointerForDelegate(fnOnAccessibilityTreeChange);
+			self->on_accessibility_location_change =
+				(void*) Marshal.GetFunctionPointerForDelegate(fnOnAccessibilityLocationChange);
 		}
 
 		public CefAccessibilityHandler(cef_accessibility_handler_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefAccessibilityHandlerPrivate.AvoidOnAccessibilityTreeChange();
 
-		/// <summary>
-		/// Called after renderer process sends accessibility tree changes to the
-		/// browser process.
-		/// </summary>
-		protected internal unsafe virtual void OnAccessibilityTreeChange(CefValue value)
-		{
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnAccessibilityTreeChangeDelegate(cef_accessibility_handler_t* self, cef_value_t* value);
-
-		// void (*)(_cef_accessibility_handler_t* self, _cef_value_t* value)*
-		private static unsafe void OnAccessibilityTreeChangeImpl(cef_accessibility_handler_t* self, cef_value_t* value)
-		{
-			var instance = GetInstance((IntPtr)self) as CefAccessibilityHandler;
-			if (instance == null || ((ICefAccessibilityHandlerPrivate)instance).AvoidOnAccessibilityTreeChange())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)value);
-				return;
-			}
-			instance.OnAccessibilityTreeChange(CefValue.Wrap(CefValue.Create, value));
-		}
-
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefAccessibilityHandlerPrivate.AvoidOnAccessibilityLocationChange();
 
-		/// <summary>
-		/// Called after renderer process sends accessibility location changes to the
-		/// browser process.
-		/// </summary>
-		protected internal unsafe virtual void OnAccessibilityLocationChange(CefValue value)
+		internal static CefAccessibilityHandler Create(IntPtr instance)
 		{
+			return new CefAccessibilityHandler((cef_accessibility_handler_t*) instance);
+		}
+
+		/// <summary>
+		///  Called after renderer process sends accessibility tree changes to the
+		///  browser process.
+		/// </summary>
+		protected internal virtual void OnAccessibilityTreeChange(CefValue value)
+		{
+		}
+
+		// void (*)(_cef_accessibility_handler_t* self, _cef_value_t* value)*
+		private static void OnAccessibilityTreeChangeImpl(cef_accessibility_handler_t* self, cef_value_t* value)
+		{
+			var instance = GetInstance((IntPtr) self) as CefAccessibilityHandler;
+			if (instance == null || ((ICefAccessibilityHandlerPrivate) instance).AvoidOnAccessibilityTreeChange())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) value);
+				return;
+			}
+
+			instance.OnAccessibilityTreeChange(CefValue.Wrap(CefValue.Create, value));
+		}
+
+		/// <summary>
+		///  Called after renderer process sends accessibility location changes to the
+		///  browser process.
+		/// </summary>
+		protected internal virtual void OnAccessibilityLocationChange(CefValue value)
+		{
+		}
+
+		// void (*)(_cef_accessibility_handler_t* self, _cef_value_t* value)*
+		private static void OnAccessibilityLocationChangeImpl(cef_accessibility_handler_t* self, cef_value_t* value)
+		{
+			var instance = GetInstance((IntPtr) self) as CefAccessibilityHandler;
+			if (instance == null || ((ICefAccessibilityHandlerPrivate) instance).AvoidOnAccessibilityLocationChange())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) value);
+				return;
+			}
+
+			instance.OnAccessibilityLocationChange(CefValue.Wrap(CefValue.Create, value));
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnAccessibilityLocationChangeDelegate(cef_accessibility_handler_t* self, cef_value_t* value);
+		private delegate void OnAccessibilityTreeChangeDelegate(cef_accessibility_handler_t* self, cef_value_t* value);
 
-		// void (*)(_cef_accessibility_handler_t* self, _cef_value_t* value)*
-		private static unsafe void OnAccessibilityLocationChangeImpl(cef_accessibility_handler_t* self, cef_value_t* value)
-		{
-			var instance = GetInstance((IntPtr)self) as CefAccessibilityHandler;
-			if (instance == null || ((ICefAccessibilityHandlerPrivate)instance).AvoidOnAccessibilityLocationChange())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)value);
-				return;
-			}
-			instance.OnAccessibilityLocationChange(CefValue.Wrap(CefValue.Create, value));
-		}
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnAccessibilityLocationChangeDelegate(cef_accessibility_handler_t* self,
+			cef_value_t* value);
 	}
 }

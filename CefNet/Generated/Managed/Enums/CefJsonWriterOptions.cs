@@ -11,44 +11,38 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Options that can be passed to CefWriteJSON.
+	///  Options that can be passed to CefWriteJSON.
 	/// </summary>
 	public enum CefJsonWriterOptions
 	{
 		/// <summary>
-		/// Default behavior.
+		///  Default behavior.
 		/// </summary>
 		Default = 0,
 
 		/// <summary>
-		/// This option instructs the writer that if a Binary value is encountered,
-		/// the value (and key if within a dictionary) will be omitted from the
-		/// output, and success will be returned. Otherwise, if a binary value is
-		/// encountered, failure will be returned.
+		///  This option instructs the writer that if a Binary value is encountered,
+		///  the value (and key if within a dictionary) will be omitted from the
+		///  output, and success will be returned. Otherwise, if a binary value is
+		///  encountered, failure will be returned.
 		/// </summary>
 		OmitBinaryValues = 1 << 0,
 
 		/// <summary>
-		/// This option instructs the writer to write doubles that have no fractional
-		/// part as a normal integer (i.e., without using exponential notation
-		/// or appending a &apos;.0&apos;) as long as the value is within the range of a
-		/// 64-bit int.
+		///  This option instructs the writer to write doubles that have no fractional
+		///  part as a normal integer (i.e., without using exponential notation
+		///  or appending a &apos;.0&apos;) as long as the value is within the range of a
+		///  64-bit int.
 		/// </summary>
 		OmitDoubleTypePreservation = 1 << 1,
 
 		/// <summary>
-		/// Return a slightly nicer formatted json string (pads with whitespace to
-		/// help with readability).
+		///  Return a slightly nicer formatted json string (pads with whitespace to
+		///  help with readability).
 		/// </summary>
-		PrettyPrint = 1 << 2,
+		PrettyPrint = 1 << 2
 	}
 }
-

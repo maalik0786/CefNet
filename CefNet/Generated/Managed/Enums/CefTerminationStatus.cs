@@ -11,37 +11,31 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Process termination status values.
+	///  Process termination status values.
 	/// </summary>
 	public enum CefTerminationStatus
 	{
 		/// <summary>
-		/// Non-zero exit status.
+		///  Non-zero exit status.
 		/// </summary>
 		AbnormalTermination = 0,
 
 		/// <summary>
-		/// SIGKILL or task manager kill.
+		///  SIGKILL or task manager kill.
 		/// </summary>
 		ProcessWasKilled = 1,
 
 		/// <summary>
-		/// Segmentation fault.
+		///  Segmentation fault.
 		/// </summary>
 		ProcessCrashed = 2,
 
 		/// <summary>
-		/// Out of memory. Some platforms may use TS_PROCESS_CRASHED instead.
+		///  Out of memory. Some platforms may use TS_PROCESS_CRASHED instead.
 		/// </summary>
-		ProcessOom = 3,
+		ProcessOom = 3
 	}
 }
-

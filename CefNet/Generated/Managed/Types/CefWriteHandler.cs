@@ -12,22 +12,21 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure the client can implement to provide a custom stream writer. The
-	/// functions of this structure may be called on any thread.
+	///  Structure the client can implement to provide a custom stream writer. The
+	///  functions of this structure may be called on any thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefWriteHandler : CefBaseRefCounted<cef_write_handler_t>, ICefWriteHandlerPrivate
+	public unsafe class CefWriteHandler : CefBaseRefCounted<cef_write_handler_t>, ICefWriteHandlerPrivate
 	{
 		private static readonly WriteDelegate fnWrite = WriteImpl;
 
@@ -39,143 +38,128 @@ namespace CefNet
 
 		private static readonly MayBlockDelegate fnMayBlock = MayBlockImpl;
 
-		internal static unsafe CefWriteHandler Create(IntPtr instance)
-		{
-			return new CefWriteHandler((cef_write_handler_t*)instance);
-		}
-
 		public CefWriteHandler()
 		{
-			cef_write_handler_t* self = this.NativeInstance;
-			self->write = (void*)Marshal.GetFunctionPointerForDelegate(fnWrite);
-			self->seek = (void*)Marshal.GetFunctionPointerForDelegate(fnSeek);
-			self->tell = (void*)Marshal.GetFunctionPointerForDelegate(fnTell);
-			self->flush = (void*)Marshal.GetFunctionPointerForDelegate(fnFlush);
-			self->may_block = (void*)Marshal.GetFunctionPointerForDelegate(fnMayBlock);
+			var self = NativeInstance;
+			self->write = (void*) Marshal.GetFunctionPointerForDelegate(fnWrite);
+			self->seek = (void*) Marshal.GetFunctionPointerForDelegate(fnSeek);
+			self->tell = (void*) Marshal.GetFunctionPointerForDelegate(fnTell);
+			self->flush = (void*) Marshal.GetFunctionPointerForDelegate(fnFlush);
+			self->may_block = (void*) Marshal.GetFunctionPointerForDelegate(fnMayBlock);
 		}
 
 		public CefWriteHandler(cef_write_handler_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefWriteHandlerPrivate.AvoidWrite();
 
-		/// <summary>
-		/// Write raw binary data.
-		/// </summary>
-		protected internal unsafe virtual long Write(IntPtr ptr, long size, long n)
-		{
-			return default;
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate UIntPtr WriteDelegate(cef_write_handler_t* self, void* ptr, UIntPtr size, UIntPtr n);
-
-		// size_t (*)(_cef_write_handler_t* self, const void* ptr, size_t size, size_t n)*
-		private static unsafe UIntPtr WriteImpl(cef_write_handler_t* self, void* ptr, UIntPtr size, UIntPtr n)
-		{
-			var instance = GetInstance((IntPtr)self) as CefWriteHandler;
-			if (instance == null || ((ICefWriteHandlerPrivate)instance).AvoidWrite())
-			{
-				return default;
-			}
-			return new UIntPtr((ulong)instance.Write(unchecked((IntPtr)ptr), (long)size, (long)n));
-		}
-
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefWriteHandlerPrivate.AvoidSeek();
 
+		internal static CefWriteHandler Create(IntPtr instance)
+		{
+			return new CefWriteHandler((cef_write_handler_t*) instance);
+		}
+
 		/// <summary>
-		/// Seek to the specified offset position. |whence| may be any one of SEEK_CUR,
-		/// SEEK_END or SEEK_SET. Return zero on success and non-zero on failure.
+		///  Write raw binary data.
 		/// </summary>
-		protected internal unsafe virtual int Seek(long offset, int whence)
+		protected internal virtual long Write(IntPtr ptr, long size, long n)
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int SeekDelegate(cef_write_handler_t* self, long offset, int whence);
+		// size_t (*)(_cef_write_handler_t* self, const void* ptr, size_t size, size_t n)*
+		private static UIntPtr WriteImpl(cef_write_handler_t* self, void* ptr, UIntPtr size, UIntPtr n)
+		{
+			var instance = GetInstance((IntPtr) self) as CefWriteHandler;
+			if (instance == null || ((ICefWriteHandlerPrivate) instance).AvoidWrite()) return default;
+			return new UIntPtr((ulong) instance.Write((IntPtr) ptr, (long) size, (long) n));
+		}
+
+		/// <summary>
+		///  Seek to the specified offset position. |whence| may be any one of SEEK_CUR,
+		///  SEEK_END or SEEK_SET. Return zero on success and non-zero on failure.
+		/// </summary>
+		protected internal virtual int Seek(long offset, int whence)
+		{
+			return default;
+		}
 
 		// int (*)(_cef_write_handler_t* self, int64 offset, int whence)*
-		private static unsafe int SeekImpl(cef_write_handler_t* self, long offset, int whence)
+		private static int SeekImpl(cef_write_handler_t* self, long offset, int whence)
 		{
-			var instance = GetInstance((IntPtr)self) as CefWriteHandler;
-			if (instance == null || ((ICefWriteHandlerPrivate)instance).AvoidSeek())
-			{
-				return default;
-			}
+			var instance = GetInstance((IntPtr) self) as CefWriteHandler;
+			if (instance == null || ((ICefWriteHandlerPrivate) instance).AvoidSeek()) return default;
 			return instance.Seek(offset, whence);
 		}
 
 		/// <summary>
-		/// Return the current offset position.
+		///  Return the current offset position.
 		/// </summary>
-		protected internal unsafe virtual long Tell()
+		protected internal virtual long Tell()
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate long TellDelegate(cef_write_handler_t* self);
-
 		// int64 (*)(_cef_write_handler_t* self)*
-		private static unsafe long TellImpl(cef_write_handler_t* self)
+		private static long TellImpl(cef_write_handler_t* self)
 		{
-			var instance = GetInstance((IntPtr)self) as CefWriteHandler;
-			if (instance == null)
-			{
-				return default;
-			}
+			var instance = GetInstance((IntPtr) self) as CefWriteHandler;
+			if (instance == null) return default;
 			return instance.Tell();
 		}
 
 		/// <summary>
-		/// Flush the stream.
+		///  Flush the stream.
 		/// </summary>
-		protected internal unsafe virtual int Flush()
+		protected internal virtual int Flush()
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int FlushDelegate(cef_write_handler_t* self);
-
 		// int (*)(_cef_write_handler_t* self)*
-		private static unsafe int FlushImpl(cef_write_handler_t* self)
+		private static int FlushImpl(cef_write_handler_t* self)
 		{
-			var instance = GetInstance((IntPtr)self) as CefWriteHandler;
-			if (instance == null)
-			{
-				return default;
-			}
+			var instance = GetInstance((IntPtr) self) as CefWriteHandler;
+			if (instance == null) return default;
 			return instance.Flush();
 		}
 
 		/// <summary>
-		/// Return true (1) if this handler performs work like accessing the file
-		/// system which may block. Used as a hint for determining the thread to access
-		/// the handler from.
+		///  Return true (1) if this handler performs work like accessing the file
+		///  system which may block. Used as a hint for determining the thread to access
+		///  the handler from.
 		/// </summary>
-		protected internal unsafe virtual bool MayBlock()
+		protected internal virtual bool MayBlock()
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int MayBlockDelegate(cef_write_handler_t* self);
-
 		// int (*)(_cef_write_handler_t* self)*
-		private static unsafe int MayBlockImpl(cef_write_handler_t* self)
+		private static int MayBlockImpl(cef_write_handler_t* self)
 		{
-			var instance = GetInstance((IntPtr)self) as CefWriteHandler;
-			if (instance == null)
-			{
-				return default;
-			}
+			var instance = GetInstance((IntPtr) self) as CefWriteHandler;
+			if (instance == null) return default;
 			return instance.MayBlock() ? 1 : 0;
 		}
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate UIntPtr WriteDelegate(cef_write_handler_t* self, void* ptr, UIntPtr size, UIntPtr n);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int SeekDelegate(cef_write_handler_t* self, long offset, int whence);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate long TellDelegate(cef_write_handler_t* self);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int FlushDelegate(cef_write_handler_t* self);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int MayBlockDelegate(cef_write_handler_t* self);
 	}
 }

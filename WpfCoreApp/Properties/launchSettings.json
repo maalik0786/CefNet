@@ -1,8 +1,8 @@
 {
-  "profiles": {
-    "WpfCoreApp": {
-      "commandName": "Project",
-      "nativeDebugging": false
-    }
-  }
+	"profiles": {
+		"WpfCoreApp": {
+			"commandName": "Project",
+			"nativeDebugging": false
+		}
+	}
 }

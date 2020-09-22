@@ -6,17 +6,13 @@
 
 namespace CefGen.CodeDom
 {
-	class CodeEnum : CodeType
+	internal class CodeEnum : CodeType
 	{
-
 		public CodeEnum(string name)
 			: base(name)
 		{
-
 		}
 
 		public string Type { get; set; }
-
-
 	}
 }

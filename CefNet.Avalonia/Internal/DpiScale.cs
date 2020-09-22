@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Avalonia;
+﻿using Avalonia;
 
 namespace CefNet.Internal
 {
@@ -18,11 +15,11 @@ namespace CefNet.Internal
 		/// <param name="dpiScaleY">The DPI scale on the Y axis.</param>
 		public DpiScale(double dpiScaleX, double dpiScaleY)
 		{
-			this.DpiScaleX = dpiScaleX;
-			this.DpiScaleY = dpiScaleY;
-			this.PixelsPerDip = 96.0;
-			this.PixelsPerInchX = dpiScaleX * 96.0;
-			this.PixelsPerInchY = dpiScaleY * 96.0;
+			DpiScaleX = dpiScaleX;
+			DpiScaleY = dpiScaleY;
+			PixelsPerDip = 96.0;
+			PixelsPerInchX = dpiScaleX * 96.0;
+			PixelsPerInchY = dpiScaleY * 96.0;
 		}
 
 		/// <summary>
@@ -53,9 +50,6 @@ namespace CefNet.Internal
 		/// <summary>
 		/// Gets the DPI.
 		/// </summary>
-		public Vector Dpi
-		{
-			get { return new Vector(PixelsPerInchX, PixelsPerInchY); }
-		}
+		public Vector Dpi => new Vector(PixelsPerInchX, PixelsPerInchY);
 	}
 }

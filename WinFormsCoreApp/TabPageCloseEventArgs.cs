@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.ComponentModel;
 
 namespace System.Windows.Forms
 {
@@ -13,17 +7,16 @@ namespace System.Windows.Forms
 		public TabPageCloseEventArgs(TabPage tab)
 			: this(tab, false)
 		{
-
 		}
 
 		public TabPageCloseEventArgs(TabPage tab, bool force)
 		{
-			this.Tab = tab;
-			this.Force = force;
+			Tab = tab;
+			Force = force;
 		}
 
-		public TabPage Tab { get; private set; }
+		public TabPage Tab { get; }
 
-		public bool Force { get; private set; }
+		public bool Force { get; }
 	}
 }

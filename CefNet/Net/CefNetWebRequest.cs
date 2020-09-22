@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -9,46 +8,101 @@ using System.Threading.Tasks;
 
 namespace CefNet.Net
 {
-
 	/// <summary>
-	/// Provides an URL request that is not associated with a specific browser or frame.
+	///  Provides an URL request that is not associated with a specific browser or frame.
 	/// </summary>
 	public class CefNetWebRequest : CefUrlRequestClient, INotifyCompletion
 	{
-		private sealed class RequestOperation
-		{
-			public CefUrlRequest request;
-			public Action continuation;
-			public CancellationToken cancellationToken;
-		}
-
 		private readonly ICefNetCredentialProvider _authentication;
-		private CefRequest _request;
-		private CefResponse _response;
-		private CefUrlRequestStatus _requestStatus;
-		private Stream _stream;
 		private RequestOperation _activeOperation;
 		private volatile Exception _exception;
+		private CefRequest _request;
+		private CefUrlRequestStatus _requestStatus;
+		private CefResponse _response;
+		private Stream _stream;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CefNetWebRequest"/> class.
+		///  Initializes a new instance of the <see cref="CefNetWebRequest" /> class.
 		/// </summary>
 		public CefNetWebRequest()
 			: this(null)
 		{
-
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CefNetWebRequest"/> class.
+		///  Initializes a new instance of the <see cref="CefNetWebRequest" /> class.
 		/// </summary>
 		/// <param name="authentication">
-		/// Provides the base authentication interface for retrieving credentials.
+		///  Provides the base authentication interface for retrieving credentials.
 		/// </param>
 		public CefNetWebRequest(ICefNetCredentialProvider authentication)
 		{
 			_activeOperation = null;
 			_authentication = authentication;
+		}
+
+		private bool IsCompleted { get; set; }
+
+		/// <summary>
+		///  Gets the request object used to create this URL request. The returned
+		///  object is read-only and should not be modified.
+		/// </summary>
+		public CefRequest Request
+		{
+			get
+			{
+				var op = _activeOperation;
+				return op is null ? _request : op.request.Request;
+			}
+		}
+
+		/// <summary>
+		///  Gets the response, or null if no response information is available.
+		///  Response information will only be available after the upload has completed.
+		///  The returned object is read-only and should not be modified.
+		/// </summary>
+		public CefResponse Response
+		{
+			get
+			{
+				var op = _activeOperation;
+				return op is null ? _response : op.request.Response;
+			}
+		}
+
+		/// <summary>
+		///  Gets the request status.
+		/// </summary>
+		public CefUrlRequestStatus RequestStatus
+		{
+			get
+			{
+				var op = _activeOperation;
+				return op is null ? _requestStatus : op.request.RequestStatus;
+			}
+		}
+
+		/// <summary>
+		///  Gets the request error if status is UR_CANCELED or UR_FAILED, or 0
+		///  otherwise.
+		/// </summary>
+		public CefErrorCode RequestError { get; private set; }
+
+		/// <summary>
+		///  Gets the value which indicates that the response body was served from the cache.
+		///  This includes responses for which revalidation was required.
+		/// </summary>
+		public bool ResponseWasCached { get; private set; }
+
+		void INotifyCompletion.OnCompleted(Action continuation)
+		{
+			if (IsCompleted)
+				continuation();
+
+			var op = Volatile.Read(ref _activeOperation);
+			if (op is null)
+				throw new InvalidOperationException();
+			op.continuation = continuation;
 		}
 
 		/// <inheritdoc />
@@ -59,44 +113,46 @@ namespace CefNet.Net
 		}
 
 		/// <summary>
-		/// Called on the IO thread when the browser needs credentials from the user.
+		///  Called on the IO thread when the browser needs credentials from the user.
 		/// </summary>
-		/// <param name="isProxy">Indicates whether the <paramref name="host"/> is a proxy server.</param>
+		/// <param name="isProxy">Indicates whether the <paramref name="host" /> is a proxy server.</param>
 		/// <param name="host">The hostname.</param>
 		/// <param name="port">The port number.</param>
 		/// <param name="realm">
-		/// The realm is used to describe the protected area or to indicate the scope of protection.
+		///  The realm is used to describe the protected area or to indicate the scope of protection.
 		/// </param>
 		/// <param name="scheme">The authentication scheme.</param>
 		/// <param name="callback">
-		/// The callback used to asynchronous continuation/cancellation of authentication requests.
+		///  The callback used to asynchronous continuation/cancellation of authentication requests.
 		/// </param>
 		/// <returns>
-		/// Return true to continue the request and call <see cref="CefAuthCallback.Continue"/>
-		/// when the authentication information is available. If the request has an associated
-		/// browser/frame then returning false will result in a call to GetAuthCredentials on the
-		/// <see cref="CefReadHandler"/> associated with that browser, if any. Otherwise,
-		/// returning false will cancel the request immediately. 
+		///  Return true to continue the request and call <see cref="CefAuthCallback.Continue" />
+		///  when the authentication information is available. If the request has an associated
+		///  browser/frame then returning false will result in a call to GetAuthCredentials on the
+		///  <see cref="CefReadHandler" /> associated with that browser, if any. Otherwise,
+		///  returning false will cancel the request immediately.
 		/// </returns>
 		/// <remarks>
-		/// This function will only be called for requests initiated from the browser process.
+		///  This function will only be called for requests initiated from the browser process.
 		/// </remarks>
-		protected internal override bool GetAuthCredentials(bool isProxy, string host, int port, string realm, string scheme, CefAuthCallback callback)
+		protected internal override bool GetAuthCredentials(bool isProxy, string host, int port, string realm,
+			string scheme, CefAuthCallback callback)
 		{
 			if (_authentication is null)
 				return false;
 
-			RequestOperation op = _activeOperation;
+			var op = _activeOperation;
 			if (op is null)
 				return false;
 
-			Task<NetworkCredential> getCredentialTask = _authentication.GetCredentialAsync(isProxy, host, port, realm, scheme, op.cancellationToken);
+			var getCredentialTask =
+				_authentication.GetCredentialAsync(isProxy, host, port, realm, scheme, op.cancellationToken);
 			if (getCredentialTask is null)
 				return false;
 
 			getCredentialTask.ContinueWith(t =>
 			{
-				NetworkCredential credential = (t.Status == TaskStatus.RanToCompletion) ? t.Result : null;
+				var credential = t.Status == TaskStatus.RanToCompletion ? t.Result : null;
 				if (credential is null)
 					callback.Cancel();
 				callback.Continue(credential.UserName, credential.Password);
@@ -105,19 +161,16 @@ namespace CefNet.Net
 		}
 
 		/// <summary>
-		/// Notifies about a download progress.
+		///  Notifies about a download progress.
 		/// </summary>
-		/// <param name="request">The associated <see cref="CefUrlRequest"/>.</param>
+		/// <param name="request">The associated <see cref="CefUrlRequest" />.</param>
 		/// <param name="current">The number of bytes received up to the call.</param>
 		/// <param name="total">The expected total size of the response (or -1 if not determined).</param>
 		protected internal override void OnDownloadProgress(CefUrlRequest request, long current, long total)
 		{
 			try
 			{
-				if (_stream is MemoryStream mem && mem.Capacity < total)
-				{
-					mem.Capacity = (int)total;
-				}
+				if (_stream is MemoryStream mem && mem.Capacity < total) mem.Capacity = (int) total;
 			}
 			catch (Exception e)
 			{
@@ -127,10 +180,10 @@ namespace CefNet.Net
 		}
 
 		/// <summary>
-		/// Called when some part of the response is read. This function will not be called if the
-		/// <see cref="CefUrlRequestFlags.NoDownloadData"/> flag is set on the request.
+		///  Called when some part of the response is read. This function will not be called if the
+		///  <see cref="CefUrlRequestFlags.NoDownloadData" /> flag is set on the request.
 		/// </summary>
-		/// <param name="request">The associated <see cref="CefUrlRequest"/>.</param>
+		/// <param name="request">The associated <see cref="CefUrlRequest" />.</param>
 		/// <param name="data">The pointer to the buffer that contains the current bytes received since the last call.</param>
 		/// <param name="dataLength">The size of the data buffer in bytes.</param>
 		protected internal override void OnDownloadData(CefUrlRequest request, IntPtr data, long dataLength)
@@ -139,7 +192,7 @@ namespace CefNet.Net
 			{
 				if (_stream is null)
 				{
-					_stream = CreateResourceStream((int)dataLength);
+					_stream = CreateResourceStream((int) dataLength);
 					if (_stream is null)
 					{
 						request.Cancel();
@@ -149,11 +202,11 @@ namespace CefNet.Net
 
 				if (_stream is MemoryStream mem)
 				{
-					long startPos = _stream.Position;
-					long endPos = startPos + dataLength;
+					var startPos = _stream.Position;
+					var endPos = startPos + dataLength;
 					if (endPos < mem.Capacity)
 					{
-						Marshal.Copy(data, mem.GetBuffer(), (int)startPos, (int)dataLength);
+						Marshal.Copy(data, mem.GetBuffer(), (int) startPos, (int) dataLength);
 						mem.SetLength(endPos);
 						mem.Position = endPos;
 						return;
@@ -172,17 +225,16 @@ namespace CefNet.Net
 		}
 
 		/// <summary>
-		/// Notifies that the request has completed.
+		///  Notifies that the request has completed.
 		/// </summary>
-		/// <param name="request">The associated <see cref="CefUrlRequest"/>.</param>
+		/// <param name="request">The associated <see cref="CefUrlRequest" />.</param>
 		/// <remarks>
-		/// Use the <see cref="CefUrlRequest.RequestStatus"/> to determine
-		/// if the request was successful or not.
+		///  Use the <see cref="CefUrlRequest.RequestStatus" /> to determine
+		///  if the request was successful or not.
 		/// </remarks>
 		protected internal override void OnRequestComplete(CefUrlRequest request)
 		{
 			if (_stream != null)
-			{
 				try
 				{
 					_stream.Flush();
@@ -193,20 +245,19 @@ namespace CefNet.Net
 				{
 					SetException(ioe);
 				}
-			}
 
 			_request = request.Request;
 			_response = request.Response;
 			_requestStatus = request.RequestStatus;
-			this.RequestError = request.RequestError;
-			this.ResponseWasCached = request.ResponseWasCached();
+			RequestError = request.RequestError;
+			ResponseWasCached = request.ResponseWasCached();
 
 			IsCompleted = true;
-			RequestOperation op = Volatile.Read(ref _activeOperation);
+			var op = Volatile.Read(ref _activeOperation);
 			if (op is null || op.continuation is null)
 				return;
 
-			ThreadPool.QueueUserWorkItem(cont => ((Action)cont)(), op.continuation);
+			ThreadPool.QueueUserWorkItem(cont => ((Action) cont)(), op.continuation);
 		}
 
 		private CefNetWebRequest GetAwaiter()
@@ -214,123 +265,55 @@ namespace CefNet.Net
 			return this;
 		}
 
-		private bool IsCompleted { get; set; }
-
 		private void GetResult() { }
 
-		void INotifyCompletion.OnCompleted(Action continuation)
-		{
-			if (IsCompleted)
-				continuation();
-
-			RequestOperation op = Volatile.Read(ref _activeOperation);
-			if (op is null)
-			{
-				throw new InvalidOperationException();
-			}
-			else
-			{
-				op.continuation = continuation;
-			}
-		}
-
 		/// <summary>
-		/// Gets the request object used to create this URL request. The returned
-		/// object is read-only and should not be modified.
-		/// </summary>
-		public CefRequest Request
-		{
-			get
-			{
-				RequestOperation op = _activeOperation;
-				return op is null ? _request : op.request.Request;
-			}
-		}
-
-		/// <summary>
-		/// Gets the response, or null if no response information is available.
-		/// Response information will only be available after the upload has completed.
-		/// The returned object is read-only and should not be modified.
-		/// </summary>
-		public CefResponse Response
-		{
-			get
-			{
-				RequestOperation op = _activeOperation;
-				return op is null ? _response : op.request.Response;
-			}
-		}
-
-		/// <summary>
-		/// Gets the request status.
-		/// </summary>
-		public CefUrlRequestStatus RequestStatus
-		{
-			get
-			{
-				RequestOperation op = _activeOperation;
-				return op is null ? _requestStatus : op.request.RequestStatus;
-			}
-		}
-
-		/// <summary>
-		/// Gets the request error if status is UR_CANCELED or UR_FAILED, or 0
-		/// otherwise.
-		/// </summary>
-		public CefErrorCode RequestError { get; private set; }
-
-		/// <summary>
-		/// Gets the value which indicates that the response body was served from the cache.
-		/// This includes responses for which revalidation was required.
-		/// </summary>
-		public bool ResponseWasCached { get; private set; }
-
-		/// <summary>
-		/// Sends the request to the server as an asynchronous operation.<para/>
-		/// For requests originating from the browser process:
-		/// <list type="bullet">
-		/// <item>
-		/// <description>
-		/// It may be intercepted by the client via CefResourceRequestHandler or
-		/// CefSchemeHandlerFactory;
-		/// </description>
-		/// </item>
-		/// <item>
-		/// <description>
-		/// POST data may only contain only a single element of type
-		/// <see cref="CefPostDataElementType.File"/> or <see cref="CefPostDataElementType.Bytes"/>.
-		/// </description>
-		/// </item>
-		/// </list>
-		/// For requests originating from the render process:
-		/// <list type="bullet">
-		/// <item>
-		/// <description>
-		/// It cannot be intercepted by the client so only http(s) and blob schemes
-		/// are supported.
-		/// </description>
-		/// </item>
-		/// <item>
-		/// <description>
-		/// POST data may only contain a single element of type <see cref="CefPostDataElementType.Bytes"/>.
-		/// </description>
-		/// </item>
-		/// </list>
+		///  Sends the request to the server as an asynchronous operation.
+		///  <para />
+		///  For requests originating from the browser process:
+		///  <list type="bullet">
+		///      <item>
+		///          <description>
+		///              It may be intercepted by the client via CefResourceRequestHandler or
+		///              CefSchemeHandlerFactory;
+		///          </description>
+		///      </item>
+		///      <item>
+		///          <description>
+		///              POST data may only contain only a single element of type
+		///              <see cref="CefPostDataElementType.File" /> or <see cref="CefPostDataElementType.Bytes" />.
+		///          </description>
+		///      </item>
+		///  </list>
+		///  For requests originating from the render process:
+		///  <list type="bullet">
+		///      <item>
+		///          <description>
+		///              It cannot be intercepted by the client so only http(s) and blob schemes
+		///              are supported.
+		///          </description>
+		///      </item>
+		///      <item>
+		///          <description>
+		///              POST data may only contain a single element of type <see cref="CefPostDataElementType.Bytes" />.
+		///          </description>
+		///      </item>
+		///  </list>
 		/// </summary>
 		/// <param name="request">
-		/// The <see cref="CefRequest"/> object to send. It will be marked as read-only after calling
-		/// this function.
+		///  The <see cref="CefRequest" /> object to send. It will be marked as read-only after calling
+		///  this function.
 		/// </param>
 		/// <param name="context">
-		/// A request context or null, if <paramref name="context"/> is empty the global
-		/// request context will be used. For requests originating from the render process
-		/// this parameter must be null.
+		///  A request context or null, if <paramref name="context" /> is empty the global
+		///  request context will be used. For requests originating from the render process
+		///  this parameter must be null.
 		/// </param>
 		/// <param name="cancellationToken">The cancellation token to cancel operation.</param>
 		/// <returns>The task object representing the asynchronous operation.</returns>
 		/// <remarks>
-		/// This operation will not block. The returned <see cref="Task"/> object will complete once
-		/// the entire response including content is read.
+		///  This operation will not block. The returned <see cref="Task" /> object will complete once
+		///  the entire response including content is read.
 		/// </remarks>
 		public async Task SendAsync(CefRequest request, CefRequestContext context, CancellationToken cancellationToken)
 		{
@@ -348,14 +331,16 @@ namespace CefNet.Net
 				_stream.Dispose();
 				_stream = null;
 			}
+
 			_requestStatus = CefUrlRequestStatus.Unknown;
-			this.RequestError = CefErrorCode.None;
-			this.ResponseWasCached = false;
-			this.IsCompleted = false;
+			RequestError = CefErrorCode.None;
+			ResponseWasCached = false;
+			IsCompleted = false;
 
 			try
 			{
-				_activeOperation.request = await CreateUrlRequest(request, context, cancellationToken).ConfigureAwait(false);
+				_activeOperation.request =
+					await CreateUrlRequest(request, context, cancellationToken).ConfigureAwait(false);
 				using (cancellationToken.Register(_activeOperation.request.Cancel))
 				{
 					await this;
@@ -372,7 +357,8 @@ namespace CefNet.Net
 			ExceptionDispatchInfo.Capture(_exception).Throw();
 		}
 
-		private Task<CefUrlRequest> CreateUrlRequest(CefRequest request, CefRequestContext context, CancellationToken cancellationToken)
+		private Task<CefUrlRequest> CreateUrlRequest(CefRequest request, CefRequestContext context,
+			CancellationToken cancellationToken)
 		{
 			_activeOperation.cancellationToken = cancellationToken;
 
@@ -396,7 +382,7 @@ namespace CefNet.Net
 		}
 
 		/// <summary>
-		/// Returns a <see cref="Task"/> that can be used to wait for the request to complete.
+		///  Returns a <see cref="Task" /> that can be used to wait for the request to complete.
 		/// </summary>
 		/// <returns>The task object representing the asynchronous operation.</returns>
 		protected async Task GetWaitTask()
@@ -405,9 +391,9 @@ namespace CefNet.Net
 		}
 
 		/// <summary>
-		/// Gets the stream that is used to read the body of the response from the server.
+		///  Gets the stream that is used to read the body of the response from the server.
 		/// </summary>
-		/// <returns>A <see cref="Stream"/> containing the body of the response.</returns>
+		/// <returns>A <see cref="Stream" /> containing the body of the response.</returns>
 		public virtual Stream GetResponseStream()
 		{
 			if (!IsCompleted)
@@ -417,7 +403,7 @@ namespace CefNet.Net
 		}
 
 		/// <summary>
-		/// Marks the current request as failed and binds the specified exception to the request.
+		///  Marks the current request as failed and binds the specified exception to the request.
 		/// </summary>
 		/// <param name="exception">The exception to bind to the request.</param>
 		protected void SetException(Exception exception)
@@ -426,15 +412,20 @@ namespace CefNet.Net
 		}
 
 		/// <summary>
-		/// Creates a <see cref="Stream"/> into which downloaded data will be written.
+		///  Creates a <see cref="Stream" /> into which downloaded data will be written.
 		/// </summary>
 		/// <param name="initialCapacity">The size of the initial portion of data to write to the stream.</param>
-		/// <returns>The <see cref="Stream"/> in which the response body will be written.</returns>
+		/// <returns>The <see cref="Stream" /> in which the response body will be written.</returns>
 		protected virtual Stream CreateResourceStream(int initialCapacity)
 		{
 			return new MemoryStream(initialCapacity);
 		}
 
+		private sealed class RequestOperation
+		{
+			public CancellationToken cancellationToken;
+			public Action continuation;
+			public CefUrlRequest request;
+		}
 	}
-
 }

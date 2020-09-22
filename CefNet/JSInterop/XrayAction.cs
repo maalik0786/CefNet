@@ -7,7 +7,6 @@
 		Get,
 		Set,
 		Invoke,
-		InvokeMember,
-
+		InvokeMember
 	}
 }

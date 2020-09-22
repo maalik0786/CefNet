@@ -11,18 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefDownloadHandlerGlue: CefDownloadHandler, ICefDownloadHandlerPrivate
+	internal sealed class CefDownloadHandlerGlue : CefDownloadHandler, ICefDownloadHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefDownloadHandlerGlue(WebViewGlue impl)
 		{
@@ -34,20 +27,21 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnBeforeDownload();
 		}
 
-		protected internal unsafe override void OnBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem, string suggestedName, CefBeforeDownloadCallback callback)
-		{
-			_implementation.OnBeforeDownload(browser, downloadItem, suggestedName, callback);
-		}
-
 		bool ICefDownloadHandlerPrivate.AvoidOnDownloadUpdated()
 		{
 			return _implementation.AvoidOnDownloadUpdated();
 		}
 
-		protected internal unsafe override void OnDownloadUpdated(CefBrowser browser, CefDownloadItem downloadItem, CefDownloadItemCallback callback)
+		protected internal override void OnBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem,
+			string suggestedName, CefBeforeDownloadCallback callback)
+		{
+			_implementation.OnBeforeDownload(browser, downloadItem, suggestedName, callback);
+		}
+
+		protected internal override void OnDownloadUpdated(CefBrowser browser, CefDownloadItem downloadItem,
+			CefDownloadItemCallback callback)
 		{
 			_implementation.OnDownloadUpdated(browser, downloadItem, callback);
 		}
-
 	}
 }

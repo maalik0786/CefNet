@@ -11,47 +11,41 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported context menu media types.
+	///  Supported context menu media types.
 	/// </summary>
 	public enum CefContextMenuMediaType
 	{
 		/// <summary>
-		/// No special node is in context.
+		///  No special node is in context.
 		/// </summary>
 		None = 0,
 
 		/// <summary>
-		/// An image node is selected.
+		///  An image node is selected.
 		/// </summary>
 		Image = 1,
 
 		/// <summary>
-		/// A video node is selected.
+		///  A video node is selected.
 		/// </summary>
 		Video = 2,
 
 		/// <summary>
-		/// An audio node is selected.
+		///  An audio node is selected.
 		/// </summary>
 		Audio = 3,
 
 		/// <summary>
-		/// A file node is selected.
+		///  A file node is selected.
 		/// </summary>
 		File = 4,
 
 		/// <summary>
-		/// A plugin node is selected.
+		///  A plugin node is selected.
 		/// </summary>
-		Plugin = 5,
+		Plugin = 5
 	}
 }
-

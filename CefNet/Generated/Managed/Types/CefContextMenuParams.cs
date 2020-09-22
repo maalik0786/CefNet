@@ -12,284 +12,161 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Provides information about the context menu state. The ethods of this
-	/// structure can only be accessed on browser process the UI thread.
+	///  Provides information about the context menu state. The ethods of this
+	///  structure can only be accessed on browser process the UI thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefContextMenuParams : CefBaseRefCounted<cef_context_menu_params_t>
+	public unsafe class CefContextMenuParams : CefBaseRefCounted<cef_context_menu_params_t>
 	{
-		internal static unsafe CefContextMenuParams Create(IntPtr instance)
-		{
-			return new CefContextMenuParams((cef_context_menu_params_t*)instance);
-		}
-
 		public CefContextMenuParams(cef_context_menu_params_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets the X coordinate of the mouse where the context menu was invoked.
-		/// Coords are relative to the associated RenderView&apos;s origin.
+		///  Gets the X coordinate of the mouse where the context menu was invoked.
+		///  Coords are relative to the associated RenderView&apos;s origin.
 		/// </summary>
-		public unsafe virtual int XCoord
+		public virtual int XCoord => SafeCall(NativeInstance->GetXCoord());
+
+		/// <summary>
+		///  Gets the Y coordinate of the mouse where the context menu was invoked.
+		///  Coords are relative to the associated RenderView&apos;s origin.
+		/// </summary>
+		public virtual int YCoord => SafeCall(NativeInstance->GetYCoord());
+
+		/// <summary>
+		///  Gets flags representing the type of node that the context menu was
+		///  invoked on.
+		/// </summary>
+		public virtual CefContextMenuTypeFlags TypeFlags => SafeCall(NativeInstance->GetTypeFlags());
+
+		/// <summary>
+		///  Gets the URL of the link, if any, that encloses the node that the
+		///  context menu was invoked on.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string LinkUrl => SafeCall(CefString.ReadAndFree(NativeInstance->GetLinkUrl()));
+
+		/// <summary>
+		///  Gets the link URL, if any, to be used ONLY for &quot;copy link address&quot;. We
+		///  don&apos;t validate this field in the frontend process.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string UnfilteredLinkUrl =>
+			SafeCall(CefString.ReadAndFree(NativeInstance->GetUnfilteredLinkUrl()));
+
+		/// <summary>
+		///  Gets the source URL, if any, for the element that the context menu was
+		///  invoked on. Example of elements with source URLs are img, audio, and video.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string SourceUrl => SafeCall(CefString.ReadAndFree(NativeInstance->GetSourceUrl()));
+
+		/// <summary>
+		///  Gets a value indicating whether the context menu was invoked on an image which has non-
+		///  NULL contents.
+		/// </summary>
+		public virtual bool HasImageContents => SafeCall(NativeInstance->HasImageContents() != 0);
+
+		/// <summary>
+		///  Gets the title text or the alt text if the context menu was invoked on
+		///  an image.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string TitleText => SafeCall(CefString.ReadAndFree(NativeInstance->GetTitleText()));
+
+		/// <summary>
+		///  Gets the URL of the top level page that the context menu was invoked on.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string PageUrl => SafeCall(CefString.ReadAndFree(NativeInstance->GetPageUrl()));
+
+		/// <summary>
+		///  Gets the URL of the subframe that the context menu was invoked on.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string FrameUrl => SafeCall(CefString.ReadAndFree(NativeInstance->GetFrameUrl()));
+
+		/// <summary>
+		///  Gets the character encoding of the subframe that the context menu was
+		///  invoked on.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string FrameCharset => SafeCall(CefString.ReadAndFree(NativeInstance->GetFrameCharset()));
+
+		/// <summary>
+		///  Gets the type of context node that the context menu was invoked on.
+		/// </summary>
+		public virtual CefContextMenuMediaType MediaType => SafeCall(NativeInstance->GetMediaType());
+
+		/// <summary>
+		///  Gets flags representing the actions supported by the media element, if
+		///  any, that the context menu was invoked on.
+		/// </summary>
+		public virtual CefContextMenuMediaStateFlags MediaStateFlags => SafeCall(NativeInstance->GetMediaStateFlags());
+
+		/// <summary>
+		///  Gets the text of the selection, if any, that the context menu was
+		///  invoked on.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string SelectionText => SafeCall(CefString.ReadAndFree(NativeInstance->GetSelectionText()));
+
+		/// <summary>
+		///  Gets the text of the misspelled word, if any, that the context menu was
+		///  invoked on.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string MisspelledWord => SafeCall(CefString.ReadAndFree(NativeInstance->GetMisspelledWord()));
+
+		/// <summary>
+		///  Gets a value indicating whether the context menu was invoked on an editable node.
+		/// </summary>
+		public virtual bool IsEditable => SafeCall(NativeInstance->IsEditable() != 0);
+
+		/// <summary>
+		///  Gets a value indicating whether the context menu was invoked on an editable node where
+		///  spell-check is enabled.
+		/// </summary>
+		public virtual bool IsSpellCheckEnabled => SafeCall(NativeInstance->IsSpellCheckEnabled() != 0);
+
+		/// <summary>
+		///  Gets flags representing the actions supported by the editable node, if
+		///  any, that the context menu was invoked on.
+		/// </summary>
+		public virtual CefContextMenuEditStateFlags EditStateFlags => SafeCall(NativeInstance->GetEditStateFlags());
+
+		/// <summary>
+		///  Gets a value indicating whether the context menu contains items specified by the
+		///  renderer process (for example, plugin placeholder or pepper plugin menu
+		///  items).
+		/// </summary>
+		public virtual bool IsCustomMenu => SafeCall(NativeInstance->IsCustomMenu() != 0);
+
+		/// <summary>
+		///  Gets a value indicating whether the context menu was invoked from a pepper plugin.
+		/// </summary>
+		public virtual bool IsPepperMenu => SafeCall(NativeInstance->IsPepperMenu() != 0);
+
+		internal static CefContextMenuParams Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(NativeInstance->GetXCoord());
-			}
+			return new CefContextMenuParams((cef_context_menu_params_t*) instance);
 		}
 
 		/// <summary>
-		/// Gets the Y coordinate of the mouse where the context menu was invoked.
-		/// Coords are relative to the associated RenderView&apos;s origin.
+		///  Returns true (1) if suggestions exist, false (0) otherwise. Fills in
+		///  |suggestions| from the spell check service for the misspelled word if there
+		///  is one.
 		/// </summary>
-		public unsafe virtual int YCoord
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetYCoord());
-			}
-		}
-
-		/// <summary>
-		/// Gets flags representing the type of node that the context menu was
-		/// invoked on.
-		/// </summary>
-		public unsafe virtual CefContextMenuTypeFlags TypeFlags
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetTypeFlags());
-			}
-		}
-
-		/// <summary>
-		/// Gets the URL of the link, if any, that encloses the node that the
-		/// context menu was invoked on.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string LinkUrl
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetLinkUrl()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the link URL, if any, to be used ONLY for &quot;copy link address&quot;. We
-		/// don&apos;t validate this field in the frontend process.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string UnfilteredLinkUrl
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetUnfilteredLinkUrl()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the source URL, if any, for the element that the context menu was
-		/// invoked on. Example of elements with source URLs are img, audio, and video.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string SourceUrl
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetSourceUrl()));
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the context menu was invoked on an image which has non-
-		/// NULL contents.
-		/// </summary>
-		public unsafe virtual bool HasImageContents
-		{
-			get
-			{
-				return SafeCall(NativeInstance->HasImageContents() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets the title text or the alt text if the context menu was invoked on
-		/// an image.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string TitleText
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetTitleText()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the URL of the top level page that the context menu was invoked on.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string PageUrl
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetPageUrl()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the URL of the subframe that the context menu was invoked on.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string FrameUrl
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetFrameUrl()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the character encoding of the subframe that the context menu was
-		/// invoked on.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string FrameCharset
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetFrameCharset()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the type of context node that the context menu was invoked on.
-		/// </summary>
-		public unsafe virtual CefContextMenuMediaType MediaType
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetMediaType());
-			}
-		}
-
-		/// <summary>
-		/// Gets flags representing the actions supported by the media element, if
-		/// any, that the context menu was invoked on.
-		/// </summary>
-		public unsafe virtual CefContextMenuMediaStateFlags MediaStateFlags
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetMediaStateFlags());
-			}
-		}
-
-		/// <summary>
-		/// Gets the text of the selection, if any, that the context menu was
-		/// invoked on.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string SelectionText
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetSelectionText()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the text of the misspelled word, if any, that the context menu was
-		/// invoked on.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string MisspelledWord
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetMisspelledWord()));
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the context menu was invoked on an editable node.
-		/// </summary>
-		public unsafe virtual bool IsEditable
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsEditable() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the context menu was invoked on an editable node where
-		/// spell-check is enabled.
-		/// </summary>
-		public unsafe virtual bool IsSpellCheckEnabled
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsSpellCheckEnabled() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets flags representing the actions supported by the editable node, if
-		/// any, that the context menu was invoked on.
-		/// </summary>
-		public unsafe virtual CefContextMenuEditStateFlags EditStateFlags
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetEditStateFlags());
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the context menu contains items specified by the
-		/// renderer process (for example, plugin placeholder or pepper plugin menu
-		/// items).
-		/// </summary>
-		public unsafe virtual bool IsCustomMenu
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsCustomMenu() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the context menu was invoked from a pepper plugin.
-		/// </summary>
-		public unsafe virtual bool IsPepperMenu
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsPepperMenu() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Returns true (1) if suggestions exist, false (0) otherwise. Fills in
-		/// |suggestions| from the spell check service for the misspelled word if there
-		/// is one.
-		/// </summary>
-		public unsafe virtual bool GetDictionarySuggestions(CefStringList suggestions)
+		public virtual bool GetDictionarySuggestions(CefStringList suggestions)
 		{
 			return SafeCall(NativeInstance->GetDictionarySuggestions(suggestions.GetNativeInstance()) != 0);
 		}

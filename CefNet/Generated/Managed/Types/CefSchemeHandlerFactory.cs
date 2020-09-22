@@ -12,76 +12,81 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure that creates cef_resource_handler_t instances for handling scheme
-	/// requests. The functions of this structure will always be called on the IO
-	/// thread.
+	///  Structure that creates cef_resource_handler_t instances for handling scheme
+	///  requests. The functions of this structure will always be called on the IO
+	///  thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefSchemeHandlerFactory : CefBaseRefCounted<cef_scheme_handler_factory_t>, ICefSchemeHandlerFactoryPrivate
+	public unsafe class CefSchemeHandlerFactory : CefBaseRefCounted<cef_scheme_handler_factory_t>,
+		ICefSchemeHandlerFactoryPrivate
 	{
 		private static readonly CreateDelegate fnCreate = CreateImpl;
 
-		internal static unsafe CefSchemeHandlerFactory Create(IntPtr instance)
-		{
-			return new CefSchemeHandlerFactory((cef_scheme_handler_factory_t*)instance);
-		}
-
 		public CefSchemeHandlerFactory()
 		{
-			cef_scheme_handler_factory_t* self = this.NativeInstance;
-			self->create = (void*)Marshal.GetFunctionPointerForDelegate(fnCreate);
+			var self = NativeInstance;
+			self->create = (void*) Marshal.GetFunctionPointerForDelegate(fnCreate);
 		}
 
 		public CefSchemeHandlerFactory(cef_scheme_handler_factory_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefSchemeHandlerFactoryPrivate.AvoidCreate();
 
+		internal static CefSchemeHandlerFactory Create(IntPtr instance)
+		{
+			return new CefSchemeHandlerFactory((cef_scheme_handler_factory_t*) instance);
+		}
+
 		/// <summary>
-		/// Return a new resource handler instance to handle the request or an NULL
-		/// reference to allow default handling of the request. |browser| and |frame|
-		/// will be the browser window and frame respectively that originated the
-		/// request or NULL if the request did not originate from a browser window (for
-		/// example, if the request came from cef_urlrequest_t). The |request| object
-		/// passed to this function cannot be modified.
+		///  Return a new resource handler instance to handle the request or an NULL
+		///  reference to allow default handling of the request. |browser| and |frame|
+		///  will be the browser window and frame respectively that originated the
+		///  request or NULL if the request did not originate from a browser window (for
+		///  example, if the request came from cef_urlrequest_t). The |request| object
+		///  passed to this function cannot be modified.
 		/// </summary>
-		protected internal unsafe virtual CefResourceHandler Create(CefBrowser browser, CefFrame frame, string schemeName, CefRequest request)
+		protected internal virtual CefResourceHandler Create(CefBrowser browser, CefFrame frame, string schemeName,
+			CefRequest request)
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate cef_resource_handler_t* CreateDelegate(cef_scheme_handler_factory_t* self, cef_browser_t* browser, cef_frame_t* frame, cef_string_t* scheme_name, cef_request_t* request);
-
 		// _cef_resource_handler_t* (*)(_cef_scheme_handler_factory_t* self, _cef_browser_t* browser, _cef_frame_t* frame, const cef_string_t* scheme_name, _cef_request_t* request)*
-		private static unsafe cef_resource_handler_t* CreateImpl(cef_scheme_handler_factory_t* self, cef_browser_t* browser, cef_frame_t* frame, cef_string_t* scheme_name, cef_request_t* request)
+		private static cef_resource_handler_t* CreateImpl(cef_scheme_handler_factory_t* self, cef_browser_t* browser,
+			cef_frame_t* frame, cef_string_t* scheme_name, cef_request_t* request)
 		{
-			var instance = GetInstance((IntPtr)self) as CefSchemeHandlerFactory;
-			if (instance == null || ((ICefSchemeHandlerFactoryPrivate)instance).AvoidCreate())
+			var instance = GetInstance((IntPtr) self) as CefSchemeHandlerFactory;
+			if (instance == null || ((ICefSchemeHandlerFactoryPrivate) instance).AvoidCreate())
 			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				ReleaseIfNonNull((cef_base_ref_counted_t*)frame);
-				ReleaseIfNonNull((cef_base_ref_counted_t*)request);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) frame);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) request);
 				return default;
 			}
-			CefResourceHandler rv = instance.Create(CefBrowser.Wrap(CefBrowser.Create, browser), CefFrame.Wrap(CefFrame.Create, frame), CefString.Read(scheme_name), CefRequest.Wrap(CefRequest.Create, request));
+
+			var rv = instance.Create(CefBrowser.Wrap(CefBrowser.Create, browser), CefFrame.Wrap(CefFrame.Create, frame),
+				CefString.Read(scheme_name), CefRequest.Wrap(CefRequest.Create, request));
 			if (rv == null)
 				return null;
-			return (rv != null) ? rv.GetNativeInstance() : null;
+			return rv != null ? rv.GetNativeInstance() : null;
 		}
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate cef_resource_handler_t* CreateDelegate(cef_scheme_handler_factory_t* self,
+			cef_browser_t* browser, cef_frame_t* frame, cef_string_t* scheme_name, cef_request_t* request);
 	}
 }

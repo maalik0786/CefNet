@@ -4,9 +4,6 @@
 // See the licence file in the project root for full license information.
 // --------------------------------------------------------------------------------------------
 
-using CefGen.CodeDom;
-using CppAst;
-using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,94 +13,89 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using CefGen.CodeDom;
+using CppAst;
+using Microsoft.CodeAnalysis;
 
 namespace CefGen
 {
 	internal static class Extensions
 	{
-		private struct BoolIntInfo
-		{
-			public string Method;
-			public string Arg;
-		}
+		private static readonly char[] WordSplittres = {' ', '\t', '\r', '\n'};
 
-		private static readonly char[] WordSplittres = new char[] { ' ', '\t', '\r', '\n' };
-
-		private readonly static Lazy<string[]> Handlers = new Lazy<string[]>(() => 
+		private static readonly Lazy<string[]> Handlers = new Lazy<string[]>(() =>
 			File.ReadAllLines(Path.Combine("Settings", "Handlers.txt"), Encoding.UTF8)
-			.Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray(), true);
+				.Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray(), true);
 
-		internal readonly static Dictionary<string, CefSourceKind> StructTypes = new Dictionary<string, CefSourceKind>();
+		internal static readonly Dictionary<string, CefSourceKind>
+			StructTypes = new Dictionary<string, CefSourceKind>();
 
-		private readonly static Lazy<BoolIntInfo[]> BooleanInt = new Lazy<BoolIntInfo[]>(() =>
+		private static readonly Lazy<BoolIntInfo[]> BooleanInt = new Lazy<BoolIntInfo[]>(() =>
 		{
 			var info = new List<BoolIntInfo>();
-			foreach(string s in File.ReadAllLines(Path.Combine("Settings", "BooleanIntParams.txt"), Encoding.UTF8)
+			foreach (var s in File.ReadAllLines(Path.Combine("Settings", "BooleanIntParams.txt"), Encoding.UTF8)
 				.Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)))
 			{
-				int startPos = s.IndexOf('(');
-				int endPos = s.LastIndexOf(')');
+				var startPos = s.IndexOf('(');
+				var endPos = s.LastIndexOf(')');
 				if (startPos == -1 || endPos == -1 || startPos > endPos)
 					continue;
-				string methodName = s.Remove(startPos);
-				foreach (string arg in s.Substring(startPos + 1, endPos - startPos - 1).Split(',', StringSplitOptions.RemoveEmptyEntries))
+				var methodName = s.Remove(startPos);
+				foreach (var arg in s.Substring(startPos + 1, endPos - startPos - 1)
+					.Split(',', StringSplitOptions.RemoveEmptyEntries))
 				{
 					if (string.IsNullOrWhiteSpace(arg))
 						continue;
-					info.Add(new BoolIntInfo { Method = methodName, Arg = arg.Trim() });
+					info.Add(new BoolIntInfo {Method = methodName, Arg = arg.Trim()});
 				}
 			}
+
 			return info.ToArray();
 		}, true);
 
-		private readonly static Lazy<Dictionary<string, string>> Names = new Lazy<Dictionary<string, string>> (() => 
-			File.ReadAllLines(Path.Combine("Settings", "NamesSchema.txt"), Encoding.UTF8).Select(s => s.Trim()).Select(s => s.Split(':'))
-			.Where(a => a.Length == 2).ToDictionary(a => a[0].Trim(), a => a[1].Trim()), true);
+		private static readonly Lazy<Dictionary<string, string>> Names = new Lazy<Dictionary<string, string>>(() =>
+			File.ReadAllLines(Path.Combine("Settings", "NamesSchema.txt"), Encoding.UTF8).Select(s => s.Trim())
+				.Select(s => s.Split(':'))
+				.Where(a => a.Length == 2).ToDictionary(a => a[0].Trim(), a => a[1].Trim()), true);
 
 
-		private readonly static string[] Keywords = new string[]
+		private static readonly string[] Keywords =
 		{
-			"private", "public", "internal", "protected", "override", "virtual",
-			"base", "this", "event", "params", "checked", "string", "object",
-			"delegate"
+			"private", "public", "internal", "protected", "override", "virtual", "base", "this", "event", "params",
+			"checked", "string", "object", "delegate"
 		};
 
-		private readonly static string[] KeywordsIL = new string[]
+		private static readonly string[] KeywordsIL =
 		{
-			"value", "hidebysig", "valuetype", "cdecl", "request", "type", "error",
-			"stream", "handler", "method", "filter", "flags", "rethrow"
+			"value", "hidebysig", "valuetype", "cdecl", "request", "type", "error", "stream", "handler", "method",
+			"filter", "flags", "rethrow"
 		};
+
+		private static readonly string[] UpperCaseNames = {"ssl", "cdm", "js", "dom", "ui", "io"};
 
 		public static StringBuilder TrimEnd(this StringBuilder self)
 		{
 			for (var i = self.Length - 1; i >= 0; i--)
-			{
 				if (char.IsWhiteSpace(self[i]))
 					self.Length = i;
 				else
 					break;
-			}
 			return self;
 		}
 
 		public static bool StartsWith(this string s, params string[] values)
 		{
-			foreach(string value in values)
-			{
+			foreach (var value in values)
 				if (s.StartsWith(value))
 					return true;
-			}
 			return false;
 		}
 
 		public static int IndexOf(this string s, Func<char, bool> predicate, int startIndex)
 		{
-			for(int i = startIndex; i < s.Length;i++)
-			{
+			for (var i = startIndex; i < s.Length; i++)
 				if (predicate(s[i]))
 					return i;
-			}
 			return -1;
 		}
 
@@ -115,17 +107,6 @@ namespace CefGen
 			return char.ToLowerInvariant(s[0]) + s.Substring(1);
 		}
 
-		private static readonly string[] UpperCaseNames = new string[]
-		{
-			"ssl",
-			"cdm",
-			"js",
-			"dom",
-			"ui",
-			"io",
-
-		};
-
 		public static string ToUpperCamel(this string s, int argsCount = 0)
 		{
 			if (string.IsNullOrEmpty(s))
@@ -134,10 +115,7 @@ namespace CefGen
 			if (s.Length == 1)
 				return s.ToUpper();
 
-			if (Names.Value.TryGetValue(s, out string name))
-			{
-				return name;
-			}
+			if (Names.Value.TryGetValue(s, out var name)) return name;
 
 
 			if (s.StartsWith("cef_js") && !s.StartsWith("cef_js_") && !s.StartsWith("cef_json_"))
@@ -155,22 +133,20 @@ namespace CefGen
 			else if (s.StartsWith("get_value_by") && !s.StartsWith("get_value_by_"))
 				s = "get_value_by_" + s.Substring(12);
 
-			 if (s.Contains("url", StringComparison.OrdinalIgnoreCase))
-			{
-				s = Regex.Replace(s, "(?<url>(_urls?))(?<char>.)", new MatchEvaluator(m => {
-					string after = m.Groups["char"].Value;
+			if (s.Contains("url", StringComparison.OrdinalIgnoreCase))
+				s = Regex.Replace(s, "(?<url>(_urls?))(?<char>.)", m =>
+				{
+					var after = m.Groups["char"].Value;
 					if (after == "_") after = string.Empty;
 					if (after == "s" && m.Value == "_urls")
 						return m.Value;
 					return m.Groups["url"].Value + "_" + after;
-				}));
-			}
+				});
 
-			string[] parts = s.Split('_');
+			var parts = s.Split('_');
 
-			string t = "";
-			foreach(string part in parts)
-			{
+			var t = "";
+			foreach (var part in parts)
 				if (part.Length == 1)
 					t += part.ToUpper();
 				else if (UpperCaseNames.Contains(part))
@@ -201,11 +177,7 @@ namespace CefGen
 					t += "ByLName";
 				else
 					t += char.ToUpper(part[0]) + part.Substring(1);
-			}
-			if (t == "GetType" && argsCount <= 1)
-			{
-				return "GetCefType";
-			}
+			if (t == "GetType" && argsCount <= 1) return "GetCefType";
 			return t;
 		}
 
@@ -240,7 +212,7 @@ namespace CefGen
 
 		public static string GetSourceFile(this CppClass @class)
 		{
-			CppField field = @class.Fields.FirstOrDefault();
+			var field = @class.Fields.FirstOrDefault();
 			if (field is null)
 				return @class.Span.Start.File;
 			return field.Span.Start.File;
@@ -248,7 +220,7 @@ namespace CefGen
 
 		public static bool IsImplementation(this INamedTypeSymbol symbol)
 		{
-			if (StructTypes.TryGetValue(symbol.Name, out CefSourceKind sourceKind))
+			if (StructTypes.TryGetValue(symbol.Name, out var sourceKind))
 				return sourceKind != CefSourceKind.Client;
 
 			throw new NotImplementedException();
@@ -257,13 +229,14 @@ namespace CefGen
 		public static string GetComment(this ISymbol symbol)
 		{
 			var lines = new List<string>();
-			foreach (string line in symbol.GetDocumentationCommentXml().Split('\n'))
+			foreach (var line in symbol.GetDocumentationCommentXml().Split('\n'))
 			{
-				string s = line.Trim();
+				var s = line.Trim();
 				if (s.StartsWith("<"))
 					continue;
 				lines.Add(s);
 			}
+
 			return string.Join('\n', lines);
 		}
 
@@ -277,42 +250,41 @@ namespace CefGen
 			if (parameter.Type.Name != "Int32")
 				return false;
 
-			string name = parameter.Name;
-			IMethodSymbol method = (IMethodSymbol)parameter.ContainingSymbol;
-			AttributeData nativeNameAttribute = method.GetAttributes().FirstOrDefault(attr => attr.AttributeClass.Name == "NativeNameAttribute");
-			string methodNativeName = nativeNameAttribute?.ConstructorArguments[0].Value as string;
+			var name = parameter.Name;
+			var method = (IMethodSymbol) parameter.ContainingSymbol;
+			var nativeNameAttribute = method.GetAttributes()
+				.FirstOrDefault(attr => attr.AttributeClass.Name == "NativeNameAttribute");
+			var methodNativeName = nativeNameAttribute?.ConstructorArguments[0].Value as string;
 			if (methodNativeName != null)
 			{
-				string methodName = (method.ContainingType.Name + "::" + methodNativeName).TrimStart('_');
-				foreach (BoolIntInfo boolInt in BooleanInt.Value)
-				{
+				var methodName = (method.ContainingType.Name + "::" + methodNativeName).TrimStart('_');
+				foreach (var boolInt in BooleanInt.Value)
 					if (boolInt.Method == methodName && boolInt.Arg == name)
-					{
 						return true;
-					}
-				}
 			}
 
-			string comment = method.GetComment();
+			var comment = method.GetComment();
 
 			if (name.StartsWith("is") && name.Length > 2 && (name[2] == '_' || char.IsUpper(name[2])))
 				return true;
-			if ((name.StartsWith("can") || name.StartsWith("has")) && name.Length > 3 && (name[3] == '_' || char.IsUpper(name[3])))
+			if ((name.StartsWith("can") || name.StartsWith("has")) && name.Length > 3 &&
+			    (name[3] == '_' || char.IsUpper(name[3])))
 				return true;
 
-			string namePattern = "|" + name + "|";
-			int startPos = 0;
+			var namePattern = "|" + name + "|";
+			var startPos = 0;
 			while (true)
 			{
 				startPos = comment.IndexOf(namePattern, startPos + 1);
 				if (startPos == -1)
 					return false;
 
-				int endPos = comment.IndexOf('.', startPos);
+				var endPos = comment.IndexOf('.', startPos);
 				if (endPos == -1)
 					endPos = comment.Length;
 
-				foreach (string word in comment.Substring(startPos, endPos - startPos).Split(WordSplittres, 5, StringSplitOptions.RemoveEmptyEntries).Skip(1))
+				foreach (var word in comment.Substring(startPos, endPos - startPos)
+					.Split(WordSplittres, 5, StringSplitOptions.RemoveEmptyEntries).Skip(1))
 				{
 					if (word.StartsWith('|') && word.EndsWith('|'))
 						break; // found another parameter
@@ -326,7 +298,7 @@ namespace CefGen
 		{
 			if (method.ReturnType.Name != "Int32")
 				return false;
-			string comment = method.GetComment();
+			var comment = method.GetComment();
 			if (comment == null)
 				return false;
 			if (comment.StartsWith("True if "))
@@ -334,20 +306,20 @@ namespace CefGen
 			if (comment.StartsWith("Return a bool"))
 				return true;
 
-			return (Regex.IsMatch(comment, @"returns?\s+true", RegexOptions.IgnoreCase)
-				|| Regex.IsMatch(comment, @"returns?\s+false", RegexOptions.IgnoreCase));
+			return Regex.IsMatch(comment, @"returns?\s+true", RegexOptions.IgnoreCase)
+			       || Regex.IsMatch(comment, @"returns?\s+false", RegexOptions.IgnoreCase);
 		}
 
 		public static bool IsBool(this IFieldSymbol field)
 		{
 			if (field.Type.Name != "Int32")
 				return false;
-			string comment = field.GetComment();
+			var comment = field.GetComment();
 			if (comment == null)
 				return false;
 
 			return comment.Contains("true", StringComparison.OrdinalIgnoreCase)
-				|| comment.Contains("false", StringComparison.OrdinalIgnoreCase);
+			       || comment.Contains("false", StringComparison.OrdinalIgnoreCase);
 		}
 
 		public static void AddVSDocComment(this IList<CodeComment> comments, string commentText, string name)
@@ -379,13 +351,13 @@ namespace CefGen
 
 		public static void AddSymbolComment(this IList<CodeComment> comments, ISymbol symbol)
 		{
-			string commentXml = symbol.GetDocumentationCommentXml();
+			var commentXml = symbol.GetDocumentationCommentXml();
 			if (string.IsNullOrWhiteSpace(commentXml))
 				return;
 			var lines = new List<string>();
-			foreach (string line in commentXml.Trim().Split('\n'))
+			foreach (var line in commentXml.Trim().Split('\n'))
 			{
-				string s = line.Trim();
+				var s = line.Trim();
 				if (s.StartsWith("<member ") || s.StartsWith("</member>"))
 					continue;
 				lines.Add(s);
@@ -394,22 +366,25 @@ namespace CefGen
 			comments.Add(new CodeComment(string.Join("\n", lines), true));
 		}
 
-		public static void AddDllImportfAttribute(this IList<CustomCodeAttribute> list, CallingConvention callingConvention)
+		public static void AddDllImportfAttribute(this IList<CustomCodeAttribute> list,
+			CallingConvention callingConvention)
 		{
 			var attr = new CustomCodeAttribute(typeof(DllImportAttribute));
 			attr.Parameters.Add("\"libcef\"");
-			attr.Parameters.Add("CallingConvention = CallingConvention." + callingConvention.ToString());
+			attr.Parameters.Add("CallingConvention = CallingConvention." + callingConvention);
 			list.Add(attr);
 		}
 
-		public static void AddUnmanagedFunctionPointerAttribute(this IList<CustomCodeAttribute> list, CallingConvention callingConvention)
+		public static void AddUnmanagedFunctionPointerAttribute(this IList<CustomCodeAttribute> list,
+			CallingConvention callingConvention)
 		{
 			var attr = new CustomCodeAttribute(typeof(UnmanagedFunctionPointerAttribute));
-			attr.Parameters.Add(nameof(CallingConvention) + "." + callingConvention.ToString());
+			attr.Parameters.Add(nameof(CallingConvention) + "." + callingConvention);
 			list.Add(attr);
 		}
 
-		public static void AddUnmanagedFunctionPointerAttribute(this IList<CustomCodeAttribute> list, string callingConvention)
+		public static void AddUnmanagedFunctionPointerAttribute(this IList<CustomCodeAttribute> list,
+			string callingConvention)
 		{
 			var attr = new CustomCodeAttribute(typeof(UnmanagedFunctionPointerAttribute));
 			attr.Parameters.Add(callingConvention);
@@ -423,6 +398,10 @@ namespace CefGen
 			list.Add(attr);
 		}
 
-
+		private struct BoolIntInfo
+		{
+			public string Method;
+			public string Arg;
+		}
 	}
 }

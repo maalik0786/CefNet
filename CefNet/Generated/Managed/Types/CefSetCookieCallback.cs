@@ -12,64 +12,61 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure to implement to be notified of asynchronous completion via
-	/// cef_cookie_manager_t::set_cookie().
+	///  Structure to implement to be notified of asynchronous completion via
+	///  cef_cookie_manager_t::set_cookie().
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefSetCookieCallback : CefBaseRefCounted<cef_set_cookie_callback_t>, ICefSetCookieCallbackPrivate
+	public unsafe class CefSetCookieCallback : CefBaseRefCounted<cef_set_cookie_callback_t>,
+		ICefSetCookieCallbackPrivate
 	{
 		private static readonly OnCompleteDelegate fnOnComplete = OnCompleteImpl;
 
-		internal static unsafe CefSetCookieCallback Create(IntPtr instance)
-		{
-			return new CefSetCookieCallback((cef_set_cookie_callback_t*)instance);
-		}
-
 		public CefSetCookieCallback()
 		{
-			cef_set_cookie_callback_t* self = this.NativeInstance;
-			self->on_complete = (void*)Marshal.GetFunctionPointerForDelegate(fnOnComplete);
+			var self = NativeInstance;
+			self->on_complete = (void*) Marshal.GetFunctionPointerForDelegate(fnOnComplete);
 		}
 
 		public CefSetCookieCallback(cef_set_cookie_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefSetCookieCallbackPrivate.AvoidOnComplete();
 
-		/// <summary>
-		/// Method that will be called upon completion. |success| will be true (1) if
-		/// the cookie was set successfully.
-		/// </summary>
-		protected internal unsafe virtual void OnComplete(bool success)
+		internal static CefSetCookieCallback Create(IntPtr instance)
 		{
+			return new CefSetCookieCallback((cef_set_cookie_callback_t*) instance);
+		}
+
+		/// <summary>
+		///  Method that will be called upon completion. |success| will be true (1) if
+		///  the cookie was set successfully.
+		/// </summary>
+		protected internal virtual void OnComplete(bool success)
+		{
+		}
+
+		// void (*)(_cef_set_cookie_callback_t* self, int success)*
+		private static void OnCompleteImpl(cef_set_cookie_callback_t* self, int success)
+		{
+			var instance = GetInstance((IntPtr) self) as CefSetCookieCallback;
+			if (instance == null || ((ICefSetCookieCallbackPrivate) instance).AvoidOnComplete()) return;
+			instance.OnComplete(success != 0);
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnCompleteDelegate(cef_set_cookie_callback_t* self, int success);
-
-		// void (*)(_cef_set_cookie_callback_t* self, int success)*
-		private static unsafe void OnCompleteImpl(cef_set_cookie_callback_t* self, int success)
-		{
-			var instance = GetInstance((IntPtr)self) as CefSetCookieCallback;
-			if (instance == null || ((ICefSetCookieCallbackPrivate)instance).AvoidOnComplete())
-			{
-				return;
-			}
-			instance.OnComplete(success != 0);
-		}
+		private delegate void OnCompleteDelegate(cef_set_cookie_callback_t* self, int success);
 	}
 }

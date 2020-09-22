@@ -11,52 +11,35 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing a range.
+	///  Structure representing a range.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefRange
+	public partial struct CefRange
 	{
 		private cef_range_t _instance;
 
 		public int From
 		{
-			get
-			{
-				return _instance.from;
-			}
-			set
-			{
-				_instance.from = value;
-			}
+			get => _instance.from;
+			set => _instance.from = value;
 		}
 
 		public int To
 		{
-			get
-			{
-				return _instance.to;
-			}
-			set
-			{
-				_instance.to = value;
-			}
+			get => _instance.to;
+			set => _instance.to = value;
 		}
 
 		public static implicit operator CefRange(cef_range_t instance)
 		{
-			return new CefRange { _instance = instance };
+			return new CefRange {_instance = instance};
 		}
 
 		public static implicit operator cef_range_t(CefRange instance)

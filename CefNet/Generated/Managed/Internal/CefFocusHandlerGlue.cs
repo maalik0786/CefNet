@@ -11,18 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefFocusHandlerGlue: CefFocusHandler, ICefFocusHandlerPrivate
+	internal sealed class CefFocusHandlerGlue : CefFocusHandler, ICefFocusHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefFocusHandlerGlue(WebViewGlue impl)
 		{
@@ -34,19 +27,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnTakeFocus();
 		}
 
-		protected internal unsafe override void OnTakeFocus(CefBrowser browser, bool next)
-		{
-			_implementation.OnTakeFocus(browser, next);
-		}
-
 		bool ICefFocusHandlerPrivate.AvoidOnSetFocus()
 		{
 			return _implementation.AvoidOnSetFocus();
-		}
-
-		protected internal unsafe override bool OnSetFocus(CefBrowser browser, CefFocusSource source)
-		{
-			return _implementation.OnSetFocus(browser, source);
 		}
 
 		bool ICefFocusHandlerPrivate.AvoidOnGotFocus()
@@ -54,10 +37,19 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnGotFocus();
 		}
 
-		protected internal unsafe override void OnGotFocus(CefBrowser browser)
+		protected internal override void OnTakeFocus(CefBrowser browser, bool next)
+		{
+			_implementation.OnTakeFocus(browser, next);
+		}
+
+		protected internal override bool OnSetFocus(CefBrowser browser, CefFocusSource source)
+		{
+			return _implementation.OnSetFocus(browser, source);
+		}
+
+		protected internal override void OnGotFocus(CefBrowser browser)
 		{
 			_implementation.OnGotFocus(browser);
 		}
-
 	}
 }

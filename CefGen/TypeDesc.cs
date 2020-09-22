@@ -5,9 +5,6 @@
 // --------------------------------------------------------------------------------------------
 
 using CppAst;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CefGen
 {
@@ -29,25 +26,13 @@ namespace CefGen
 
 		public string ClrType
 		{
-			get
-			{
-				return IsCallable ? "void*" : _clrType;
-			}
-			set
-			{
-				_clrType = value;
-			}
+			get => IsCallable ? "void*" : _clrType;
+			set => _clrType = value;
 		}
 
-		public bool IsCallable
-		{
-			get { return FunctionTypeRef != null; }
-		}
+		public bool IsCallable => FunctionTypeRef != null;
 
-		public bool IsUnsafe
-		{
-			get { return TypeRef is CppPointerType; }
-		}
+		public bool IsUnsafe => TypeRef is CppPointerType;
 
 		public override string ToString()
 		{

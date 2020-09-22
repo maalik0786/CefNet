@@ -11,159 +11,153 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported menu IDs. Non-English translations can be provided for the
-	/// IDS_MENU_* strings in CefResourceBundleHandler::GetLocalizedString().
+	///  Supported menu IDs. Non-English translations can be provided for the
+	///  IDS_MENU_* strings in CefResourceBundleHandler::GetLocalizedString().
 	/// </summary>
 	public enum CefMenuId
 	{
 		/// <summary>
-		/// Navigation.
+		///  Navigation.
 		/// </summary>
 		Back = 100,
 
 		/// <summary>
-		/// Navigation.
+		///  Navigation.
 		/// </summary>
 		Forward = 101,
 
 		/// <summary>
-		/// Navigation.
+		///  Navigation.
 		/// </summary>
 		Reload = 102,
 
 		/// <summary>
-		/// Navigation.
+		///  Navigation.
 		/// </summary>
 		ReloadNocache = 103,
 
 		/// <summary>
-		/// Navigation.
+		///  Navigation.
 		/// </summary>
 		Stopload = 104,
 
 		/// <summary>
-		/// Editing.
+		///  Editing.
 		/// </summary>
 		Undo = 110,
 
 		/// <summary>
-		/// Editing.
+		///  Editing.
 		/// </summary>
 		Redo = 111,
 
 		/// <summary>
-		/// Editing.
+		///  Editing.
 		/// </summary>
 		Cut = 112,
 
 		/// <summary>
-		/// Editing.
+		///  Editing.
 		/// </summary>
 		Copy = 113,
 
 		/// <summary>
-		/// Editing.
+		///  Editing.
 		/// </summary>
 		Paste = 114,
 
 		/// <summary>
-		/// Editing.
+		///  Editing.
 		/// </summary>
 		Delete = 115,
 
 		/// <summary>
-		/// Editing.
+		///  Editing.
 		/// </summary>
 		SelectAll = 116,
 
 		/// <summary>
-		/// Miscellaneous.
+		///  Miscellaneous.
 		/// </summary>
 		Find = 130,
 
 		/// <summary>
-		/// Miscellaneous.
+		///  Miscellaneous.
 		/// </summary>
 		Print = 131,
 
 		/// <summary>
-		/// Miscellaneous.
+		///  Miscellaneous.
 		/// </summary>
 		ViewSource = 132,
 
 		/// <summary>
-		/// Spell checking word correction suggestions.
+		///  Spell checking word correction suggestions.
 		/// </summary>
 		SpellcheckSuggestion0 = 200,
 
 		/// <summary>
-		/// Spell checking word correction suggestions.
+		///  Spell checking word correction suggestions.
 		/// </summary>
 		SpellcheckSuggestion1 = 201,
 
 		/// <summary>
-		/// Spell checking word correction suggestions.
+		///  Spell checking word correction suggestions.
 		/// </summary>
 		SpellcheckSuggestion2 = 202,
 
 		/// <summary>
-		/// Spell checking word correction suggestions.
+		///  Spell checking word correction suggestions.
 		/// </summary>
 		SpellcheckSuggestion3 = 203,
 
 		/// <summary>
-		/// Spell checking word correction suggestions.
+		///  Spell checking word correction suggestions.
 		/// </summary>
 		SpellcheckSuggestion4 = 204,
 
 		/// <summary>
-		/// Spell checking word correction suggestions.
+		///  Spell checking word correction suggestions.
 		/// </summary>
 		SpellcheckSuggestionLast = 204,
 
 		/// <summary>
-		/// Spell checking word correction suggestions.
+		///  Spell checking word correction suggestions.
 		/// </summary>
 		NoSpellingSuggestions = 205,
 
 		/// <summary>
-		/// Spell checking word correction suggestions.
+		///  Spell checking word correction suggestions.
 		/// </summary>
 		AddToDictionary = 206,
 
 		/// <summary>
-		/// Custom menu items originating from the renderer process. For example,
-		/// plugin placeholder menu items or Flash menu items.
+		///  Custom menu items originating from the renderer process. For example,
+		///  plugin placeholder menu items or Flash menu items.
 		/// </summary>
 		CustomFirst = 220,
 
 		/// <summary>
-		/// Custom menu items originating from the renderer process. For example,
-		/// plugin placeholder menu items or Flash menu items.
+		///  Custom menu items originating from the renderer process. For example,
+		///  plugin placeholder menu items or Flash menu items.
 		/// </summary>
 		CustomLast = 250,
 
 		/// <summary>
-		/// All user-defined menu IDs should come between MENU_ID_USER_FIRST and
-		/// MENU_ID_USER_LAST to avoid overlapping the Chromium and CEF ID ranges
-		/// defined in the tools/gritsettings/resource_ids file.
+		///  All user-defined menu IDs should come between MENU_ID_USER_FIRST and
+		///  MENU_ID_USER_LAST to avoid overlapping the Chromium and CEF ID ranges
+		///  defined in the tools/gritsettings/resource_ids file.
 		/// </summary>
 		UserFirst = 26500,
 
 		/// <summary>
-		/// All user-defined menu IDs should come between MENU_ID_USER_FIRST and
-		/// MENU_ID_USER_LAST to avoid overlapping the Chromium and CEF ID ranges
-		/// defined in the tools/gritsettings/resource_ids file.
+		///  All user-defined menu IDs should come between MENU_ID_USER_FIRST and
+		///  MENU_ID_USER_LAST to avoid overlapping the Chromium and CEF ID ranges
+		///  defined in the tools/gritsettings/resource_ids file.
 		/// </summary>
-		UserLast = 28500,
+		UserLast = 28500
 	}
 }
-

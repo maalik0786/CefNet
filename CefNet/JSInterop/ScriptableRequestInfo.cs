@@ -1,21 +1,21 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace CefNet.JSInterop
 {
-	sealed class ScriptableRequestInfo : IDisposable
+	internal sealed class ScriptableRequestInfo : IDisposable
 	{
-		private static int _RequestIndex;
-		private static Dictionary<int, ScriptableRequestInfo> _ActiveRequests = new Dictionary<int, ScriptableRequestInfo>();
 		internal const int DefaultTimeout = 5000;
+		private static int _RequestIndex;
+
+		private static readonly Dictionary<int, ScriptableRequestInfo> _ActiveRequests =
+			new Dictionary<int, ScriptableRequestInfo>();
 
 		private ManualResetEvent _event;
-		private object _result;
 		private Exception _exception;
+		private object _result;
 
 
 		public ScriptableRequestInfo()
@@ -29,10 +29,7 @@ namespace CefNet.JSInterop
 			}
 		}
 
-		~ScriptableRequestInfo()
-		{
-			_event?.Dispose();
-		}
+		public int RequestId { get; }
 
 		public void Dispose()
 		{
@@ -40,10 +37,16 @@ namespace CefNet.JSInterop
 			{
 				_ActiveRequests.Remove(RequestId);
 			}
-			ManualResetEvent ev = _event;
+
+			var ev = _event;
 			_event = null;
 			if (ev != null) ev.Dispose();
 			GC.SuppressFinalize(this);
+		}
+
+		~ScriptableRequestInfo()
+		{
+			_event?.Dispose();
 		}
 
 		public static ScriptableRequestInfo Get(int key)
@@ -53,15 +56,14 @@ namespace CefNet.JSInterop
 			{
 				_ActiveRequests.TryGetValue(key, out value);
 			}
+
 			return value;
 		}
-
-		public int RequestId { get; }
 
 		[DebuggerStepThrough]
 		public object GetResult()
 		{
-			Exception exception = Volatile.Read(ref _exception);
+			var exception = Volatile.Read(ref _exception);
 			if (exception != null)
 				throw _exception;
 			return Volatile.Read(ref _result);
@@ -69,7 +71,7 @@ namespace CefNet.JSInterop
 
 		public void Wait()
 		{
-			int timeout = ScriptableObject.Timeout;
+			var timeout = ScriptableObject.Timeout;
 			if (timeout <= 0)
 				timeout = DefaultTimeout;
 			if (_event.WaitOne(timeout))
@@ -95,7 +97,6 @@ namespace CefNet.JSInterop
 				_event?.Set();
 			}
 			catch (ObjectDisposedException) { }
-			
 		}
 
 		private static object CastToDotnetType(CefValue value)
@@ -106,7 +107,7 @@ namespace CefNet.JSInterop
 			if (!value.IsValid)
 				throw new InvalidCastException();
 
-			switch(value.Type)
+			switch (value.Type)
 			{
 				case CefValueType.String:
 					return value.GetString();
@@ -119,7 +120,7 @@ namespace CefNet.JSInterop
 				case CefValueType.Double:
 					return value.GetDouble();
 				case CefValueType.Binary:
-					CefBinaryValue v = value.GetBinary();
+					var v = value.GetBinary();
 					if (v.Size == 1)
 						return V8Undefined.Value;
 					return XrayHandle.FromCfxBinaryValue(v).ToObject();

@@ -11,18 +11,15 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Device information for a MediaSink object.
+	///  Device information for a MediaSink object.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_media_sink_device_info_t
+	public struct cef_media_sink_device_info_t
 	{
 		public cef_string_t ip_address;
 
@@ -31,4 +28,3 @@ namespace CefNet.CApi
 		public cef_string_t model_name;
 	}
 }
-

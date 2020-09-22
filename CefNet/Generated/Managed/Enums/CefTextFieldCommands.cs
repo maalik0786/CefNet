@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Represents commands available to TextField.
+	///  Represents commands available to TextField.
 	/// </summary>
 	public enum CefTextFieldCommands
 	{
@@ -33,7 +28,6 @@ namespace CefNet
 
 		Delete = 5,
 
-		SelectAll = 6,
+		SelectAll = 6
 	}
 }
-

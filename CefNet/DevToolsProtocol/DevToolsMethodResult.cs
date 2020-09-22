@@ -4,9 +4,9 @@
 	{
 		internal DevToolsMethodResult(int messageId, byte[] result, bool success)
 		{
-			this.MessageID = messageId;
-			this.Result = result;
-			this.Success = success;
+			MessageID = messageId;
+			Result = result;
+			Success = success;
 		}
 
 		public int MessageID { get; }

@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CefNet
 {
-	public class PopupShowEventArgs: EventArgs
+	public class PopupShowEventArgs : EventArgs
 	{
 		public PopupShowEventArgs()
 		{
-			this.Visible = false;
+			Visible = false;
 		}
 
 		public PopupShowEventArgs(CefRect rect)
 		{
-			this.Visible = (rect.Width | rect.Height) != 0;
-			this.Bounds = rect;
+			Visible = (rect.Width | rect.Height) != 0;
+			Bounds = rect;
 		}
 
 		public bool Visible { get; }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
-
-#pragma warning disable CS1591
+﻿#pragma warning disable CS1591
 
 namespace CefNet.Internal
 {
@@ -17,7 +12,9 @@ namespace CefNet.Internal
 		bool CefPointToScreen(ref CefPoint point);
 		void RaiseCefBrowserCreated();
 		bool RaiseClosing();
+
 		void RaiseClosed();
+
 		//void RaiseBrowserDestroyed();
 		void RaiseCefCreateWindow(CreateWindowEventArgs e);
 		void RaiseCefPaint(CefPaintEventArgs e);
@@ -26,7 +23,10 @@ namespace CefNet.Internal
 		void RaiseBeforeBrowse(BeforeBrowseEventArgs e);
 		void RaiseAddressChange(AddressChangeEventArgs e);
 		void RaiseLoadingStateChange(LoadingStateChangeEventArgs e);
-		bool RaiseRunContextMenu(CefFrame frame, CefContextMenuParams menuParams, CefMenuModel model, CefRunContextMenuCallback callback);
+
+		bool RaiseRunContextMenu(CefFrame frame, CefContextMenuParams menuParams, CefMenuModel model,
+			CefRunContextMenuCallback callback);
+
 		void RaiseTextFound(ITextFoundEventArgs e);
 		void RaisePdfPrintFinished(IPdfPrintFinishedEventArgs e);
 		void RaiseDevToolsEventAvailable(DevToolsProtocolEventAvailableEventArgs e);

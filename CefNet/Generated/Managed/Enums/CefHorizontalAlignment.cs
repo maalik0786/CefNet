@@ -11,32 +11,26 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Specifies the horizontal text alignment mode.
+	///  Specifies the horizontal text alignment mode.
 	/// </summary>
 	public enum CefHorizontalAlignment
 	{
 		/// <summary>
-		/// Align the text&apos;s left edge with that of its display area.
+		///  Align the text&apos;s left edge with that of its display area.
 		/// </summary>
 		Left = 0,
 
 		/// <summary>
-		/// Align the text&apos;s center with that of its display area.
+		///  Align the text&apos;s center with that of its display area.
 		/// </summary>
 		Center = 1,
 
 		/// <summary>
-		/// Align the text&apos;s right edge with that of its display area.
+		///  Align the text&apos;s right edge with that of its display area.
 		/// </summary>
-		Right = 2,
+		Right = 2
 	}
 }
-

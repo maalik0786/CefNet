@@ -12,54 +12,50 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback structure used to asynchronously cancel a download.
+	///  Callback structure used to asynchronously cancel a download.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefDownloadItemCallback : CefBaseRefCounted<cef_download_item_callback_t>
+	public unsafe class CefDownloadItemCallback : CefBaseRefCounted<cef_download_item_callback_t>
 	{
-		internal static unsafe CefDownloadItemCallback Create(IntPtr instance)
+		public CefDownloadItemCallback(cef_download_item_callback_t* instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
-			return new CefDownloadItemCallback((cef_download_item_callback_t*)instance);
 		}
 
-		public CefDownloadItemCallback(cef_download_item_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+		internal static CefDownloadItemCallback Create(IntPtr instance)
 		{
+			return new CefDownloadItemCallback((cef_download_item_callback_t*) instance);
 		}
 
 		/// <summary>
-		/// Call to cancel the download.
+		///  Call to cancel the download.
 		/// </summary>
-		public unsafe virtual void Cancel()
+		public virtual void Cancel()
 		{
 			NativeInstance->Cancel();
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Call to pause the download.
+		///  Call to pause the download.
 		/// </summary>
-		public unsafe virtual void Pause()
+		public virtual void Pause()
 		{
 			NativeInstance->Pause();
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Call to resume the download.
+		///  Call to resume the download.
 		/// </summary>
-		public unsafe virtual void Resume()
+		public virtual void Resume()
 		{
 			NativeInstance->Resume();
 			GC.KeepAlive(this);

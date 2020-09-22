@@ -11,75 +11,72 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Information about a specific web plugin.
+	///  Information about a specific web plugin.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_web_plugin_info_t
+	public unsafe struct cef_web_plugin_info_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_web_plugin_info_t* self)*
+		///  cef_string_userfree_t (*)(_cef_web_plugin_info_t* self)*
 		/// </summary>
 		public void* get_name;
 
 		/// <summary>
-		/// Returns the plugin name (i.e. Flash).
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the plugin name (i.e. Flash).
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_name")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetName();
+		public extern cef_string_userfree_t GetName();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_web_plugin_info_t* self)*
+		///  cef_string_userfree_t (*)(_cef_web_plugin_info_t* self)*
 		/// </summary>
 		public void* get_path;
 
 		/// <summary>
-		/// Returns the plugin file path (DLL/bundle/library).
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the plugin file path (DLL/bundle/library).
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_path")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetPath();
+		public extern cef_string_userfree_t GetPath();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_web_plugin_info_t* self)*
+		///  cef_string_userfree_t (*)(_cef_web_plugin_info_t* self)*
 		/// </summary>
 		public void* get_version;
 
 		/// <summary>
-		/// Returns the version of the plugin (may be OS-specific).
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the version of the plugin (may be OS-specific).
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_version")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetVersion();
+		public extern cef_string_userfree_t GetVersion();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_web_plugin_info_t* self)*
+		///  cef_string_userfree_t (*)(_cef_web_plugin_info_t* self)*
 		/// </summary>
 		public void* get_description;
 
 		/// <summary>
-		/// Returns a description of the plugin from the version information.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns a description of the plugin from the version information.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_description")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetDescription();
+		public extern cef_string_userfree_t GetDescription();
 	}
 }
-

@@ -12,41 +12,37 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback for asynchronous continuation of cef_resource_handler_t::skip().
+	///  Callback for asynchronous continuation of cef_resource_handler_t::skip().
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefResourceSkipCallback : CefBaseRefCounted<cef_resource_skip_callback_t>
+	public unsafe class CefResourceSkipCallback : CefBaseRefCounted<cef_resource_skip_callback_t>
 	{
-		internal static unsafe CefResourceSkipCallback Create(IntPtr instance)
+		public CefResourceSkipCallback(cef_resource_skip_callback_t* instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
-			return new CefResourceSkipCallback((cef_resource_skip_callback_t*)instance);
 		}
 
-		public CefResourceSkipCallback(cef_resource_skip_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+		internal static CefResourceSkipCallback Create(IntPtr instance)
 		{
+			return new CefResourceSkipCallback((cef_resource_skip_callback_t*) instance);
 		}
 
 		/// <summary>
-		/// Callback for asynchronous continuation of skip(). If |bytes_skipped| &gt; 0
-		/// then either skip() will be called again until the requested number of bytes
-		/// have been skipped or the request will proceed. If |bytes_skipped|
-		/// &lt;
-		/// = 0 the
-		/// request will fail with ERR_REQUEST_RANGE_NOT_SATISFIABLE.
+		///  Callback for asynchronous continuation of skip(). If |bytes_skipped| &gt; 0
+		///  then either skip() will be called again until the requested number of bytes
+		///  have been skipped or the request will proceed. If |bytes_skipped|
+		///  &lt;
+		///  = 0 the
+		///  request will fail with ERR_REQUEST_RANGE_NOT_SATISFIABLE.
 		/// </summary>
-		public unsafe virtual void Continue(long bytesSkipped)
+		public virtual void Continue(long bytesSkipped)
 		{
 			NativeInstance->Continue(bytesSkipped);
 			GC.KeepAlive(this);

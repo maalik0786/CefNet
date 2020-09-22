@@ -12,27 +12,25 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_string_utf16_t
+	public unsafe struct cef_string_utf16_t
 	{
 		public char* str;
 
 		public UIntPtr length;
 
 		/// <summary>
-		/// void (*)(char16* str)*
+		///  void (*)(char16* str)*
 		/// </summary>
 		public void* dtor;
 
 		[NativeName("dtor")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Dtor(char* str);
+		public extern void Dtor(char* str);
 	}
 }
-

@@ -11,72 +11,69 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure used for retrieving resources from the resource bundle (*.pak)
-	/// files loaded by CEF during startup or via the cef_resource_bundle_handler_t
-	/// returned from cef_app_t::GetResourceBundleHandler. See CefSettings for
-	/// additional options related to resource bundle loading. The functions of this
-	/// structure may be called on any thread unless otherwise indicated.
+	///  Structure used for retrieving resources from the resource bundle (*.pak)
+	///  files loaded by CEF during startup or via the cef_resource_bundle_handler_t
+	///  returned from cef_app_t::GetResourceBundleHandler. See CefSettings for
+	///  additional options related to resource bundle loading. The functions of this
+	///  structure may be called on any thread unless otherwise indicated.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_resource_bundle_t
+	public unsafe struct cef_resource_bundle_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_resource_bundle_t* self, int string_id)*
+		///  cef_string_userfree_t (*)(_cef_resource_bundle_t* self, int string_id)*
 		/// </summary>
 		public void* get_localized_string;
 
 		/// <summary>
-		/// Returns the localized string for the specified |string_id| or an NULL
-		/// string if the value is not found. Include cef_pack_strings.h for a listing
-		/// of valid string ID values.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the localized string for the specified |string_id| or an NULL
+		///  string if the value is not found. Include cef_pack_strings.h for a listing
+		///  of valid string ID values.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_localized_string")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetLocalizedString(int string_id);
+		public extern cef_string_userfree_t GetLocalizedString(int string_id);
 
 		/// <summary>
-		/// _cef_binary_value_t* (*)(_cef_resource_bundle_t* self, int resource_id)*
+		///  _cef_binary_value_t* (*)(_cef_resource_bundle_t* self, int resource_id)*
 		/// </summary>
 		public void* get_data_resource;
 
 		/// <summary>
-		/// Returns a cef_binary_value_t containing the decompressed contents of the
-		/// specified scale independent |resource_id| or NULL if not found. Include
-		/// cef_pack_resources.h for a listing of valid resource ID values.
+		///  Returns a cef_binary_value_t containing the decompressed contents of the
+		///  specified scale independent |resource_id| or NULL if not found. Include
+		///  cef_pack_resources.h for a listing of valid resource ID values.
 		/// </summary>
 		[NativeName("get_data_resource")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_binary_value_t* GetDataResource(int resource_id);
+		public extern cef_binary_value_t* GetDataResource(int resource_id);
 
 		/// <summary>
-		/// _cef_binary_value_t* (*)(_cef_resource_bundle_t* self, int resource_id, cef_scale_factor_t scale_factor)*
+		///  _cef_binary_value_t* (*)(_cef_resource_bundle_t* self, int resource_id, cef_scale_factor_t scale_factor)*
 		/// </summary>
 		public void* get_data_resource_for_scale;
 
 		/// <summary>
-		/// Returns a cef_binary_value_t containing the decompressed contents of the
-		/// specified |resource_id| nearest the scale factor |scale_factor| or NULL if
-		/// not found. Use a |scale_factor| value of SCALE_FACTOR_NONE for scale
-		/// independent resources or call GetDataResource instead.Include
-		/// cef_pack_resources.h for a listing of valid resource ID values.
+		///  Returns a cef_binary_value_t containing the decompressed contents of the
+		///  specified |resource_id| nearest the scale factor |scale_factor| or NULL if
+		///  not found. Use a |scale_factor| value of SCALE_FACTOR_NONE for scale
+		///  independent resources or call GetDataResource instead.Include
+		///  cef_pack_resources.h for a listing of valid resource ID values.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		[NativeName("get_data_resource_for_scale")]
-		public unsafe extern cef_binary_value_t* GetDataResourceForScale(int resource_id, CefScaleFactor scale_factor);
+		public extern cef_binary_value_t* GetDataResourceForScale(int resource_id, CefScaleFactor scale_factor);
 	}
 }
-

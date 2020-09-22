@@ -5,12 +5,11 @@ namespace CefNet
 	public unsafe partial class CefValue
 	{
 		/// <summary>
-		/// Creates a new object.
+		///  Creates a new object.
 		/// </summary>
 		public CefValue()
 			: this(CefNativeApi.cef_value_create())
 		{
-
 		}
 
 		public bool SetBinary(byte[] buffer)

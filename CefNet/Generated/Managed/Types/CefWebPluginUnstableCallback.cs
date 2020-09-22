@@ -12,65 +12,63 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure to implement for receiving unstable plugin information. The
-	/// functions of this structure will be called on the browser process IO thread.
+	///  Structure to implement for receiving unstable plugin information. The
+	///  functions of this structure will be called on the browser process IO thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefWebPluginUnstableCallback : CefBaseRefCounted<cef_web_plugin_unstable_callback_t>, ICefWebPluginUnstableCallbackPrivate
+	public unsafe class CefWebPluginUnstableCallback : CefBaseRefCounted<cef_web_plugin_unstable_callback_t>,
+		ICefWebPluginUnstableCallbackPrivate
 	{
 		private static readonly IsUnstableDelegate fnIsUnstable = IsUnstableImpl;
 
-		internal static unsafe CefWebPluginUnstableCallback Create(IntPtr instance)
-		{
-			return new CefWebPluginUnstableCallback((cef_web_plugin_unstable_callback_t*)instance);
-		}
-
 		public CefWebPluginUnstableCallback()
 		{
-			cef_web_plugin_unstable_callback_t* self = this.NativeInstance;
-			self->is_unstable = (void*)Marshal.GetFunctionPointerForDelegate(fnIsUnstable);
+			var self = NativeInstance;
+			self->is_unstable = (void*) Marshal.GetFunctionPointerForDelegate(fnIsUnstable);
 		}
 
 		public CefWebPluginUnstableCallback(cef_web_plugin_unstable_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefWebPluginUnstableCallbackPrivate.AvoidIsUnstable();
 
-		/// <summary>
-		/// Method that will be called for the requested plugin. |unstable| will be
-		/// true (1) if the plugin has reached the crash count threshold of 3 times in
-		/// 120 seconds.
-		/// </summary>
-		protected internal unsafe virtual void IsUnstable(string path, bool unstable)
+		internal static CefWebPluginUnstableCallback Create(IntPtr instance)
 		{
+			return new CefWebPluginUnstableCallback((cef_web_plugin_unstable_callback_t*) instance);
+		}
+
+		/// <summary>
+		///  Method that will be called for the requested plugin. |unstable| will be
+		///  true (1) if the plugin has reached the crash count threshold of 3 times in
+		///  120 seconds.
+		/// </summary>
+		protected internal virtual void IsUnstable(string path, bool unstable)
+		{
+		}
+
+		// void (*)(_cef_web_plugin_unstable_callback_t* self, const cef_string_t* path, int unstable)*
+		private static void IsUnstableImpl(cef_web_plugin_unstable_callback_t* self, cef_string_t* path, int unstable)
+		{
+			var instance = GetInstance((IntPtr) self) as CefWebPluginUnstableCallback;
+			if (instance == null || ((ICefWebPluginUnstableCallbackPrivate) instance).AvoidIsUnstable()) return;
+			instance.IsUnstable(CefString.Read(path), unstable != 0);
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void IsUnstableDelegate(cef_web_plugin_unstable_callback_t* self, cef_string_t* path, int unstable);
-
-		// void (*)(_cef_web_plugin_unstable_callback_t* self, const cef_string_t* path, int unstable)*
-		private static unsafe void IsUnstableImpl(cef_web_plugin_unstable_callback_t* self, cef_string_t* path, int unstable)
-		{
-			var instance = GetInstance((IntPtr)self) as CefWebPluginUnstableCallback;
-			if (instance == null || ((ICefWebPluginUnstableCallbackPrivate)instance).AvoidIsUnstable())
-			{
-				return;
-			}
-			instance.IsUnstable(CefString.Read(path), unstable != 0);
-		}
+		private delegate void IsUnstableDelegate(cef_web_plugin_unstable_callback_t* self, cef_string_t* path,
+			int unstable);
 	}
 }

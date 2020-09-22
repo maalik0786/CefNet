@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CefNet.Internal
+﻿namespace CefNet.Internal
 {
 	public partial class WebViewGlue
 	{
@@ -11,9 +7,11 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnFindResult(CefBrowser browser, int identifier, int count, CefRect selectionRect, int activeMatchOrdinal, bool finalUpdate)
+		protected internal virtual void OnFindResult(CefBrowser browser, int identifier, int count,
+			CefRect selectionRect, int activeMatchOrdinal, bool finalUpdate)
 		{
-			WebView.RaiseTextFound(new TextFoundEventArgs(identifier, count, selectionRect, activeMatchOrdinal, finalUpdate));
+			WebView.RaiseTextFound(new TextFoundEventArgs(identifier, count, selectionRect, activeMatchOrdinal,
+				finalUpdate));
 		}
 	}
 }

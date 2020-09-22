@@ -11,66 +11,60 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Path key values.
+	///  Path key values.
 	/// </summary>
 	public enum CefPathKey
 	{
 		/// <summary>
-		/// Current directory.
+		///  Current directory.
 		/// </summary>
 		DirCurrent = 0,
 
 		/// <summary>
-		/// Directory containing PK_FILE_EXE.
+		///  Directory containing PK_FILE_EXE.
 		/// </summary>
 		DirExe = 1,
 
 		/// <summary>
-		/// Directory containing PK_FILE_MODULE.
+		///  Directory containing PK_FILE_MODULE.
 		/// </summary>
 		DirModule = 2,
 
 		/// <summary>
-		/// Temporary directory.
+		///  Temporary directory.
 		/// </summary>
 		DirTemp = 3,
 
 		/// <summary>
-		/// Path and filename of the current executable.
+		///  Path and filename of the current executable.
 		/// </summary>
 		FileExe = 4,
 
 		/// <summary>
-		/// Path and filename of the module containing the CEF code (usually the libcef
-		/// module).
+		///  Path and filename of the module containing the CEF code (usually the libcef
+		///  module).
 		/// </summary>
 		FileModule = 5,
 
 		/// <summary>
-		/// &quot;Local Settings@Application Data&quot; directory under the user profile
-		/// directory on Windows.
+		///  &quot;Local Settings@Application Data&quot; directory under the user profile
+		///  directory on Windows.
 		/// </summary>
 		LocalAppData = 6,
 
 		/// <summary>
-		/// &quot;Application Data&quot; directory under the user profile directory on Windows
-		/// and &quot;~/Library/Application Support&quot; directory on Mac OS X.
+		///  &quot;Application Data&quot; directory under the user profile directory on Windows
+		///  and &quot;~/Library/Application Support&quot; directory on Mac OS X.
 		/// </summary>
 		UserData = 7,
 
 		/// <summary>
-		/// Directory containing application resources. Can be configured via
-		/// CefSettings.resources_dir_path.
+		///  Directory containing application resources. Can be configured via
+		///  CefSettings.resources_dir_path.
 		/// </summary>
-		DirResources = 8,
+		DirResources = 8
 	}
 }
-

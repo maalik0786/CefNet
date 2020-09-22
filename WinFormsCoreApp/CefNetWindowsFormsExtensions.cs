@@ -1,5 +1,6 @@
 ﻿#if MODERNFORMS
 using Modern.Forms;
+
 #else
 using System.Windows.Forms;
 #endif
@@ -17,6 +18,7 @@ namespace CefNet
 					return tabControl;
 				control = control.Parent;
 			}
+
 			return null;
 		}
 	}

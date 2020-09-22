@@ -12,86 +12,53 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing the SSL information for a navigation entry.
+	///  Structure representing the SSL information for a navigation entry.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefSSLStatus : CefBaseRefCounted<cef_sslstatus_t>
+	public unsafe class CefSSLStatus : CefBaseRefCounted<cef_sslstatus_t>
 	{
-		internal static unsafe CefSSLStatus Create(IntPtr instance)
-		{
-			return new CefSSLStatus((cef_sslstatus_t*)instance);
-		}
-
 		public CefSSLStatus(cef_sslstatus_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether the status is related to a secure SSL/TLS connection.
+		///  Gets a value indicating whether the status is related to a secure SSL/TLS connection.
 		/// </summary>
-		public unsafe virtual bool IsSecureConnection
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsSecureConnection() != 0);
-			}
-		}
+		public virtual bool IsSecureConnection => SafeCall(NativeInstance->IsSecureConnection() != 0);
 
 		/// <summary>
-		/// Gets a bitmask containing any and all problems verifying the server
-		/// certificate.
+		///  Gets a bitmask containing any and all problems verifying the server
+		///  certificate.
 		/// </summary>
-		public unsafe virtual CefCertStatus CertStatus
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetCertStatus());
-			}
-		}
+		public virtual CefCertStatus CertStatus => SafeCall(NativeInstance->GetCertStatus());
 
 		/// <summary>
-		/// Gets the SSL version used for the SSL connection.
+		///  Gets the SSL version used for the SSL connection.
 		/// </summary>
-		public unsafe virtual CefSSLVersion Sslversion
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetSslversion());
-			}
-		}
+		public virtual CefSSLVersion Sslversion => SafeCall(NativeInstance->GetSslversion());
 
 		/// <summary>
-		/// Gets a bitmask containing the page security content status.
+		///  Gets a bitmask containing the page security content status.
 		/// </summary>
-		public unsafe virtual CefSSLContentStatus ContentStatus
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetContentStatus());
-			}
-		}
+		public virtual CefSSLContentStatus ContentStatus => SafeCall(NativeInstance->GetContentStatus());
 
 		/// <summary>
-		/// Gets the X.509 certificate.
+		///  Gets the X.509 certificate.
 		/// </summary>
-		public unsafe virtual CefX509Certificate X509certificate
+		public virtual CefX509Certificate X509certificate =>
+			SafeCall(CefX509Certificate.Wrap(CefX509Certificate.Create, NativeInstance->GetX509certificate()));
+
+		internal static CefSSLStatus Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(CefX509Certificate.Wrap(CefX509Certificate.Create, NativeInstance->GetX509certificate()));
-			}
+			return new CefSSLStatus((cef_sslstatus_t*) instance);
 		}
 	}
 }

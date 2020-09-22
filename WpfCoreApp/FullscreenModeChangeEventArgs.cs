@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 
 namespace WpfCoreApp
 {
@@ -10,7 +7,7 @@ namespace WpfCoreApp
 		public FullscreenModeChangeEventArgs(object source, bool fullscreen)
 			: base(CustomWebView.FullscreenEvent, source)
 		{
-			this.Fullscreen = fullscreen;
+			Fullscreen = fullscreen;
 		}
 
 		public bool Fullscreen { get; }

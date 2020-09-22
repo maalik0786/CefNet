@@ -11,52 +11,35 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing a size.
+	///  Structure representing a size.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefSize
+	public partial struct CefSize
 	{
 		private cef_size_t _instance;
 
 		public int Width
 		{
-			get
-			{
-				return _instance.width;
-			}
-			set
-			{
-				_instance.width = value;
-			}
+			get => _instance.width;
+			set => _instance.width = value;
 		}
 
 		public int Height
 		{
-			get
-			{
-				return _instance.height;
-			}
-			set
-			{
-				_instance.height = value;
-			}
+			get => _instance.height;
+			set => _instance.height = value;
 		}
 
 		public static implicit operator CefSize(cef_size_t instance)
 		{
-			return new CefSize { _instance = instance };
+			return new CefSize {_instance = instance};
 		}
 
 		public static implicit operator cef_size_t(CefSize instance)

@@ -6,12 +6,11 @@
 
 namespace CefGen.CodeDom
 {
-	class CodeNamespaceImport
+	internal class CodeNamespaceImport
 	{
-
 		public CodeNamespaceImport(string @namespace)
 		{
-			this.Namespace = @namespace;
+			Namespace = @namespace;
 		}
 
 		public string Namespace { get; set; }

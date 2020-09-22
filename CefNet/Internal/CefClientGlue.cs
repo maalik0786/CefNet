@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CefNet.Internal
+﻿namespace CefNet.Internal
 {
-	partial class CefClientGlue
+	internal partial class CefClientGlue
 	{
-		internal WebViewGlue Implementation
-		{
-			get { return _implementation; }
-		}
+		internal WebViewGlue Implementation { get; }
 
 		public void NotifyPopupBrowserCreating()
 		{
-			_implementation.NotifyPopupBrowserCreating();
+			Implementation.NotifyPopupBrowserCreating();
 		}
 	}
 }

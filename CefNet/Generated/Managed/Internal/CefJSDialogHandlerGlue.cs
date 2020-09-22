@@ -11,18 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefJSDialogHandlerGlue: CefJSDialogHandler, ICefJSDialogHandlerPrivate
+	internal sealed class CefJSDialogHandlerGlue : CefJSDialogHandler, ICefJSDialogHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefJSDialogHandlerGlue(WebViewGlue impl)
 		{
@@ -34,19 +27,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnJSDialog();
 		}
 
-		protected internal unsafe override bool OnJSDialog(CefBrowser browser, string originUrl, CefJSDialogType dialogType, string messageText, string defaultPromptText, CefJSDialogCallback callback, ref int suppressMessage)
-		{
-			return _implementation.OnJSDialog(browser, originUrl, dialogType, messageText, defaultPromptText, callback, ref suppressMessage);
-		}
-
 		bool ICefJSDialogHandlerPrivate.AvoidOnBeforeUnloadDialog()
 		{
 			return _implementation.AvoidOnBeforeUnloadDialog();
-		}
-
-		protected internal unsafe override bool OnBeforeUnloadDialog(CefBrowser browser, string messageText, bool isReload, CefJSDialogCallback callback)
-		{
-			return _implementation.OnBeforeUnloadDialog(browser, messageText, isReload, callback);
 		}
 
 		bool ICefJSDialogHandlerPrivate.AvoidOnResetDialogState()
@@ -54,20 +37,32 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnResetDialogState();
 		}
 
-		protected internal unsafe override void OnResetDialogState(CefBrowser browser)
-		{
-			_implementation.OnResetDialogState(browser);
-		}
-
 		bool ICefJSDialogHandlerPrivate.AvoidOnDialogClosed()
 		{
 			return _implementation.AvoidOnDialogClosed();
 		}
 
-		protected internal unsafe override void OnDialogClosed(CefBrowser browser)
+		protected internal override bool OnJSDialog(CefBrowser browser, string originUrl, CefJSDialogType dialogType,
+			string messageText, string defaultPromptText, CefJSDialogCallback callback, ref int suppressMessage)
+		{
+			return _implementation.OnJSDialog(browser, originUrl, dialogType, messageText, defaultPromptText, callback,
+				ref suppressMessage);
+		}
+
+		protected internal override bool OnBeforeUnloadDialog(CefBrowser browser, string messageText, bool isReload,
+			CefJSDialogCallback callback)
+		{
+			return _implementation.OnBeforeUnloadDialog(browser, messageText, isReload, callback);
+		}
+
+		protected internal override void OnResetDialogState(CefBrowser browser)
+		{
+			_implementation.OnResetDialogState(browser);
+		}
+
+		protected internal override void OnDialogClosed(CefBrowser browser)
 		{
 			_implementation.OnDialogClosed(browser);
 		}
-
 	}
 }

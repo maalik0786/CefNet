@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CefNet.Internal
+﻿namespace CefNet.Internal
 {
 	partial class WebViewGlue
 	{
@@ -81,7 +77,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		protected internal virtual bool OnProcessMessageReceived(CefBrowser browser, CefFrame frame, CefProcessId sourceProcess, CefProcessMessage message)
+		protected internal virtual bool OnProcessMessageReceived(CefBrowser browser, CefFrame frame,
+			CefProcessId sourceProcess, CefProcessMessage message)
 		{
 			var ea = new CefProcessMessageReceivedEventArgs(browser, frame, sourceProcess, message);
 			CefNetApplication.Instance.OnCefProcessMessageReceived(ea);

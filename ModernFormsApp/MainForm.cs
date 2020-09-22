@@ -1,22 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using CefNet;
-using CefNet.Modern.Forms;
 using Modern.Forms;
+using SkiaSharp;
 
 namespace ModernFormsApp
 {
 	public class MainForm : Form
 	{
-		private readonly Button btnGo;
 		private readonly Button btnBack;
 		private readonly Button btnForward;
+		private readonly Button btnGo;
 		private readonly Menu menu;
-		private readonly TextBox txtAddress;
 		private readonly TabControl tabs;
+		private readonly TextBox txtAddress;
 
 		public MainForm()
 		{
@@ -28,7 +24,7 @@ namespace ModernFormsApp
 
 			menu = new Menu();
 			menu.Items.Add(submenu);
-			this.Controls.Add(menu);
+			Controls.Add(menu);
 
 
 			btnBack = new Button();
@@ -36,7 +32,7 @@ namespace ModernFormsApp
 			btnBack.Top = menu.Bottom;
 			btnBack.Width = btnBack.Height;
 			btnBack.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-			this.Controls.Add(btnBack);
+			Controls.Add(btnBack);
 
 			btnForward = new Button();
 			btnForward.Text = ">";
@@ -44,7 +40,7 @@ namespace ModernFormsApp
 			btnForward.Top = menu.Bottom;
 			btnForward.Width = btnForward.Height;
 			btnForward.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-			this.Controls.Add(btnForward);
+			Controls.Add(btnForward);
 
 			btnGo = new Button();
 			btnGo.Text = "Go";
@@ -53,7 +49,7 @@ namespace ModernFormsApp
 			btnGo.Width = btnGo.Height * 2;
 			btnGo.Anchor = AnchorStyles.Left | AnchorStyles.Top;
 			btnGo.Click += BtnGo_Click;
-			this.Controls.Add(btnGo);
+			Controls.Add(btnGo);
 
 			txtAddress = new TextBox();
 			txtAddress.KeyDown += HandleAddressKeyDown;
@@ -62,18 +58,28 @@ namespace ModernFormsApp
 			txtAddress.Width = ScaledSize.Width - txtAddress.ScaledLeft;
 			txtAddress.Height = btnGo.Height;
 			txtAddress.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
-			this.Controls.Add(txtAddress);
+			Controls.Add(txtAddress);
 
 			tabs = new TabControl();
-			tabs.SetBounds(0, txtAddress.Bottom, this.ScaledSize.Width, this.ScaledSize.Height - tabs.ScaledTop);
+			tabs.SetBounds(0, txtAddress.Bottom, ScaledSize.Width, ScaledSize.Height - tabs.ScaledTop);
 			tabs.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
 			//tabs.ControlAdded += Tabs_ControlAdded;
 			//tabs.ControlRemoved += Tabs_ControlRemoved;
 			tabs.SelectedIndexChanged += Tabs_SelectedIndexChanged;
-			this.Controls.Add(tabs);
+			Controls.Add(tabs);
 
-			this.Style.BackgroundColor = SkiaSharp.SKColors.Red;
-			this.Text = nameof(MainForm);
+			Style.BackgroundColor = SKColors.Red;
+			Text = nameof(MainForm);
+		}
+
+		private IChromiumWebView SelectedView
+		{
+			get
+			{
+				if (tabs == null || tabs.TabPages.Count == 0)
+					return null;
+				return (tabs.SelectedTabPage as IWebViewTab)?.WebView;
+			}
 		}
 
 		private void HandleAddTab(object sender, EventArgs e)
@@ -87,19 +93,9 @@ namespace ModernFormsApp
 			tabs.TabPages.Add(viewTab);
 		}
 
-		private IChromiumWebView SelectedView
-		{
-			get
-			{
-				if (tabs == null || tabs.TabPages.Count == 0)
-					return null;
-				return (tabs.SelectedTabPage as IWebViewTab)?.WebView;
-			}
-		}
-
 		private void BtnGo_Click(object sender, EventArgs e)
 		{
-			if (this.SelectedView == null)
+			if (SelectedView == null)
 				return;
 
 			SelectedView.Navigate("https://cefnet.github.io/winsize.html");
@@ -112,8 +108,9 @@ namespace ModernFormsApp
 			btnBack.Top = menu.Bottom;
 			btnForward.Top = menu.Bottom;
 			btnGo.Top = menu.Bottom;
-			txtAddress.SetBounds(txtAddress.Left, menu.Bottom, this.ScaledSize.Width - txtAddress.ScaledLeft, txtAddress.Height);
-			tabs.SetBounds(tabs.Left, btnGo.Bottom, this.ScaledSize.Width, this.ScaledSize.Height - btnGo.ScaledBounds.Bottom);
+			txtAddress.SetBounds(txtAddress.Left, menu.Bottom, ScaledSize.Width - txtAddress.ScaledLeft,
+				txtAddress.Height);
+			tabs.SetBounds(tabs.Left, btnGo.Bottom, ScaledSize.Width, ScaledSize.Height - btnGo.ScaledBounds.Bottom);
 
 			AddTab(true);
 		}
@@ -129,14 +126,8 @@ namespace ModernFormsApp
 		private void HandleAddressKeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.Enter)
-			{
-				if (Uri.TryCreate(txtAddress.Text, UriKind.Absolute, out Uri url))
-				{
+				if (Uri.TryCreate(txtAddress.Text, UriKind.Absolute, out var url))
 					SelectedView?.Navigate(url.AbsoluteUri);
-				}
-			}
 		}
-
-
 	}
 }

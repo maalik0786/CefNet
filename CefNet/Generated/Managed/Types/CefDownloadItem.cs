@@ -12,225 +12,121 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure used to represent a download item.
+	///  Structure used to represent a download item.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefDownloadItem : CefBaseRefCounted<cef_download_item_t>
+	public unsafe class CefDownloadItem : CefBaseRefCounted<cef_download_item_t>
 	{
-		internal static unsafe CefDownloadItem Create(IntPtr instance)
-		{
-			return new CefDownloadItem((cef_download_item_t*)instance);
-		}
-
 		public CefDownloadItem(cef_download_item_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this object is valid. Do not call any other functions
-		/// if this property returns false.
+		///  Gets a value indicating whether this object is valid. Do not call any other functions
+		///  if this property returns false.
 		/// </summary>
-		public unsafe virtual bool IsValid
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsValid() != 0);
-			}
-		}
+		public virtual bool IsValid => SafeCall(NativeInstance->IsValid() != 0);
 
 		/// <summary>
-		/// Gets a value indicating whether the download is in progress.
+		///  Gets a value indicating whether the download is in progress.
 		/// </summary>
-		public unsafe virtual bool IsInProgress
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsInProgress() != 0);
-			}
-		}
+		public virtual bool IsInProgress => SafeCall(NativeInstance->IsInProgress() != 0);
 
 		/// <summary>
-		/// Gets a value indicating whether the download is complete.
+		///  Gets a value indicating whether the download is complete.
 		/// </summary>
-		public unsafe virtual bool IsComplete
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsComplete() != 0);
-			}
-		}
+		public virtual bool IsComplete => SafeCall(NativeInstance->IsComplete() != 0);
 
 		/// <summary>
-		/// Gets a value indicating whether the download has been canceled or interrupted.
+		///  Gets a value indicating whether the download has been canceled or interrupted.
 		/// </summary>
-		public unsafe virtual bool IsCanceled
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsCanceled() != 0);
-			}
-		}
+		public virtual bool IsCanceled => SafeCall(NativeInstance->IsCanceled() != 0);
 
 		/// <summary>
-		/// Gets a simple speed estimate in bytes/s.
+		///  Gets a simple speed estimate in bytes/s.
 		/// </summary>
-		public unsafe virtual long CurrentSpeed
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetCurrentSpeed());
-			}
-		}
+		public virtual long CurrentSpeed => SafeCall(NativeInstance->GetCurrentSpeed());
 
 		/// <summary>
-		/// Gets the rough percent complete or -1 if the receive total size is
-		/// unknown.
+		///  Gets the rough percent complete or -1 if the receive total size is
+		///  unknown.
 		/// </summary>
-		public unsafe virtual int PercentComplete
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetPercentComplete());
-			}
-		}
+		public virtual int PercentComplete => SafeCall(NativeInstance->GetPercentComplete());
 
 		/// <summary>
-		/// Gets the total number of bytes.
+		///  Gets the total number of bytes.
 		/// </summary>
-		public unsafe virtual long TotalBytes
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetTotalBytes());
-			}
-		}
+		public virtual long TotalBytes => SafeCall(NativeInstance->GetTotalBytes());
 
 		/// <summary>
-		/// Gets the number of received bytes.
+		///  Gets the number of received bytes.
 		/// </summary>
-		public unsafe virtual long ReceivedBytes
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetReceivedBytes());
-			}
-		}
+		public virtual long ReceivedBytes => SafeCall(NativeInstance->GetReceivedBytes());
 
 		/// <summary>
-		/// Gets the time that the download started.
+		///  Gets the time that the download started.
 		/// </summary>
-		public unsafe virtual CefTime StartTime
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetStartTime());
-			}
-		}
+		public virtual CefTime StartTime => SafeCall(NativeInstance->GetStartTime());
 
 		/// <summary>
-		/// Gets the time that the download ended.
+		///  Gets the time that the download ended.
 		/// </summary>
-		public unsafe virtual CefTime EndTime
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetEndTime());
-			}
-		}
+		public virtual CefTime EndTime => SafeCall(NativeInstance->GetEndTime());
 
 		/// <summary>
-		/// Gets the full path to the downloaded or downloading file.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the full path to the downloaded or downloading file.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string FullPath
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetFullPath()));
-			}
-		}
+		public virtual string FullPath => SafeCall(CefString.ReadAndFree(NativeInstance->GetFullPath()));
 
 		/// <summary>
-		/// Gets the unique identifier for this download.
+		///  Gets the unique identifier for this download.
 		/// </summary>
-		public unsafe virtual uint Id
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetId());
-			}
-		}
+		public virtual uint Id => SafeCall(NativeInstance->GetId());
 
 		/// <summary>
-		/// Gets the URL.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the URL.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string Url
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetUrl()));
-			}
-		}
+		public virtual string Url => SafeCall(CefString.ReadAndFree(NativeInstance->GetUrl()));
 
 		/// <summary>
-		/// Gets the original URL before any redirections.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the original URL before any redirections.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string OriginalUrl
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetOriginalUrl()));
-			}
-		}
+		public virtual string OriginalUrl => SafeCall(CefString.ReadAndFree(NativeInstance->GetOriginalUrl()));
 
 		/// <summary>
-		/// Gets the suggested file name.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the suggested file name.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string SuggestedFileName
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetSuggestedFileName()));
-			}
-		}
+		public virtual string SuggestedFileName =>
+			SafeCall(CefString.ReadAndFree(NativeInstance->GetSuggestedFileName()));
 
 		/// <summary>
-		/// Gets the content disposition.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the content disposition.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string ContentDisposition
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetContentDisposition()));
-			}
-		}
+		public virtual string ContentDisposition =>
+			SafeCall(CefString.ReadAndFree(NativeInstance->GetContentDisposition()));
 
 		/// <summary>
-		/// Gets the mime type.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the mime type.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string MimeType
+		public virtual string MimeType => SafeCall(CefString.ReadAndFree(NativeInstance->GetMimeType()));
+
+		internal static CefDownloadItem Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetMimeType()));
-			}
+			return new CefDownloadItem((cef_download_item_t*) instance);
 		}
 	}
 }

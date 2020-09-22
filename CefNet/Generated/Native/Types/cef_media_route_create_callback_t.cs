@@ -11,39 +11,38 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Callback structure for cef_media_router_t::CreateRoute. The functions of this
-	/// structure will be called on the browser process UI thread.
+	///  Callback structure for cef_media_router_t::CreateRoute. The functions of this
+	///  structure will be called on the browser process UI thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_media_route_create_callback_t
+	public unsafe struct cef_media_route_create_callback_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_media_route_create_callback_t* self, cef_media_route_create_result_t result, const cef_string_t* error, _cef_media_route_t* route)*
+		///  void (*)(_cef_media_route_create_callback_t* self, cef_media_route_create_result_t result, const cef_string_t*
+		///  error, _cef_media_route_t* route)*
 		/// </summary>
 		public void* on_media_route_create_finished;
 
 		/// <summary>
-		/// Method that will be executed when the route creation has finished. |result|
-		/// will be CEF_MRCR_OK if the route creation succeeded. |error| will be a
-		/// description of the error if the route creation failed. |route| is the
-		/// resulting route, or NULL if the route creation failed.
+		///  Method that will be executed when the route creation has finished. |result|
+		///  will be CEF_MRCR_OK if the route creation succeeded. |error| will be a
+		///  description of the error if the route creation failed. |route| is the
+		///  resulting route, or NULL if the route creation failed.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		[NativeName("on_media_route_create_finished")]
-		public unsafe extern void OnMediaRouteCreateFinished(CefMediaRouteCreateResult result, [Immutable]cef_string_t* error, cef_media_route_t* route);
+		public extern void OnMediaRouteCreateFinished(CefMediaRouteCreateResult result, [Immutable] cef_string_t* error,
+			cef_media_route_t* route);
 	}
 }
-

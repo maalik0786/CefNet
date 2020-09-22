@@ -11,129 +11,126 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing a V8 exception. The functions of this structure may be
-	/// called on any render process thread.
+	///  Structure representing a V8 exception. The functions of this structure may be
+	///  called on any render process thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_v8exception_t
+	public unsafe struct cef_v8exception_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_v8exception_t* self)*
+		///  cef_string_userfree_t (*)(_cef_v8exception_t* self)*
 		/// </summary>
 		public void* get_message;
 
 		/// <summary>
-		/// Returns the exception message.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the exception message.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_message")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetMessage();
+		public extern cef_string_userfree_t GetMessage();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_v8exception_t* self)*
+		///  cef_string_userfree_t (*)(_cef_v8exception_t* self)*
 		/// </summary>
 		public void* get_source_line;
 
 		/// <summary>
-		/// Returns the line of source code that the exception occurred within.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the line of source code that the exception occurred within.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_source_line")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetSourceLine();
+		public extern cef_string_userfree_t GetSourceLine();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_v8exception_t* self)*
+		///  cef_string_userfree_t (*)(_cef_v8exception_t* self)*
 		/// </summary>
 		public void* get_script_resource_name;
 
 		/// <summary>
-		/// Returns the resource name for the script from where the function causing
-		/// the error originates.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the resource name for the script from where the function causing
+		///  the error originates.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_script_resource_name")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetScriptResourceName();
+		public extern cef_string_userfree_t GetScriptResourceName();
 
 		/// <summary>
-		/// int (*)(_cef_v8exception_t* self)*
+		///  int (*)(_cef_v8exception_t* self)*
 		/// </summary>
 		public void* get_line_number;
 
 		/// <summary>
-		/// Returns the 1-based number of the line where the error occurred or 0 if the
-		/// line number is unknown.
+		///  Returns the 1-based number of the line where the error occurred or 0 if the
+		///  line number is unknown.
 		/// </summary>
 		[NativeName("get_line_number")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int GetLineNumber();
+		public extern int GetLineNumber();
 
 		/// <summary>
-		/// int (*)(_cef_v8exception_t* self)*
+		///  int (*)(_cef_v8exception_t* self)*
 		/// </summary>
 		public void* get_start_position;
 
 		/// <summary>
-		/// Returns the index within the script of the first character where the error
-		/// occurred.
+		///  Returns the index within the script of the first character where the error
+		///  occurred.
 		/// </summary>
 		[NativeName("get_start_position")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int GetStartPosition();
+		public extern int GetStartPosition();
 
 		/// <summary>
-		/// int (*)(_cef_v8exception_t* self)*
+		///  int (*)(_cef_v8exception_t* self)*
 		/// </summary>
 		public void* get_end_position;
 
 		/// <summary>
-		/// Returns the index within the script of the last character where the error
-		/// occurred.
+		///  Returns the index within the script of the last character where the error
+		///  occurred.
 		/// </summary>
 		[NativeName("get_end_position")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int GetEndPosition();
+		public extern int GetEndPosition();
 
 		/// <summary>
-		/// int (*)(_cef_v8exception_t* self)*
+		///  int (*)(_cef_v8exception_t* self)*
 		/// </summary>
 		public void* get_start_column;
 
 		/// <summary>
-		/// Returns the index within the line of the first character where the error
-		/// occurred.
+		///  Returns the index within the line of the first character where the error
+		///  occurred.
 		/// </summary>
 		[NativeName("get_start_column")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int GetStartColumn();
+		public extern int GetStartColumn();
 
 		/// <summary>
-		/// int (*)(_cef_v8exception_t* self)*
+		///  int (*)(_cef_v8exception_t* self)*
 		/// </summary>
 		public void* get_end_column;
 
 		/// <summary>
-		/// Returns the index within the line of the last character where the error
-		/// occurred.
+		///  Returns the index within the line of the last character where the error
+		///  occurred.
 		/// </summary>
 		[NativeName("get_end_column")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int GetEndColumn();
+		public extern int GetEndColumn();
 	}
 }
-

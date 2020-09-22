@@ -13,63 +13,58 @@
 
 using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Implement this structure for asynchronous task execution. If the task is
-	/// posted successfully and if the associated message loop is still running then
-	/// the execute() function will be called on the target thread. If the task fails
-	/// to post then the task object may be destroyed on the source thread instead of
-	/// the target thread. For this reason be cautious when performing work in the
-	/// task object destructor.
+	///  Implement this structure for asynchronous task execution. If the task is
+	///  posted successfully and if the associated message loop is still running then
+	///  the execute() function will be called on the target thread. If the task fails
+	///  to post then the task object may be destroyed on the source thread instead of
+	///  the target thread. For this reason be cautious when performing work in the
+	///  task object destructor.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefTask : CefBaseRefCounted<cef_task_t>, ICefTaskPrivate
+	public unsafe class CefTask : CefBaseRefCounted<cef_task_t>, ICefTaskPrivate
 	{
 		private static readonly ExecuteDelegate fnExecute = ExecuteImpl;
 
-		internal static unsafe CefTask Create(IntPtr instance)
-		{
-			return new CefTask((cef_task_t*)instance);
-		}
-
 		public CefTask()
 		{
-			cef_task_t* self = this.NativeInstance;
-			self->execute = (void*)Marshal.GetFunctionPointerForDelegate(fnExecute);
+			var self = NativeInstance;
+			self->execute = (void*) Marshal.GetFunctionPointerForDelegate(fnExecute);
 		}
 
 		public CefTask(cef_task_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
+		}
+
+		internal static CefTask Create(IntPtr instance)
+		{
+			return new CefTask((cef_task_t*) instance);
 		}
 
 		/// <summary>
-		/// Method that will be executed on the target thread.
+		///  Method that will be executed on the target thread.
 		/// </summary>
-		protected internal unsafe virtual void Execute()
+		protected internal virtual void Execute()
 		{
+		}
+
+		// void (*)(_cef_task_t* self)*
+		private static void ExecuteImpl(cef_task_t* self)
+		{
+			var instance = GetInstance((IntPtr) self) as CefTask;
+			if (instance == null) return;
+			instance.Execute();
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void ExecuteDelegate(cef_task_t* self);
-
-		// void (*)(_cef_task_t* self)*
-		private static unsafe void ExecuteImpl(cef_task_t* self)
-		{
-			var instance = GetInstance((IntPtr)self) as CefTask;
-			if (instance == null)
-			{
-				return;
-			}
-			instance.Execute();
-		}
+		private delegate void ExecuteDelegate(cef_task_t* self);
 	}
 }

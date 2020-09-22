@@ -12,8 +12,8 @@ namespace CefGen
 	{
 		public ResolveTypeNameEventArgs(string type)
 		{
-			this.Type = type;
-			this.Result = type;
+			Type = type;
+			Result = type;
 		}
 
 		public string Type { get; set; }

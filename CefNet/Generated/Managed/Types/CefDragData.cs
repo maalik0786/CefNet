@@ -12,289 +12,232 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure used to represent drag data. The functions of this structure may be
-	/// called on any thread.
+	///  Structure used to represent drag data. The functions of this structure may be
+	///  called on any thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
 	public unsafe partial class CefDragData : CefBaseRefCounted<cef_drag_data_t>
 	{
-		internal static unsafe CefDragData Create(IntPtr instance)
-		{
-			return new CefDragData((cef_drag_data_t*)instance);
-		}
-
 		public CefDragData(cef_drag_data_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this object is read-only.
+		///  Gets a value indicating whether this object is read-only.
 		/// </summary>
-		public unsafe virtual bool IsReadOnly
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsReadOnly() != 0);
-			}
-		}
+		public virtual bool IsReadOnly => SafeCall(NativeInstance->IsReadOnly() != 0);
 
 		/// <summary>
-		/// Gets a value indicating whether the drag data is a link.
+		///  Gets a value indicating whether the drag data is a link.
 		/// </summary>
-		public unsafe virtual bool IsLink
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsLink() != 0);
-			}
-		}
+		public virtual bool IsLink => SafeCall(NativeInstance->IsLink() != 0);
 
 		/// <summary>
-		/// Gets a value indicating whether the drag data is a text or html fragment.
+		///  Gets a value indicating whether the drag data is a text or html fragment.
 		/// </summary>
-		public unsafe virtual bool IsFragment
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsFragment() != 0);
-			}
-		}
+		public virtual bool IsFragment => SafeCall(NativeInstance->IsFragment() != 0);
 
 		/// <summary>
-		/// Gets a value indicating whether the drag data is a file.
+		///  Gets a value indicating whether the drag data is a file.
 		/// </summary>
-		public unsafe virtual bool IsFile
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsFile() != 0);
-			}
-		}
+		public virtual bool IsFile => SafeCall(NativeInstance->IsFile() != 0);
 
 		/// <summary>
-		/// Return the link URL that is being dragged.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Return the link URL that is being dragged.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string LinkUrl
+		public virtual string LinkUrl
 		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetLinkUrl()));
-			}
+			get => SafeCall(CefString.ReadAndFree(NativeInstance->GetLinkUrl()));
 			set
 			{
 				fixed (char* s0 = value)
 				{
-					var cstr0 = new cef_string_t { Str = s0, Length = value != null ? value.Length : 0 };
+					var cstr0 = new cef_string_t {Str = s0, Length = value != null ? value.Length : 0};
 					NativeInstance->SetLinkUrl(&cstr0);
 				}
+
 				GC.KeepAlive(this);
 			}
 		}
 
 		/// <summary>
-		/// Return the title associated with the link being dragged.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Return the title associated with the link being dragged.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string LinkTitle
+		public virtual string LinkTitle
 		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetLinkTitle()));
-			}
+			get => SafeCall(CefString.ReadAndFree(NativeInstance->GetLinkTitle()));
 			set
 			{
 				fixed (char* s0 = value)
 				{
-					var cstr0 = new cef_string_t { Str = s0, Length = value != null ? value.Length : 0 };
+					var cstr0 = new cef_string_t {Str = s0, Length = value != null ? value.Length : 0};
 					NativeInstance->SetLinkTitle(&cstr0);
 				}
+
 				GC.KeepAlive(this);
 			}
 		}
 
 		/// <summary>
-		/// Return the metadata, if any, associated with the link being dragged.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Return the metadata, if any, associated with the link being dragged.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string LinkMetadata
+		public virtual string LinkMetadata
 		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetLinkMetadata()));
-			}
+			get => SafeCall(CefString.ReadAndFree(NativeInstance->GetLinkMetadata()));
 			set
 			{
 				fixed (char* s0 = value)
 				{
-					var cstr0 = new cef_string_t { Str = s0, Length = value != null ? value.Length : 0 };
+					var cstr0 = new cef_string_t {Str = s0, Length = value != null ? value.Length : 0};
 					NativeInstance->SetLinkMetadata(&cstr0);
 				}
+
 				GC.KeepAlive(this);
 			}
 		}
 
 		/// <summary>
-		/// Return the plain text fragment that is being dragged.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Return the plain text fragment that is being dragged.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string FragmentText
+		public virtual string FragmentText
 		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetFragmentText()));
-			}
+			get => SafeCall(CefString.ReadAndFree(NativeInstance->GetFragmentText()));
 			set
 			{
 				fixed (char* s0 = value)
 				{
-					var cstr0 = new cef_string_t { Str = s0, Length = value != null ? value.Length : 0 };
+					var cstr0 = new cef_string_t {Str = s0, Length = value != null ? value.Length : 0};
 					NativeInstance->SetFragmentText(&cstr0);
 				}
+
 				GC.KeepAlive(this);
 			}
 		}
 
 		/// <summary>
-		/// Return the text/html fragment that is being dragged.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Return the text/html fragment that is being dragged.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string FragmentHtml
+		public virtual string FragmentHtml
 		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetFragmentHtml()));
-			}
+			get => SafeCall(CefString.ReadAndFree(NativeInstance->GetFragmentHtml()));
 			set
 			{
 				fixed (char* s0 = value)
 				{
-					var cstr0 = new cef_string_t { Str = s0, Length = value != null ? value.Length : 0 };
+					var cstr0 = new cef_string_t {Str = s0, Length = value != null ? value.Length : 0};
 					NativeInstance->SetFragmentHtml(&cstr0);
 				}
+
 				GC.KeepAlive(this);
 			}
 		}
 
 		/// <summary>
-		/// Return the base URL that the fragment came from. This value is used for
-		/// resolving relative URLs and may be NULL.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Return the base URL that the fragment came from. This value is used for
+		///  resolving relative URLs and may be NULL.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string FragmentBaseUrl
+		public virtual string FragmentBaseUrl
 		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetFragmentBaseUrl()));
-			}
+			get => SafeCall(CefString.ReadAndFree(NativeInstance->GetFragmentBaseUrl()));
 			set
 			{
 				fixed (char* s0 = value)
 				{
-					var cstr0 = new cef_string_t { Str = s0, Length = value != null ? value.Length : 0 };
+					var cstr0 = new cef_string_t {Str = s0, Length = value != null ? value.Length : 0};
 					NativeInstance->SetFragmentBaseUrl(&cstr0);
 				}
+
 				GC.KeepAlive(this);
 			}
 		}
 
 		/// <summary>
-		/// Return the name of the file being dragged out of the browser window.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Return the name of the file being dragged out of the browser window.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string FileName
+		public virtual string FileName => SafeCall(CefString.ReadAndFree(NativeInstance->GetFileName()));
+
+		/// <summary>
+		///  Gets a value indicating whether an image representation of drag data is available.
+		/// </summary>
+		public virtual bool HasImage => SafeCall(NativeInstance->HasImage() != 0);
+
+		/// <summary>
+		///  Get the image hotspot (drag start location relative to image dimensions).
+		/// </summary>
+		public virtual CefPoint ImageHotspot => SafeCall(NativeInstance->GetImageHotspot());
+
+		internal static CefDragData Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetFileName()));
-			}
+			return new CefDragData((cef_drag_data_t*) instance);
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether an image representation of drag data is available.
+		///  Returns a copy of the current object.
 		/// </summary>
-		public unsafe virtual bool HasImage
+		public virtual CefDragData Clone()
 		{
-			get
-			{
-				return SafeCall(NativeInstance->HasImage() != 0);
-			}
+			return SafeCall(Wrap(Create, NativeInstance->Clone()));
 		}
 
 		/// <summary>
-		/// Get the image hotspot (drag start location relative to image dimensions).
+		///  Write the contents of the file being dragged out of the web view into
+		///  |writer|. Returns the number of bytes sent to |writer|. If |writer| is NULL
+		///  this function will return the size of the file contents in bytes. Call
+		///  get_file_name() to get a suggested name for the file.
 		/// </summary>
-		public unsafe virtual CefPoint ImageHotspot
+		public virtual long GetFileContents(CefStreamWriter writer)
 		{
-			get
-			{
-				return SafeCall(NativeInstance->GetImageHotspot());
-			}
+			return SafeCall((long) NativeInstance->GetFileContents(writer != null ? writer.GetNativeInstance() : null));
 		}
 
 		/// <summary>
-		/// Returns a copy of the current object.
+		///  Retrieve the list of file names that are being dragged into the browser
+		///  window.
 		/// </summary>
-		public unsafe virtual CefDragData Clone()
-		{
-			return SafeCall(CefDragData.Wrap(CefDragData.Create, NativeInstance->Clone()));
-		}
-
-		/// <summary>
-		/// Write the contents of the file being dragged out of the web view into
-		/// |writer|. Returns the number of bytes sent to |writer|. If |writer| is NULL
-		/// this function will return the size of the file contents in bytes. Call
-		/// get_file_name() to get a suggested name for the file.
-		/// </summary>
-		public unsafe virtual long GetFileContents(CefStreamWriter writer)
-		{
-			return SafeCall((long)NativeInstance->GetFileContents((writer != null) ? writer.GetNativeInstance() : null));
-		}
-
-		/// <summary>
-		/// Retrieve the list of file names that are being dragged into the browser
-		/// window.
-		/// </summary>
-		public unsafe virtual int GetFileNames(CefStringList names)
+		public virtual int GetFileNames(CefStringList names)
 		{
 			return SafeCall(NativeInstance->GetFileNames(names.GetNativeInstance()));
 		}
 
 		/// <summary>
-		/// Reset the file contents. You should do this before calling
-		/// cef_browser_host_t::DragTargetDragEnter as the web view does not allow us
-		/// to drag in this kind of data.
+		///  Reset the file contents. You should do this before calling
+		///  cef_browser_host_t::DragTargetDragEnter as the web view does not allow us
+		///  to drag in this kind of data.
 		/// </summary>
-		public unsafe virtual void ResetFileContents()
+		public virtual void ResetFileContents()
 		{
 			NativeInstance->ResetFileContents();
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Add a file that is being dragged into the webview.
+		///  Add a file that is being dragged into the webview.
 		/// </summary>
-		public unsafe virtual void AddFile(string path, string displayName)
+		public virtual void AddFile(string path, string displayName)
 		{
 			fixed (char* s0 = path)
 			fixed (char* s1 = displayName)
 			{
-				var cstr0 = new cef_string_t { Str = s0, Length = path != null ? path.Length : 0 };
-				var cstr1 = new cef_string_t { Str = s1, Length = displayName != null ? displayName.Length : 0 };
+				var cstr0 = new cef_string_t {Str = s0, Length = path != null ? path.Length : 0};
+				var cstr1 = new cef_string_t {Str = s1, Length = displayName != null ? displayName.Length : 0};
 				NativeInstance->AddFile(&cstr0, &cstr1);
 			}
+
 			GC.KeepAlive(this);
 		}
 	}

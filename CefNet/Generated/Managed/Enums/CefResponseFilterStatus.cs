@@ -11,34 +11,28 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Return values for CefResponseFilter::Filter().
+	///  Return values for CefResponseFilter::Filter().
 	/// </summary>
 	public enum CefResponseFilterStatus
 	{
 		/// <summary>
-		/// Some or all of the pre-filter data was read successfully but more data is
-		/// needed in order to continue filtering (filtered output is pending).
+		///  Some or all of the pre-filter data was read successfully but more data is
+		///  needed in order to continue filtering (filtered output is pending).
 		/// </summary>
 		NeedMoreData = 0,
 
 		/// <summary>
-		/// Some or all of the pre-filter data was read successfully and all available
-		/// filtered output has been written.
+		///  Some or all of the pre-filter data was read successfully and all available
+		///  filtered output has been written.
 		/// </summary>
 		Done = 1,
 
 		/// <summary>
-		/// An error occurred during filtering.
+		///  An error occurred during filtering.
 		/// </summary>
-		Error = 2,
+		Error = 2
 	}
 }
-

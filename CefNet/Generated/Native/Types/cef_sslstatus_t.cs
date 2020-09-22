@@ -11,84 +11,81 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing the SSL information for a navigation entry.
+	///  Structure representing the SSL information for a navigation entry.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_sslstatus_t
+	public unsafe struct cef_sslstatus_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_sslstatus_t* self)*
+		///  int (*)(_cef_sslstatus_t* self)*
 		/// </summary>
 		public void* is_secure_connection;
 
 		/// <summary>
-		/// Returns true (1) if the status is related to a secure SSL/TLS connection.
+		///  Returns true (1) if the status is related to a secure SSL/TLS connection.
 		/// </summary>
 		[NativeName("is_secure_connection")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsSecureConnection();
+		public extern int IsSecureConnection();
 
 		/// <summary>
-		/// cef_cert_status_t (*)(_cef_sslstatus_t* self)*
+		///  cef_cert_status_t (*)(_cef_sslstatus_t* self)*
 		/// </summary>
 		public void* get_cert_status;
 
 		/// <summary>
-		/// Returns a bitmask containing any and all problems verifying the server
-		/// certificate.
+		///  Returns a bitmask containing any and all problems verifying the server
+		///  certificate.
 		/// </summary>
 		[NativeName("get_cert_status")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern CefCertStatus GetCertStatus();
+		public extern CefCertStatus GetCertStatus();
 
 		/// <summary>
-		/// cef_ssl_version_t (*)(_cef_sslstatus_t* self)*
+		///  cef_ssl_version_t (*)(_cef_sslstatus_t* self)*
 		/// </summary>
 		public void* get_sslversion;
 
 		/// <summary>
-		/// Returns the SSL version used for the SSL connection.
+		///  Returns the SSL version used for the SSL connection.
 		/// </summary>
 		[NativeName("get_sslversion")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern CefSSLVersion GetSslversion();
+		public extern CefSSLVersion GetSslversion();
 
 		/// <summary>
-		/// cef_ssl_content_status_t (*)(_cef_sslstatus_t* self)*
+		///  cef_ssl_content_status_t (*)(_cef_sslstatus_t* self)*
 		/// </summary>
 		public void* get_content_status;
 
 		/// <summary>
-		/// Returns a bitmask containing the page security content status.
+		///  Returns a bitmask containing the page security content status.
 		/// </summary>
 		[NativeName("get_content_status")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern CefSSLContentStatus GetContentStatus();
+		public extern CefSSLContentStatus GetContentStatus();
 
 		/// <summary>
-		/// _cef_x509certificate_t* (*)(_cef_sslstatus_t* self)*
+		///  _cef_x509certificate_t* (*)(_cef_sslstatus_t* self)*
 		/// </summary>
 		public void* get_x509certificate;
 
 		/// <summary>
-		/// Returns the X.509 certificate.
+		///  Returns the X.509 certificate.
 		/// </summary>
 		[NativeName("get_x509certificate")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_x509certificate_t* GetX509certificate();
+		public extern cef_x509certificate_t* GetX509certificate();
 	}
 }
-

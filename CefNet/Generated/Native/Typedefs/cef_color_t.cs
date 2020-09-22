@@ -11,21 +11,17 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// 32-bit ARGB color value, not premultiplied. The color components are always
-	/// in a known order. Equivalent to the SkColor type.
+	///  32-bit ARGB color value, not premultiplied. The color components are always
+	///  in a known order. Equivalent to the SkColor type.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_color_t
+	public struct cef_color_t
 	{
 		public uint Base;
 	}
 }
-

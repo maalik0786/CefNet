@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CefNet.WinApi
 {
@@ -9,6 +7,6 @@ namespace CefNet.WinApi
 	{
 		None = 0,
 		Pressed = 0x8000,
-		Toggled = 0x0001,
+		Toggled = 0x0001
 	}
 }

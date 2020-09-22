@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Navigation types.
+	///  Navigation types.
 	/// </summary>
 	public enum CefNavigationType
 	{
@@ -33,7 +28,6 @@ namespace CefNet
 
 		FormResubmitted = 4,
 
-		Other = 5,
+		Other = 5
 	}
 }
-

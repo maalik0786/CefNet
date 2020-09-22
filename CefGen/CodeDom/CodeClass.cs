@@ -6,14 +6,11 @@
 
 namespace CefGen.CodeDom
 {
-	sealed class CodeClass : CodeType
+	internal sealed class CodeClass : CodeType
 	{
-
 		public CodeClass(string name)
 			: base(name)
 		{
-
 		}
-
 	}
 }

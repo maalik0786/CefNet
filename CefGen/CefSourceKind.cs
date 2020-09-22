@@ -10,6 +10,6 @@ namespace CefGen
 	{
 		Unknown,
 		Library,
-		Client,
+		Client
 	}
 }

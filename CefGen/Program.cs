@@ -4,20 +4,18 @@
 // See the licence file in the project root for full license information.
 // --------------------------------------------------------------------------------------------
 
-using CppAst;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using CppAst;
 
 namespace CefGen
 {
-	class Program
+	internal class Program
 	{
 		private static readonly HashSet<string> IgnoreClasses = new HashSet<string>
 		{
@@ -28,32 +26,28 @@ namespace CefGen
 			"_cef_main_args_t",
 			"_cef_window_info_t",
 			"_XEvent",
-			"_XDisplay",
-
+			"_XDisplay"
 		};
 
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
 			string cefPath = null;
 			string outDirPath = null;
-			string projectPath = GetProjectPath();
+			var projectPath = GetProjectPath();
 
-			bool onlyStdCall = false;
-			foreach (string arg in args)
-			{
+			var onlyStdCall = false;
+			foreach (var arg in args)
 				if (arg.StartsWith("--"))
 				{
 					if (arg.StartsWith("--out="))
 						outDirPath = arg.Substring(6);
 					if (arg == "--stdcall")
 						onlyStdCall = true;
-					continue;
 				}
 				else if (cefPath == null)
 				{
 					cefPath = arg;
 				}
-			}
 
 			if (string.IsNullOrWhiteSpace(cefPath))
 				cefPath = Path.Combine(projectPath, "..", "cef");
@@ -110,26 +104,23 @@ namespace CefGen
 
 		private static string GetProjectPath()
 		{
-			string projectPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
-			string rootPath = Path.GetPathRoot(projectPath);
+			var projectPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+			var rootPath = Path.GetPathRoot(projectPath);
 			while (Path.GetFileName(projectPath) != "CefGen")
 			{
 				if (projectPath == rootPath)
 					throw new DirectoryNotFoundException("Could not find the project directory.");
 				projectPath = Path.GetDirectoryName(projectPath);
 			}
+
 			return projectPath;
 		}
 
 		private static string GetApiHash(string cefPath)
 		{
-			foreach (string line in File.ReadAllLines(Path.Combine(cefPath, "include", "cef_api_hash.h")))
-			{
+			foreach (var line in File.ReadAllLines(Path.Combine(cefPath, "include", "cef_api_hash.h")))
 				if (line.StartsWith("#define CEF_API_HASH_UNIVERSAL"))
-				{
 					return Regex.Match(line, "\"[a-z0-9]+\"").Value.Trim('"');
-				}
-			}
 			Console.WriteLine("API hash not found.");
 			Environment.Exit(-1);
 			return null;
@@ -137,50 +128,62 @@ namespace CefGen
 
 		private static string ApplyHotPatch(string basePath)
 		{
-			string temp = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp");
+			var temp = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp");
 			if (Directory.Exists(temp))
 			{
 				Directory.Delete(temp, true);
 				Thread.Sleep(1000);
 			}
+
 			Directory.CreateDirectory(temp);
 			Directory.CreateDirectory(Path.Combine(temp, "include"));
 			Directory.CreateDirectory(Path.Combine(temp, "include", "internal"));
 
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 			{
-				string path = Path.Combine(basePath, "include", "internal", "cef_types_linux.h");
+				var path = Path.Combine(basePath, "include", "internal", "cef_types_linux.h");
 				if (File.Exists(path))
 				{
-					string content = File.ReadAllText(path, Encoding.UTF8);
-					content = content.Replace("#define cef_cursor_handle_t unsigned long", "typedef unsigned long HCURSOR;\n#define cef_cursor_handle_t HCURSOR");
-					content = content.Replace("#define cef_window_handle_t unsigned long", "typedef unsigned long HWND;\n#define cef_window_handle_t HWND");
-					content = content.Replace("#define cef_event_handle_t XEvent*", "typedef XEvent* CefEventHandle;\n#define cef_event_handle_t CefEventHandle");
-					File.WriteAllText(Path.Combine(temp, "include", "internal", "cef_types_linux.h"), content, Encoding.UTF8);
+					var content = File.ReadAllText(path, Encoding.UTF8);
+					content = content.Replace("#define cef_cursor_handle_t unsigned long",
+						"typedef unsigned long HCURSOR;\n#define cef_cursor_handle_t HCURSOR");
+					content = content.Replace("#define cef_window_handle_t unsigned long",
+						"typedef unsigned long HWND;\n#define cef_window_handle_t HWND");
+					content = content.Replace("#define cef_event_handle_t XEvent*",
+						"typedef XEvent* CefEventHandle;\n#define cef_event_handle_t CefEventHandle");
+					File.WriteAllText(Path.Combine(temp, "include", "internal", "cef_types_linux.h"), content,
+						Encoding.UTF8);
 				}
 			}
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				string path = Path.Combine(basePath, "include", "internal", "cef_types_win.h");
+				var path = Path.Combine(basePath, "include", "internal", "cef_types_win.h");
 				if (File.Exists(path))
 				{
-					string content = File.ReadAllText(path, Encoding.UTF8);
-					content = content.Replace("#define cef_event_handle_t MSG*", "typedef MSG* CefEventHandle;\n#define cef_event_handle_t CefEventHandle");
-					File.WriteAllText(Path.Combine(temp, "include", "internal", "cef_types_win.h"), content, Encoding.UTF8);
+					var content = File.ReadAllText(path, Encoding.UTF8);
+					content = content.Replace("#define cef_event_handle_t MSG*",
+						"typedef MSG* CefEventHandle;\n#define cef_event_handle_t CefEventHandle");
+					File.WriteAllText(Path.Combine(temp, "include", "internal", "cef_types_win.h"), content,
+						Encoding.UTF8);
 				}
 			}
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
 			{
-				string path = Path.Combine(basePath, "include", "internal", "cef_types_mac.h");
+				var path = Path.Combine(basePath, "include", "internal", "cef_types_mac.h");
 				if (File.Exists(path))
 				{
-					string content = File.ReadAllText(path, Encoding.UTF8);
-					content = content.Replace("#define cef_cursor_handle_t void*", "typedef void* HCURSOR;\n#define cef_cursor_handle_t HCURSOR");
-					content = content.Replace("#define cef_window_handle_t void*", "typedef void* HWND;\n#define cef_window_handle_t HWND");
-					content = content.Replace("#define cef_event_handle_t void*", "typedef void* CefEventHandle;\n#define cef_event_handle_t CefEventHandle");
-					File.WriteAllText(Path.Combine(temp, "include", "internal", "cef_types_mac.h"), content, Encoding.UTF8);
+					var content = File.ReadAllText(path, Encoding.UTF8);
+					content = content.Replace("#define cef_cursor_handle_t void*",
+						"typedef void* HCURSOR;\n#define cef_cursor_handle_t HCURSOR");
+					content = content.Replace("#define cef_window_handle_t void*",
+						"typedef void* HWND;\n#define cef_window_handle_t HWND");
+					content = content.Replace("#define cef_event_handle_t void*",
+						"typedef void* CefEventHandle;\n#define cef_event_handle_t CefEventHandle");
+					File.WriteAllText(Path.Combine(temp, "include", "internal", "cef_types_mac.h"), content,
+						Encoding.UTF8);
 				}
 			}
+
 			return temp;
 		}
 
@@ -205,56 +208,58 @@ namespace CefGen
 			{
 				options.Defines.Add("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH");
 			}
-			else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
 			{
 				//options.TargetCpu = CppTargetCpu.X86_64;
 				options.TargetSystem = "darwin";
 				options.TargetVendor = "apple";
-				options.SystemIncludeFolders.Add("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include");
-				options.SystemIncludeFolders.Add("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1");
-				options.SystemIncludeFolders.Add("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include");
-				options.SystemIncludeFolders.Add("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include");
+				options.SystemIncludeFolders.Add(
+					"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include");
+				options.SystemIncludeFolders.Add(
+					"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1");
+				options.SystemIncludeFolders.Add(
+					"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include");
+				options.SystemIncludeFolders.Add(
+					"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include");
 				options.AdditionalArguments.Add("-stdlib=libc++");
 			}
 
 			var nativeBuild = new NativeCefApiBuilder(onlyStdCall)
 			{
-				Namespace = "CefNet.CApi",
-				BaseDirectory = basePath
+				Namespace = "CefNet.CApi", BaseDirectory = basePath
 			};
 
-			var enumBuild = new NativeCefApiBuilder(onlyStdCall)
-			{
-				Namespace = "CefNet",
-				BaseDirectory = basePath
-			};
+			var enumBuild = new NativeCefApiBuilder(onlyStdCall) {Namespace = "CefNet", BaseDirectory = basePath};
 
-			CppCompilation compilation = CppParser.ParseFiles(files, options);
+			var compilation = CppParser.ParseFiles(files, options);
 			if (compilation.HasErrors)
 			{
-				foreach(var msg in compilation.Diagnostics.Messages)
+				foreach (var msg in compilation.Diagnostics.Messages)
 					Console.WriteLine(msg);
 
 				Environment.Exit(-1);
 				return;
 			}
+
 			var aliasResolver = new AliasResolver(compilation);
 			nativeBuild.ResolveCefTypeDef += aliasResolver.HandleResolveEvent;
 			enumBuild.ResolveCefTypeDef += aliasResolver.HandleResolveEvent;
 			Func<string, string> resolveType = aliasResolver.ResolveNonFail;
 
-			foreach (CppClass @class in compilation.Classes)
+			foreach (var @class in compilation.Classes)
 			{
-				string source = @class.Span.Start.File;
+				var source = @class.Span.Start.File;
 				if (!source.Contains("capi") && !source.Contains("internal"))
 					continue;
 
 				if (IgnoreClasses.Contains(@class.Name))
 					continue;
 
-				string fileName = aliasResolver.ResolveNonFail(@class.Name);
-				using (var csfile = new StreamWriter(Path.Combine(outDirPath, "Native", "Types", fileName + ".cs"), false, Encoding.UTF8))
-				using (var ilfile = new StreamWriter(Path.Combine(outDirPath, "Native", "MSIL", fileName + ".il"), false, Encoding.UTF8))
+				var fileName = aliasResolver.ResolveNonFail(@class.Name);
+				using (var csfile = new StreamWriter(Path.Combine(outDirPath, "Native", "Types", fileName + ".cs"),
+					false, Encoding.UTF8))
+				using (var ilfile = new StreamWriter(Path.Combine(outDirPath, "Native", "MSIL", fileName + ".il"),
+					false, Encoding.UTF8))
 				{
 					nativeBuild.Format(@class, csfile, ilfile);
 					csfile.Flush();
@@ -262,13 +267,13 @@ namespace CefGen
 				}
 			}
 
-			foreach (CppTypedef typedef in compilation.Typedefs)
+			foreach (var typedef in compilation.Typedefs)
 			{
-				string name = typedef.Name;
+				var name = typedef.Name;
 				if (name.StartsWith("cef_string_")
-					|| name == "cef_color_t"
-					//|| name == "cef_platform_thread_id_t"
-					|| name == "cef_platform_thread_handle_t")
+				    || name == "cef_color_t"
+				    //|| name == "cef_platform_thread_id_t"
+				    || name == "cef_platform_thread_handle_t")
 				{
 					var sb = new StringBuilder();
 					try
@@ -282,15 +287,18 @@ namespace CefGen
 					{
 						continue;
 					}
-					string fileName = aliasResolver.ResolveNonFail(typedef.Name);
-					File.WriteAllText(Path.Combine(outDirPath, "Native", "Typedefs", fileName + ".cs"), sb.ToString(), Encoding.UTF8);
+
+					var fileName = aliasResolver.ResolveNonFail(typedef.Name);
+					File.WriteAllText(Path.Combine(outDirPath, "Native", "Typedefs", fileName + ".cs"), sb.ToString(),
+						Encoding.UTF8);
 				}
 			}
 
-			foreach (CppEnum @enum in compilation.Enums)
+			foreach (var @enum in compilation.Enums)
 			{
-				string fileName = aliasResolver.ResolveNonFail(@enum.Name);
-				using (var csfile = new StreamWriter(Path.Combine(outDirPath, "Managed", "Enums", fileName + ".cs"), false, Encoding.UTF8))
+				var fileName = aliasResolver.ResolveNonFail(@enum.Name);
+				using (var csfile = new StreamWriter(Path.Combine(outDirPath, "Managed", "Enums", fileName + ".cs"),
+					false, Encoding.UTF8))
 				{
 					enumBuild.Format(@enum, csfile);
 					csfile.Flush();
@@ -300,24 +308,20 @@ namespace CefGen
 
 			var api = new CefApiClass("CefNativeApi")
 			{
-				Functions = compilation.Functions,
-				ApiHash = GetApiHash(basePath)
+				Functions = compilation.Functions, ApiHash = GetApiHash(basePath)
 			};
 
-			using (var csfile = new StreamWriter(Path.Combine(outDirPath, "Native", "CefNativeApi.cs"), false, Encoding.UTF8))
+			using (var csfile = new StreamWriter(Path.Combine(outDirPath, "Native", "CefNativeApi.cs"), false,
+				Encoding.UTF8))
 			{
 				nativeBuild.Format(api, csfile);
 				csfile.Flush();
 			}
-
 		}
 
 		private static void Clean(string path)
 		{
-			if (Directory.Exists(path))
-			{
-				Directory.Delete(path, true);
-			}
+			if (Directory.Exists(path)) Directory.Delete(path, true);
 			Directory.CreateDirectory(path);
 			Thread.Sleep(1000);
 			Directory.CreateDirectory(Path.Combine(path, "Managed"));
@@ -330,11 +334,5 @@ namespace CefGen
 			Directory.CreateDirectory(Path.Combine(path, "Native", "Types"));
 			Directory.CreateDirectory(Path.Combine(path, "Native", "Typedefs"));
 		}
-
-
 	}
-
-
-
-
 }

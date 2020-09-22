@@ -11,84 +11,81 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// A simple thread abstraction that establishes a message loop on a new thread.
-	/// The consumer uses cef_task_runner_t to execute code on the thread&apos;s message
-	/// loop. The thread is terminated when the cef_thread_t object is destroyed or
-	/// stop() is called. All pending tasks queued on the thread&apos;s message loop will
-	/// run to completion before the thread is terminated. cef_thread_create() can be
-	/// called on any valid CEF thread in either the browser or render process. This
-	/// structure should only be used for tasks that require a dedicated thread. In
-	/// most cases you can post tasks to an existing CEF thread instead of creating a
-	/// new one; see cef_task.h for details.
+	///  A simple thread abstraction that establishes a message loop on a new thread.
+	///  The consumer uses cef_task_runner_t to execute code on the thread&apos;s message
+	///  loop. The thread is terminated when the cef_thread_t object is destroyed or
+	///  stop() is called. All pending tasks queued on the thread&apos;s message loop will
+	///  run to completion before the thread is terminated. cef_thread_create() can be
+	///  called on any valid CEF thread in either the browser or render process. This
+	///  structure should only be used for tasks that require a dedicated thread. In
+	///  most cases you can post tasks to an existing CEF thread instead of creating a
+	///  new one; see cef_task.h for details.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_thread_t
+	public unsafe struct cef_thread_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// _cef_task_runner_t* (*)(_cef_thread_t* self)*
+		///  _cef_task_runner_t* (*)(_cef_thread_t* self)*
 		/// </summary>
 		public void* get_task_runner;
 
 		/// <summary>
-		/// Returns the cef_task_runner_t that will execute code on this thread&apos;s
-		/// message loop. This function is safe to call from any thread.
+		///  Returns the cef_task_runner_t that will execute code on this thread&apos;s
+		///  message loop. This function is safe to call from any thread.
 		/// </summary>
 		[NativeName("get_task_runner")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_task_runner_t* GetTaskRunner();
+		public extern cef_task_runner_t* GetTaskRunner();
 
 		/// <summary>
-		/// cef_platform_thread_id_t (*)(_cef_thread_t* self)*
+		///  cef_platform_thread_id_t (*)(_cef_thread_t* self)*
 		/// </summary>
 		public void* get_platform_thread_id;
 
 		/// <summary>
-		/// Returns the platform thread ID. It will return the same value after stop()
-		/// is called. This function is safe to call from any thread.
+		///  Returns the platform thread ID. It will return the same value after stop()
+		///  is called. This function is safe to call from any thread.
 		/// </summary>
 		[NativeName("get_platform_thread_id")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern uint GetPlatformThreadId();
+		public extern uint GetPlatformThreadId();
 
 		/// <summary>
-		/// void (*)(_cef_thread_t* self)*
+		///  void (*)(_cef_thread_t* self)*
 		/// </summary>
 		public void* stop;
 
 		/// <summary>
-		/// Stop and join the thread. This function must be called from the same thread
-		/// that called cef_thread_create(). Do not call this function if
-		/// cef_thread_create() was called with a |stoppable| value of false (0).
+		///  Stop and join the thread. This function must be called from the same thread
+		///  that called cef_thread_create(). Do not call this function if
+		///  cef_thread_create() was called with a |stoppable| value of false (0).
 		/// </summary>
 		[NativeName("stop")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Stop();
+		public extern void Stop();
 
 		/// <summary>
-		/// int (*)(_cef_thread_t* self)*
+		///  int (*)(_cef_thread_t* self)*
 		/// </summary>
 		public void* is_running;
 
 		/// <summary>
-		/// Returns true (1) if the thread is currently running. This function must be
-		/// called from the same thread that called cef_thread_create().
+		///  Returns true (1) if the thread is currently running. This function must be
+		///  called from the same thread that called cef_thread_create().
 		/// </summary>
 		[NativeName("is_running")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsRunning();
+		public extern int IsRunning();
 	}
 }
-

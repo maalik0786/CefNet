@@ -12,46 +12,42 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback structure used for asynchronous continuation of url requests.
+	///  Callback structure used for asynchronous continuation of url requests.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefRequestCallback : CefBaseRefCounted<cef_request_callback_t>
+	public unsafe class CefRequestCallback : CefBaseRefCounted<cef_request_callback_t>
 	{
-		internal static unsafe CefRequestCallback Create(IntPtr instance)
+		public CefRequestCallback(cef_request_callback_t* instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
-			return new CefRequestCallback((cef_request_callback_t*)instance);
 		}
 
-		public CefRequestCallback(cef_request_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+		internal static CefRequestCallback Create(IntPtr instance)
 		{
+			return new CefRequestCallback((cef_request_callback_t*) instance);
 		}
 
 		/// <summary>
-		/// Continue the url request. If |allow| is true (1) the request will be
-		/// continued. Otherwise, the request will be canceled.
+		///  Continue the url request. If |allow| is true (1) the request will be
+		///  continued. Otherwise, the request will be canceled.
 		/// </summary>
-		public unsafe virtual void Continue(bool allow)
+		public virtual void Continue(bool allow)
 		{
 			NativeInstance->Continue(allow ? 1 : 0);
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Cancel the url request.
+		///  Cancel the url request.
 		/// </summary>
-		public unsafe virtual void Cancel()
+		public virtual void Cancel()
 		{
 			NativeInstance->Cancel();
 			GC.KeepAlive(this);

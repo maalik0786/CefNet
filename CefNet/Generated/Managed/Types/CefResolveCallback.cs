@@ -12,64 +12,62 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback structure for cef_request_context_t::ResolveHost.
+	///  Callback structure for cef_request_context_t::ResolveHost.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefResolveCallback : CefBaseRefCounted<cef_resolve_callback_t>, ICefResolveCallbackPrivate
+	public unsafe class CefResolveCallback : CefBaseRefCounted<cef_resolve_callback_t>, ICefResolveCallbackPrivate
 	{
 		private static readonly OnResolveCompletedDelegate fnOnResolveCompleted = OnResolveCompletedImpl;
 
-		internal static unsafe CefResolveCallback Create(IntPtr instance)
-		{
-			return new CefResolveCallback((cef_resolve_callback_t*)instance);
-		}
-
 		public CefResolveCallback()
 		{
-			cef_resolve_callback_t* self = this.NativeInstance;
-			self->on_resolve_completed = (void*)Marshal.GetFunctionPointerForDelegate(fnOnResolveCompleted);
+			var self = NativeInstance;
+			self->on_resolve_completed = (void*) Marshal.GetFunctionPointerForDelegate(fnOnResolveCompleted);
 		}
 
 		public CefResolveCallback(cef_resolve_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefResolveCallbackPrivate.AvoidOnResolveCompleted();
 
-		/// <summary>
-		/// Called on the UI thread after the ResolveHost request has completed.
-		/// |result| will be the result code. |resolved_ips| will be the list of
-		/// resolved IP addresses or NULL if the resolution failed.
-		/// </summary>
-		protected internal unsafe virtual void OnResolveCompleted(CefErrorCode result, CefStringList resolvedIps)
+		internal static CefResolveCallback Create(IntPtr instance)
 		{
+			return new CefResolveCallback((cef_resolve_callback_t*) instance);
+		}
+
+		/// <summary>
+		///  Called on the UI thread after the ResolveHost request has completed.
+		///  |result| will be the result code. |resolved_ips| will be the list of
+		///  resolved IP addresses or NULL if the resolution failed.
+		/// </summary>
+		protected internal virtual void OnResolveCompleted(CefErrorCode result, CefStringList resolvedIps)
+		{
+		}
+
+		// void (*)(_cef_resolve_callback_t* self, cef_errorcode_t result, cef_string_list_t resolved_ips)*
+		private static void OnResolveCompletedImpl(cef_resolve_callback_t* self, CefErrorCode result,
+			cef_string_list_t resolved_ips)
+		{
+			var instance = GetInstance((IntPtr) self) as CefResolveCallback;
+			if (instance == null || ((ICefResolveCallbackPrivate) instance).AvoidOnResolveCompleted()) return;
+			instance.OnResolveCompleted(result, CefStringList.Wrap(resolved_ips));
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnResolveCompletedDelegate(cef_resolve_callback_t* self, CefErrorCode result, cef_string_list_t resolved_ips);
-
-		// void (*)(_cef_resolve_callback_t* self, cef_errorcode_t result, cef_string_list_t resolved_ips)*
-		private static unsafe void OnResolveCompletedImpl(cef_resolve_callback_t* self, CefErrorCode result, cef_string_list_t resolved_ips)
-		{
-			var instance = GetInstance((IntPtr)self) as CefResolveCallback;
-			if (instance == null || ((ICefResolveCallbackPrivate)instance).AvoidOnResolveCompleted())
-			{
-				return;
-			}
-			instance.OnResolveCompleted(result, CefStringList.Wrap(resolved_ips));
-		}
+		private delegate void OnResolveCompletedDelegate(cef_resolve_callback_t* self, CefErrorCode result,
+			cef_string_list_t resolved_ips);
 	}
 }

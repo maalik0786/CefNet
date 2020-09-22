@@ -13,169 +13,113 @@
 
 using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Request context initialization settings. Specify NULL or 0 to get the
-	/// recommended default values.
+	///  Request context initialization settings. Specify NULL or 0 to get the
+	///  recommended default values.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefRequestContextSettings : IDisposable
+	public unsafe class CefRequestContextSettings : IDisposable
 	{
-		private cef_request_context_settings_t* _instance;
-
 		private readonly bool _disposable;
 
 		public CefRequestContextSettings()
 		{
 			_disposable = true;
-			_instance = (cef_request_context_settings_t*)CefStructure.Allocate(sizeof(cef_request_context_settings_t));
-			_instance->size = new UIntPtr((uint)sizeof(cef_request_context_settings_t));
-		}
-
-		internal static unsafe CefRequestContextSettings Create(IntPtr instance)
-		{
-			return new CefRequestContextSettings((cef_request_context_settings_t*)instance);
+			NativeInstance =
+				(cef_request_context_settings_t*) CefStructure.Allocate(sizeof(cef_request_context_settings_t));
+			NativeInstance->size = new UIntPtr((uint) sizeof(cef_request_context_settings_t));
 		}
 
 		public CefRequestContextSettings(cef_request_context_settings_t* instance)
 		{
-			_instance = instance;
+			NativeInstance = instance;
 		}
 
-		public cef_request_context_settings_t* NativeInstance
-		{
-			get
-			{
-				return _instance;
-			}
-		}
-
-		public cef_request_context_settings_t* GetNativeInstance()
-		{
-			return _instance;
-		}
+		public cef_request_context_settings_t* NativeInstance { get; private set; }
 
 		/// <summary>
-		/// Size of this structure.
+		///  Size of this structure.
 		/// </summary>
 		public long Size
 		{
-			get
-			{
-				return (long)(_instance->size);
-			}
-			set
-			{
-				_instance->size = new UIntPtr((ulong)value);
-			}
+			get => (long) NativeInstance->size;
+			set => NativeInstance->size = new UIntPtr((ulong) value);
 		}
 
 		/// <summary>
-		/// The location where cache data for this request context will be stored on
-		/// disk. If this value is non-empty then it must be an absolute path that is
-		/// either equal to or a child directory of CefSettings.root_cache_path. If
-		/// this value is empty then browsers will be created in &quot;incognito mode&quot; where
-		/// in-memory caches are used for storage and no data is persisted to disk.
-		/// HTML5 databases such as localStorage will only persist across sessions if a
-		/// cache path is specified. To share the global browser cache and related
-		/// configuration set this value to match the CefSettings.cache_path value.
+		///  The location where cache data for this request context will be stored on
+		///  disk. If this value is non-empty then it must be an absolute path that is
+		///  either equal to or a child directory of CefSettings.root_cache_path. If
+		///  this value is empty then browsers will be created in &quot;incognito mode&quot; where
+		///  in-memory caches are used for storage and no data is persisted to disk.
+		///  HTML5 databases such as localStorage will only persist across sessions if a
+		///  cache path is specified. To share the global browser cache and related
+		///  configuration set this value to match the CefSettings.cache_path value.
 		/// </summary>
 		public string CachePath
 		{
-			get
-			{
-				return CefString.Read(&_instance->cache_path);
-			}
-			set
-			{
-				CefString.Replace(&_instance->cache_path, value);
-			}
+			get => CefString.Read(&NativeInstance->cache_path);
+			set => CefString.Replace(&NativeInstance->cache_path, value);
 		}
 
 		/// <summary>
-		/// To persist session cookies (cookies without an expiry date or validity
-		/// interval) by default when using the global cookie manager set this value to
-		/// true (1). Session cookies are generally intended to be transient and most
-		/// Web browsers do not persist them. Can be set globally using the
-		/// CefSettings.persist_session_cookies value. This value will be ignored if
-		/// |cache_path| is empty or if it matches the CefSettings.cache_path value.
+		///  To persist session cookies (cookies without an expiry date or validity
+		///  interval) by default when using the global cookie manager set this value to
+		///  true (1). Session cookies are generally intended to be transient and most
+		///  Web browsers do not persist them. Can be set globally using the
+		///  CefSettings.persist_session_cookies value. This value will be ignored if
+		///  |cache_path| is empty or if it matches the CefSettings.cache_path value.
 		/// </summary>
 		public bool PersistSessionCookies
 		{
-			get
-			{
-				return _instance->persist_session_cookies != 0;
-			}
-			set
-			{
-				_instance->persist_session_cookies = value ? 1 : 0;
-			}
+			get => NativeInstance->persist_session_cookies != 0;
+			set => NativeInstance->persist_session_cookies = value ? 1 : 0;
 		}
 
 		/// <summary>
-		/// To persist user preferences as a JSON file in the cache path directory set
-		/// this value to true (1). Can be set globally using the
-		/// CefSettings.persist_user_preferences value. This value will be ignored if
-		/// |cache_path| is empty or if it matches the CefSettings.cache_path value.
+		///  To persist user preferences as a JSON file in the cache path directory set
+		///  this value to true (1). Can be set globally using the
+		///  CefSettings.persist_user_preferences value. This value will be ignored if
+		///  |cache_path| is empty or if it matches the CefSettings.cache_path value.
 		/// </summary>
 		public bool PersistUserPreferences
 		{
-			get
-			{
-				return _instance->persist_user_preferences != 0;
-			}
-			set
-			{
-				_instance->persist_user_preferences = value ? 1 : 0;
-			}
+			get => NativeInstance->persist_user_preferences != 0;
+			set => NativeInstance->persist_user_preferences = value ? 1 : 0;
 		}
 
 		/// <summary>
-		/// Set to true (1) to ignore errors related to invalid SSL certificates.
-		/// Enabling this setting can lead to potential security vulnerabilities like
-		/// &quot;man in the middle&quot; attacks. Applications that load content from the
-		/// internet should not enable this setting. Can be set globally using the
-		/// CefSettings.ignore_certificate_errors value. This value will be ignored if
-		/// |cache_path| matches the CefSettings.cache_path value.
+		///  Set to true (1) to ignore errors related to invalid SSL certificates.
+		///  Enabling this setting can lead to potential security vulnerabilities like
+		///  &quot;man in the middle&quot; attacks. Applications that load content from the
+		///  internet should not enable this setting. Can be set globally using the
+		///  CefSettings.ignore_certificate_errors value. This value will be ignored if
+		///  |cache_path| matches the CefSettings.cache_path value.
 		/// </summary>
 		public bool IgnoreCertificateErrors
 		{
-			get
-			{
-				return _instance->ignore_certificate_errors != 0;
-			}
-			set
-			{
-				_instance->ignore_certificate_errors = value ? 1 : 0;
-			}
+			get => NativeInstance->ignore_certificate_errors != 0;
+			set => NativeInstance->ignore_certificate_errors = value ? 1 : 0;
 		}
 
 		/// <summary>
-		/// Comma delimited ordered list of language codes without any whitespace that
-		/// will be used in the &quot;Accept-Language&quot; HTTP header. Can be set globally
-		/// using the CefSettings.accept_language_list value or overridden on a per-
-		/// browser basis using the CefBrowserSettings.accept_language_list value. If
-		/// all values are empty then &quot;en-US,en&quot; will be used. This value will be
-		/// ignored if |cache_path| matches the CefSettings.cache_path value.
+		///  Comma delimited ordered list of language codes without any whitespace that
+		///  will be used in the &quot;Accept-Language&quot; HTTP header. Can be set globally
+		///  using the CefSettings.accept_language_list value or overridden on a per-
+		///  browser basis using the CefBrowserSettings.accept_language_list value. If
+		///  all values are empty then &quot;en-US,en&quot; will be used. This value will be
+		///  ignored if |cache_path| matches the CefSettings.cache_path value.
 		/// </summary>
 		public string AcceptLanguageList
 		{
-			get
-			{
-				return CefString.Read(&_instance->accept_language_list);
-			}
-			set
-			{
-				CefString.Replace(&_instance->accept_language_list, value);
-			}
+			get => CefString.Read(&NativeInstance->accept_language_list);
+			set => CefString.Replace(&NativeInstance->accept_language_list, value);
 		}
 
 		public void Dispose()
@@ -184,14 +128,25 @@ namespace CefNet
 			GC.SuppressFinalize(this);
 		}
 
+		internal static CefRequestContextSettings Create(IntPtr instance)
+		{
+			return new CefRequestContextSettings((cef_request_context_settings_t*) instance);
+		}
+
+		public cef_request_context_settings_t* GetNativeInstance()
+		{
+			return NativeInstance;
+		}
+
 		protected virtual void Dispose(bool disposing)
 		{
-			if (_disposable && _instance != null)
+			if (_disposable && NativeInstance != null)
 			{
 				CachePath = null;
 				AcceptLanguageList = null;
-				Marshal.FreeHGlobal((IntPtr)_instance);
-				_instance = null;}
+				Marshal.FreeHGlobal((IntPtr) NativeInstance);
+				NativeInstance = null;
+			}
 		}
 
 		~CefRequestContextSettings()

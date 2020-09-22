@@ -11,7 +11,6 @@ namespace CefGen.CodeDom
 		public CodeProperty(string name)
 			: base(name)
 		{
-
 		}
 
 		public CodeMethodParameter Type { get; set; }
@@ -19,6 +18,5 @@ namespace CefGen.CodeDom
 		public string GetterBody { get; set; }
 
 		public string SetterBody { get; set; }
-
 	}
 }

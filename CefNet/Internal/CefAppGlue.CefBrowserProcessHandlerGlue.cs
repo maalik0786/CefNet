@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CefNet.Internal
+﻿namespace CefNet.Internal
 {
-	partial class CefAppGlue
+	internal partial class CefAppGlue
 	{
 		public void OnContextInitialized()
 		{

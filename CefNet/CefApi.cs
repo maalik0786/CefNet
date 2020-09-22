@@ -1,5 +1,4 @@
-﻿#if True
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using CefNet.WinApi;
@@ -283,7 +282,8 @@ namespace CefNet
 		{
 			if (settings == null)
 				throw new ArgumentNullException(nameof(settings));
-			bool rv = CefNativeApi.cef_initialize((cef_main_args_t*)&args, settings.GetNativeInstance(), application != null ? application.GetNativeInstance() : null, (void*)windowsSandboxInfo) != 0;
+			bool rv =
+ CefNativeApi.cef_initialize((cef_main_args_t*)&args, settings.GetNativeInstance(), application != null ? application.GetNativeInstance() : null, (void*)windowsSandboxInfo) != 0;
 			GC.KeepAlive(settings);
 			GC.KeepAlive(application);
 			return rv;
@@ -923,7 +923,8 @@ namespace CefNet
 			{
 				var cstr0 = new cef_string_t { Str = s0, Length = json.Length };
 				var cstr1 = new cef_string_t();
-				CefValue rv = CefValue.Wrap(CefValue.Create, CefNativeApi.cef_parse_jsonand_return_error(&cstr0, options, p1, &cstr1));
+				CefValue rv =
+ CefValue.Wrap(CefValue.Create, CefNativeApi.cef_parse_jsonand_return_error(&cstr0, options, p1, &cstr1));
 				errorMessage = CefString.ReadAndFree(&cstr1);
 				return rv;
 			}
@@ -1249,5 +1250,3 @@ namespace CefNet
 
 	}
 }
-
-#endif

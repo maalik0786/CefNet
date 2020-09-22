@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported context menu edit state bit flags.
+	///  Supported context menu edit state bit flags.
 	/// </summary>
 	public enum CefContextMenuEditStateFlags
 	{
@@ -39,7 +34,6 @@ namespace CefNet
 
 		CanSelectAll = 1 << 6,
 
-		CanTranslate = 1 << 7,
+		CanTranslate = 1 << 7
 	}
 }
-

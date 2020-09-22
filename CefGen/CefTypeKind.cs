@@ -13,6 +13,6 @@ namespace CefGen
 		Sized,
 		RefCounted,
 		Scoped,
-		Enum,
+		Enum
 	}
 }

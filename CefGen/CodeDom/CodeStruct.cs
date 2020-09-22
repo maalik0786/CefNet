@@ -4,22 +4,13 @@
 // See the licence file in the project root for full license information.
 // --------------------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace CefGen.CodeDom
 {
-	class CodeStruct : CodeType
+	internal class CodeStruct : CodeType
 	{
-
 		public CodeStruct(string name)
 			: base(name)
 		{
-
 		}
-
-
-
 	}
 }

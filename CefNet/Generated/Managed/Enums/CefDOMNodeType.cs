@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// DOM node types.
+	///  DOM node types.
 	/// </summary>
 	public enum CefDOMNodeType
 	{
@@ -41,7 +36,6 @@ namespace CefNet
 
 		DocumentType = 8,
 
-		DocumentFragment = 9,
+		DocumentFragment = 9
 	}
 }
-

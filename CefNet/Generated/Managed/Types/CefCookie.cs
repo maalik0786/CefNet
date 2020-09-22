@@ -12,26 +12,22 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Cookie information.
+	///  Cookie information.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefCookie : IDisposable
+	public unsafe struct CefCookie : IDisposable
 	{
 		private cef_cookie_t _instance;
 
 		/// <summary>
-		/// The cookie name.
+		///  The cookie name.
 		/// </summary>
 		public string Name
 		{
@@ -52,7 +48,7 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// The cookie value.
+		///  The cookie value.
 		/// </summary>
 		public string Value
 		{
@@ -73,9 +69,9 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// If |domain| is empty a host cookie will be created instead of a domain
-		/// cookie. Domain cookies are stored with a leading &quot;.&quot; and are visible to
-		/// sub-domains whereas host cookies are not.
+		///  If |domain| is empty a host cookie will be created instead of a domain
+		///  cookie. Domain cookies are stored with a leading &quot;.&quot; and are visible to
+		///  sub-domains whereas host cookies are not.
 		/// </summary>
 		public string Domain
 		{
@@ -96,8 +92,8 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// If |path| is non-empty only URLs at or below the path will get the cookie
-		/// value.
+		///  If |path| is non-empty only URLs at or below the path will get the cookie
+		///  value.
 		/// </summary>
 		public string Path
 		{
@@ -118,122 +114,74 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// If |secure| is true the cookie will only be sent for HTTPS requests.
+		///  If |secure| is true the cookie will only be sent for HTTPS requests.
 		/// </summary>
 		public bool Secure
 		{
-			get
-			{
-				return _instance.secure != 0;
-			}
-			set
-			{
-				_instance.secure = value ? 1 : 0;
-			}
+			get => _instance.secure != 0;
+			set => _instance.secure = value ? 1 : 0;
 		}
 
 		/// <summary>
-		/// If |httponly| is true the cookie will only be sent for HTTP requests.
+		///  If |httponly| is true the cookie will only be sent for HTTP requests.
 		/// </summary>
 		public bool HttpOnly
 		{
-			get
-			{
-				return _instance.httponly != 0;
-			}
-			set
-			{
-				_instance.httponly = value ? 1 : 0;
-			}
+			get => _instance.httponly != 0;
+			set => _instance.httponly = value ? 1 : 0;
 		}
 
 		/// <summary>
-		/// The cookie creation date. This is automatically populated by the system on
-		/// cookie creation.
+		///  The cookie creation date. This is automatically populated by the system on
+		///  cookie creation.
 		/// </summary>
 		public CefTime Creation
 		{
-			get
-			{
-				return _instance.creation;
-			}
-			set
-			{
-				_instance.creation = value;
-			}
+			get => _instance.creation;
+			set => _instance.creation = value;
 		}
 
 		/// <summary>
-		/// The cookie last access date. This is automatically populated by the system
-		/// on access.
+		///  The cookie last access date. This is automatically populated by the system
+		///  on access.
 		/// </summary>
 		public CefTime LastAccess
 		{
-			get
-			{
-				return _instance.last_access;
-			}
-			set
-			{
-				_instance.last_access = value;
-			}
+			get => _instance.last_access;
+			set => _instance.last_access = value;
 		}
 
 		/// <summary>
-		/// The cookie expiration date is only valid if |has_expires| is true.
+		///  The cookie expiration date is only valid if |has_expires| is true.
 		/// </summary>
 		public bool HasExpires
 		{
-			get
-			{
-				return _instance.has_expires != 0;
-			}
-			set
-			{
-				_instance.has_expires = value ? 1 : 0;
-			}
+			get => _instance.has_expires != 0;
+			set => _instance.has_expires = value ? 1 : 0;
 		}
 
 		public CefTime Expires
 		{
-			get
-			{
-				return _instance.expires;
-			}
-			set
-			{
-				_instance.expires = value;
-			}
+			get => _instance.expires;
+			set => _instance.expires = value;
 		}
 
 		/// <summary>
-		/// Same site.
+		///  Same site.
 		/// </summary>
 		public CefCookieSameSite SameSite
 		{
-			get
-			{
-				return _instance.same_site;
-			}
-			set
-			{
-				_instance.same_site = value;
-			}
+			get => _instance.same_site;
+			set => _instance.same_site = value;
 		}
 
 		/// <summary>
-		/// Priority.
+		///  Priority.
 		/// </summary>
 		public CefCookiePriority Priority
 		{
-			get
-			{
-				return _instance.priority;
-			}
-			set
-			{
-				_instance.priority = value;
-			}
+			get => _instance.priority;
+			set => _instance.priority = value;
 		}
 
 		public void Dispose()
@@ -246,7 +194,7 @@ namespace CefNet
 
 		public static implicit operator CefCookie(cef_cookie_t instance)
 		{
-			return new CefCookie { _instance = instance };
+			return new CefCookie {_instance = instance};
 		}
 
 		public static implicit operator cef_cookie_t(CefCookie instance)

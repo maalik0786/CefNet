@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CefNet
 {
@@ -8,9 +6,9 @@ namespace CefNet
 	{
 		public LoadingStateChangeEventArgs(bool busy, bool canGoBack, bool canGoForward)
 		{
-			this.Busy = busy;
-			this.CanGoBack = canGoBack;
-			this.CanGoForward = canGoForward;
+			Busy = busy;
+			CanGoBack = canGoBack;
+			CanGoForward = canGoForward;
 		}
 
 		public bool Busy { get; }
@@ -18,6 +16,5 @@ namespace CefNet
 		public bool CanGoBack { get; }
 
 		public bool CanGoForward { get; }
-
 	}
 }

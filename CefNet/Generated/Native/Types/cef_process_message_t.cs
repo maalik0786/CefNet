@@ -11,86 +11,83 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing a message. Can be used on any process and thread.
+	///  Structure representing a message. Can be used on any process and thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_process_message_t
+	public unsafe struct cef_process_message_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_process_message_t* self)*
+		///  int (*)(_cef_process_message_t* self)*
 		/// </summary>
 		public void* is_valid;
 
 		/// <summary>
-		/// Returns true (1) if this object is valid. Do not call any other functions
-		/// if this function returns false (0).
+		///  Returns true (1) if this object is valid. Do not call any other functions
+		///  if this function returns false (0).
 		/// </summary>
 		[NativeName("is_valid")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsValid();
+		public extern int IsValid();
 
 		/// <summary>
-		/// int (*)(_cef_process_message_t* self)*
+		///  int (*)(_cef_process_message_t* self)*
 		/// </summary>
 		public void* is_read_only;
 
 		/// <summary>
-		/// Returns true (1) if the values of this object are read-only. Some APIs may
-		/// expose read-only objects.
+		///  Returns true (1) if the values of this object are read-only. Some APIs may
+		///  expose read-only objects.
 		/// </summary>
 		[NativeName("is_read_only")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsReadOnly();
+		public extern int IsReadOnly();
 
 		/// <summary>
-		/// _cef_process_message_t* (*)(_cef_process_message_t* self)*
+		///  _cef_process_message_t* (*)(_cef_process_message_t* self)*
 		/// </summary>
 		public void* copy;
 
 		/// <summary>
-		/// Returns a writable copy of this object.
+		///  Returns a writable copy of this object.
 		/// </summary>
 		[NativeName("copy")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_process_message_t* Copy();
+		public extern cef_process_message_t* Copy();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_process_message_t* self)*
+		///  cef_string_userfree_t (*)(_cef_process_message_t* self)*
 		/// </summary>
 		public void* get_name;
 
 		/// <summary>
-		/// Returns the message name.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the message name.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_name")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetName();
+		public extern cef_string_userfree_t GetName();
 
 		/// <summary>
-		/// _cef_list_value_t* (*)(_cef_process_message_t* self)*
+		///  _cef_list_value_t* (*)(_cef_process_message_t* self)*
 		/// </summary>
 		public void* get_argument_list;
 
 		/// <summary>
-		/// Returns the list of arguments.
+		///  Returns the list of arguments.
 		/// </summary>
 		[NativeName("get_argument_list")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_list_value_t* GetArgumentList();
+		public extern cef_list_value_t* GetArgumentList();
 	}
 }
-

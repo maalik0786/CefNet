@@ -11,72 +11,68 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// URL component parts.
+	///  URL component parts.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_urlparts_t
+	public struct cef_urlparts_t
 	{
 		/// <summary>
-		/// The complete URL specification.
+		///  The complete URL specification.
 		/// </summary>
 		public cef_string_t spec;
 
 		/// <summary>
-		/// Scheme component not including the colon (e.g., &quot;http&quot;).
+		///  Scheme component not including the colon (e.g., &quot;http&quot;).
 		/// </summary>
 		public cef_string_t scheme;
 
 		/// <summary>
-		/// User name component.
+		///  User name component.
 		/// </summary>
 		public cef_string_t username;
 
 		/// <summary>
-		/// Password component.
+		///  Password component.
 		/// </summary>
 		public cef_string_t password;
 
 		/// <summary>
-		/// Host component. This may be a hostname, an IPv4 address or an IPv6 literal
-		/// surrounded by square brackets (e.g., &quot;[2001:db8::1]&quot;).
+		///  Host component. This may be a hostname, an IPv4 address or an IPv6 literal
+		///  surrounded by square brackets (e.g., &quot;[2001:db8::1]&quot;).
 		/// </summary>
 		public cef_string_t host;
 
 		/// <summary>
-		/// Port number component.
+		///  Port number component.
 		/// </summary>
 		public cef_string_t port;
 
 		/// <summary>
-		/// Origin contains just the scheme, host, and port from a URL. Equivalent to
-		/// clearing any username and password, replacing the path with a slash, and
-		/// clearing everything after that. This value will be empty for non-standard
-		/// URLs.
+		///  Origin contains just the scheme, host, and port from a URL. Equivalent to
+		///  clearing any username and password, replacing the path with a slash, and
+		///  clearing everything after that. This value will be empty for non-standard
+		///  URLs.
 		/// </summary>
 		public cef_string_t origin;
 
 		/// <summary>
-		/// Path component including the first slash following the host.
+		///  Path component including the first slash following the host.
 		/// </summary>
 		public cef_string_t path;
 
 		/// <summary>
-		/// Query string component (i.e., everything following the &apos;?&apos;).
+		///  Query string component (i.e., everything following the &apos;?&apos;).
 		/// </summary>
 		public cef_string_t query;
 
 		/// <summary>
-		/// Fragment (hash) identifier component (i.e., the string following the &apos;#&apos;).
+		///  Fragment (hash) identifier component (i.e., the string following the &apos;#&apos;).
 		/// </summary>
 		public cef_string_t fragment;
 	}
 }
-

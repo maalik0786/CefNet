@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported JavaScript dialog types.
+	///  Supported JavaScript dialog types.
 	/// </summary>
 	public enum CefJSDialogType
 	{
@@ -27,7 +22,6 @@ namespace CefNet
 
 		Confirm = 1,
 
-		Prompt = 2,
+		Prompt = 2
 	}
 }
-

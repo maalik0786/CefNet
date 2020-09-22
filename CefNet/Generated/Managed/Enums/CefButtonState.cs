@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Specifies the button display state.
+	///  Specifies the button display state.
 	/// </summary>
 	public enum CefButtonState
 	{
@@ -29,7 +24,6 @@ namespace CefNet
 
 		Pressed = 2,
 
-		Disabled = 3,
+		Disabled = 3
 	}
 }
-

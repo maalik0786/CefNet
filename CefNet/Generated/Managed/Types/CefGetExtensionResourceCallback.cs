@@ -12,46 +12,42 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback structure used for asynchronous continuation of
-	/// cef_extension_handler_t::GetExtensionResource.
+	///  Callback structure used for asynchronous continuation of
+	///  cef_extension_handler_t::GetExtensionResource.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefGetExtensionResourceCallback : CefBaseRefCounted<cef_get_extension_resource_callback_t>
+	public unsafe class CefGetExtensionResourceCallback : CefBaseRefCounted<cef_get_extension_resource_callback_t>
 	{
-		internal static unsafe CefGetExtensionResourceCallback Create(IntPtr instance)
+		public CefGetExtensionResourceCallback(cef_get_extension_resource_callback_t* instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
-			return new CefGetExtensionResourceCallback((cef_get_extension_resource_callback_t*)instance);
 		}
 
-		public CefGetExtensionResourceCallback(cef_get_extension_resource_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+		internal static CefGetExtensionResourceCallback Create(IntPtr instance)
 		{
+			return new CefGetExtensionResourceCallback((cef_get_extension_resource_callback_t*) instance);
 		}
 
 		/// <summary>
-		/// Continue the request. Read the resource contents from |stream|.
+		///  Continue the request. Read the resource contents from |stream|.
 		/// </summary>
-		public unsafe virtual void Continue(CefStreamReader stream)
+		public virtual void Continue(CefStreamReader stream)
 		{
-			NativeInstance->Continue((stream != null) ? stream.GetNativeInstance() : null);
+			NativeInstance->Continue(stream != null ? stream.GetNativeInstance() : null);
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Cancel the request.
+		///  Cancel the request.
 		/// </summary>
-		public unsafe virtual void Cancel()
+		public virtual void Cancel()
 		{
 			NativeInstance->Cancel();
 			GC.KeepAlive(this);

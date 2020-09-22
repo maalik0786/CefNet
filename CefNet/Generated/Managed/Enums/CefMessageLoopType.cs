@@ -11,33 +11,27 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Message loop types. Indicates the set of asynchronous events that a message
-	/// loop can process.
+	///  Message loop types. Indicates the set of asynchronous events that a message
+	///  loop can process.
 	/// </summary>
 	public enum CefMessageLoopType
 	{
 		/// <summary>
-		/// Supports tasks and timers.
+		///  Supports tasks and timers.
 		/// </summary>
 		Default = 0,
 
 		/// <summary>
-		/// Supports tasks, timers and native UI events (e.g. Windows messages).
+		///  Supports tasks, timers and native UI events (e.g. Windows messages).
 		/// </summary>
 		UI = 1,
 
 		/// <summary>
-		/// Supports tasks, timers and asynchronous IO events.
+		///  Supports tasks, timers and asynchronous IO events.
 		/// </summary>
-		IO = 2,
+		IO = 2
 	}
 }
-

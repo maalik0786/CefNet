@@ -11,52 +11,35 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing a point.
+	///  Structure representing a point.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefPoint
+	public partial struct CefPoint
 	{
 		private cef_point_t _instance;
 
 		public int X
 		{
-			get
-			{
-				return _instance.x;
-			}
-			set
-			{
-				_instance.x = value;
-			}
+			get => _instance.x;
+			set => _instance.x = value;
 		}
 
 		public int Y
 		{
-			get
-			{
-				return _instance.y;
-			}
-			set
-			{
-				_instance.y = value;
-			}
+			get => _instance.y;
+			set => _instance.y = value;
 		}
 
 		public static implicit operator CefPoint(cef_point_t instance)
 		{
-			return new CefPoint { _instance = instance };
+			return new CefPoint {_instance = instance};
 		}
 
 		public static implicit operator cef_point_t(CefPoint instance)

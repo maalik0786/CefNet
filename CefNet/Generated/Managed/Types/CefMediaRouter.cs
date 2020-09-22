@@ -12,90 +12,88 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Supports discovery of and communication with media devices on the local
-	/// network via the Cast and DIAL protocols. The functions of this structure may
-	/// be called on any browser process thread unless otherwise indicated.
+	///  Supports discovery of and communication with media devices on the local
+	///  network via the Cast and DIAL protocols. The functions of this structure may
+	///  be called on any browser process thread unless otherwise indicated.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
 	public unsafe partial class CefMediaRouter : CefBaseRefCounted<cef_media_router_t>
 	{
-		internal static unsafe CefMediaRouter Create(IntPtr instance)
-		{
-			return new CefMediaRouter((cef_media_router_t*)instance);
-		}
-
 		public CefMediaRouter(cef_media_router_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
-		/// <summary>
-		/// Add an observer for MediaRouter events. The observer will remain registered
-		/// until the returned Registration object is destroyed.
-		/// </summary>
-		public unsafe virtual CefRegistration AddObserver(CefMediaObserver observer)
+		internal static CefMediaRouter Create(IntPtr instance)
 		{
-			return SafeCall(CefRegistration.Wrap(CefRegistration.Create, NativeInstance->AddObserver((observer != null) ? observer.GetNativeInstance() : null)));
+			return new CefMediaRouter((cef_media_router_t*) instance);
 		}
 
 		/// <summary>
-		/// Returns a MediaSource object for the specified media source URN. Supported
-		/// URN schemes include &quot;cast:&quot; and &quot;dial:&quot;, and will be already known by the
-		/// client application (e.g. &quot;cast:
-		/// &lt;appId
-		/// &gt;?clientId=
-		/// &lt;clientId
-		/// &gt;&quot;).
+		///  Add an observer for MediaRouter events. The observer will remain registered
+		///  until the returned Registration object is destroyed.
 		/// </summary>
-		public unsafe virtual CefMediaSource GetSource(string urn)
+		public virtual CefRegistration AddObserver(CefMediaObserver observer)
+		{
+			return SafeCall(CefRegistration.Wrap(CefRegistration.Create,
+				NativeInstance->AddObserver(observer != null ? observer.GetNativeInstance() : null)));
+		}
+
+		/// <summary>
+		///  Returns a MediaSource object for the specified media source URN. Supported
+		///  URN schemes include &quot;cast:&quot; and &quot;dial:&quot;, and will be already known by the
+		///  client application (e.g. &quot;cast:
+		///  &lt;appId
+		///  &gt;?clientId=
+		///  &lt;clientId
+		///  &gt;&quot;).
+		/// </summary>
+		public virtual CefMediaSource GetSource(string urn)
 		{
 			fixed (char* s0 = urn)
 			{
-				var cstr0 = new cef_string_t { Str = s0, Length = urn != null ? urn.Length : 0 };
+				var cstr0 = new cef_string_t {Str = s0, Length = urn != null ? urn.Length : 0};
 				return SafeCall(CefMediaSource.Wrap(CefMediaSource.Create, NativeInstance->GetSource(&cstr0)));
 			}
 		}
 
 		/// <summary>
-		/// Trigger an asynchronous call to cef_media_observer_t::OnSinks on all
-		/// registered observers.
+		///  Trigger an asynchronous call to cef_media_observer_t::OnSinks on all
+		///  registered observers.
 		/// </summary>
-		public unsafe virtual void NotifyCurrentSinks()
+		public virtual void NotifyCurrentSinks()
 		{
 			NativeInstance->NotifyCurrentSinks();
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Create a new route between |source| and |sink|. Source and sink must be
-		/// valid, compatible (as reported by cef_media_sink_t::IsCompatibleWith), and
-		/// a route between them must not already exist. |callback| will be executed on
-		/// success or failure. If route creation succeeds it will also trigger an
-		/// asynchronous call to cef_media_observer_t::OnRoutes on all registered
-		/// observers.
+		///  Create a new route between |source| and |sink|. Source and sink must be
+		///  valid, compatible (as reported by cef_media_sink_t::IsCompatibleWith), and
+		///  a route between them must not already exist. |callback| will be executed on
+		///  success or failure. If route creation succeeds it will also trigger an
+		///  asynchronous call to cef_media_observer_t::OnRoutes on all registered
+		///  observers.
 		/// </summary>
-		public unsafe virtual void CreateRoute(CefMediaSource source, CefMediaSink sink, CefMediaRouteCreateCallback callback)
+		public virtual void CreateRoute(CefMediaSource source, CefMediaSink sink, CefMediaRouteCreateCallback callback)
 		{
-			NativeInstance->CreateRoute((source != null) ? source.GetNativeInstance() : null, (sink != null) ? sink.GetNativeInstance() : null, (callback != null) ? callback.GetNativeInstance() : null);
+			NativeInstance->CreateRoute(source != null ? source.GetNativeInstance() : null,
+				sink != null ? sink.GetNativeInstance() : null, callback != null ? callback.GetNativeInstance() : null);
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Trigger an asynchronous call to cef_media_observer_t::OnRoutes on all
-		/// registered observers.
+		///  Trigger an asynchronous call to cef_media_observer_t::OnRoutes on all
+		///  registered observers.
 		/// </summary>
-		public unsafe virtual void NotifyCurrentRoutes()
+		public virtual void NotifyCurrentRoutes()
 		{
 			NativeInstance->NotifyCurrentRoutes();
 			GC.KeepAlive(this);

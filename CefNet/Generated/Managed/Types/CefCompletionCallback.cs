@@ -13,58 +13,54 @@
 
 using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Generic callback structure used for asynchronous completion.
+	///  Generic callback structure used for asynchronous completion.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefCompletionCallback : CefBaseRefCounted<cef_completion_callback_t>, ICefCompletionCallbackPrivate
+	public unsafe class CefCompletionCallback : CefBaseRefCounted<cef_completion_callback_t>,
+		ICefCompletionCallbackPrivate
 	{
 		private static readonly OnCompleteDelegate fnOnComplete = OnCompleteImpl;
 
-		internal static unsafe CefCompletionCallback Create(IntPtr instance)
-		{
-			return new CefCompletionCallback((cef_completion_callback_t*)instance);
-		}
-
 		public CefCompletionCallback()
 		{
-			cef_completion_callback_t* self = this.NativeInstance;
-			self->on_complete = (void*)Marshal.GetFunctionPointerForDelegate(fnOnComplete);
+			var self = NativeInstance;
+			self->on_complete = (void*) Marshal.GetFunctionPointerForDelegate(fnOnComplete);
 		}
 
 		public CefCompletionCallback(cef_completion_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
+		}
+
+		internal static CefCompletionCallback Create(IntPtr instance)
+		{
+			return new CefCompletionCallback((cef_completion_callback_t*) instance);
 		}
 
 		/// <summary>
-		/// Method that will be called once the task is complete.
+		///  Method that will be called once the task is complete.
 		/// </summary>
-		protected internal unsafe virtual void OnComplete()
+		protected internal virtual void OnComplete()
 		{
+		}
+
+		// void (*)(_cef_completion_callback_t* self)*
+		private static void OnCompleteImpl(cef_completion_callback_t* self)
+		{
+			var instance = GetInstance((IntPtr) self) as CefCompletionCallback;
+			if (instance == null) return;
+			instance.OnComplete();
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnCompleteDelegate(cef_completion_callback_t* self);
-
-		// void (*)(_cef_completion_callback_t* self)*
-		private static unsafe void OnCompleteImpl(cef_completion_callback_t* self)
-		{
-			var instance = GetInstance((IntPtr)self) as CefCompletionCallback;
-			if (instance == null)
-			{
-				return;
-			}
-			instance.OnComplete();
-		}
+		private delegate void OnCompleteDelegate(cef_completion_callback_t* self);
 	}
 }

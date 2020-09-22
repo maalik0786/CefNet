@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// DOM document types.
+	///  DOM document types.
 	/// </summary>
 	public enum CefDOMDocumentType
 	{
@@ -29,7 +24,6 @@ namespace CefNet
 
 		Xhtml = 2,
 
-		Plugin = 3,
+		Plugin = 3
 	}
 }
-

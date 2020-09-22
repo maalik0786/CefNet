@@ -13,7 +13,7 @@ namespace CefNet.Wpf
 #endif
 {
 	/// <summary>
-	/// Implements a basic data transfer mechanism.
+	///  Implements a basic data transfer mechanism.
 	/// </summary>
 	public class CefNetDragData : IDataObject
 	{
@@ -23,11 +23,11 @@ namespace CefNet.Wpf
 		public const string DataFormatCefNetDragData = nameof(CefNetDragData);
 		public const string DataFormatCefDragData = nameof(CefDragData);
 
-		private WeakReference<WebView> _source;
-		private HashSet<string> _formats;
+		private readonly WeakReference<WebView> _source;
+		private readonly HashSet<string> _formats;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CefNetDragData"/> class.
+		///  Initializes a new instance of the <see cref="CefNetDragData" /> class.
 		/// </summary>
 		/// <param name="source">The source of the drag event.</param>
 		/// <param name="data">The original drag data.</param>
@@ -36,15 +36,13 @@ namespace CefNet.Wpf
 			var formats = new HashSet<string>();
 			formats.Add(DataFormatCefNetDragData);
 			formats.Add(DataFormatCefDragData);
-			if (data.IsFile)
-			{
-				formats.Add(DataFormats.FileDrop);
-			}
+			if (data.IsFile) formats.Add(DataFormats.FileDrop);
 			if (data.IsLink)
 			{
 				formats.Add(DataFormatUnicodeUrl);
 				formats.Add(DataFormats.UnicodeText);
 			}
+
 			if (data.IsFragment)
 			{
 				formats.Add(DataFormats.UnicodeText);
@@ -54,22 +52,22 @@ namespace CefNet.Wpf
 
 			_source = new WeakReference<WebView>(source);
 			_formats = formats;
-			this.Data = data;
+			Data = data;
 		}
 
 		/// <summary>
-		/// The original drag data.
+		///  The original drag data.
 		/// </summary>
 		public CefDragData Data { get; }
 
 		/// <summary>
-		/// The source of the drag event.
+		///  The source of the drag event.
 		/// </summary>
 		public WebView Source
 		{
 			get
 			{
-				if (_source.TryGetTarget(out WebView source))
+				if (_source.TryGetTarget(out var source))
 					return source;
 				return null;
 			}
@@ -83,17 +81,20 @@ namespace CefNet.Wpf
 				s = Data.LinkUrl;
 				return s is null ? null : new MemoryStream(Encoding.Unicode.GetBytes(s));
 			}
+
 			if (DataFormatUrl.Equals(format, StringComparison.Ordinal))
 			{
 				s = Data.LinkUrl;
 				return s is null ? null : new MemoryStream(Encoding.ASCII.GetBytes(s));
 			}
+
 			if (DataFormats.UnicodeText.Equals(format, StringComparison.Ordinal))
 			{
 				if (Data.IsLink)
 					return Data.LinkUrl;
 				return Data.FragmentText;
 			}
+
 			if (DataFormats.Html.Equals(format, StringComparison.Ordinal))
 				return Data.FragmentHtml;
 			if (DataFormats.Text.Equals(format, StringComparison.Ordinal))

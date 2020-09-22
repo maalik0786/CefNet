@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Cookie priority values.
+	///  Cookie priority values.
 	/// </summary>
 	public enum CefCookiePriority
 	{
@@ -27,7 +22,6 @@ namespace CefNet
 
 		Medium = 0,
 
-		High = 1,
+		High = 1
 	}
 }
-

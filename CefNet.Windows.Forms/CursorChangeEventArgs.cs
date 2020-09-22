@@ -1,7 +1,7 @@
 ﻿using System;
-
 #if MODERNFORMS
 using Modern.Forms;
+
 #else
 using System.Windows.Forms;
 #endif
@@ -12,12 +12,12 @@ namespace CefNet.Modern.Forms
 namespace CefNet.Windows.Forms
 #endif
 {
-public class CursorChangeEventArgs : EventArgs
+	public class CursorChangeEventArgs : EventArgs
 	{
 		public CursorChangeEventArgs(Cursor cursor, CefCursorType cursorType)
 		{
-			this.Cursor = cursor;
-			this.CursorType = cursorType;
+			Cursor = cursor;
+			CursorType = cursorType;
 		}
 
 		public Cursor Cursor { get; }

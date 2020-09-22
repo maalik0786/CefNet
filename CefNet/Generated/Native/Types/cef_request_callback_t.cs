@@ -11,48 +11,45 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Callback structure used for asynchronous continuation of url requests.
+	///  Callback structure used for asynchronous continuation of url requests.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_request_callback_t
+	public unsafe struct cef_request_callback_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_request_callback_t* self, int allow)*
+		///  void (*)(_cef_request_callback_t* self, int allow)*
 		/// </summary>
 		public void* cont;
 
 		/// <summary>
-		/// Continue the url request. If |allow| is true (1) the request will be
-		/// continued. Otherwise, the request will be canceled.
+		///  Continue the url request. If |allow| is true (1) the request will be
+		///  continued. Otherwise, the request will be canceled.
 		/// </summary>
 		[NativeName("cont")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Continue(int allow);
+		public extern void Continue(int allow);
 
 		/// <summary>
-		/// void (*)(_cef_request_callback_t* self)*
+		///  void (*)(_cef_request_callback_t* self)*
 		/// </summary>
 		public void* cancel;
 
 		/// <summary>
-		/// Cancel the url request.
+		///  Cancel the url request.
 		/// </summary>
 		[NativeName("cancel")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Cancel();
+		public extern void Cancel();
 	}
 }
-

@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace CefNet.Windows.Forms
 {
@@ -17,13 +15,13 @@ namespace CefNet.Windows.Forms
 		}
 
 		/// <summary>
-		/// Converts a drag drop effects to the CEF dragging operation mask.
+		///  Converts a drag drop effects to the CEF dragging operation mask.
 		/// </summary>
 		/// <param name="self">The drag drop effects.</param>
 		/// <returns></returns>
 		public static CefDragOperationsMask ToCefDragOperationsMask(this DragDropEffects self)
 		{
-			CefDragOperationsMask effects = CefDragOperationsMask.None;
+			var effects = CefDragOperationsMask.None;
 			if (self.HasFlag(DragDropEffects.All))
 				effects |= CefDragOperationsMask.Every;
 			if (self.HasFlag(DragDropEffects.Copy))
@@ -36,13 +34,13 @@ namespace CefNet.Windows.Forms
 		}
 
 		/// <summary>
-		/// Converts the CEF dragging operation mask to drag drop effects.
+		///  Converts the CEF dragging operation mask to drag drop effects.
 		/// </summary>
 		/// <param name="self">The CEF dragging operation mask.</param>
 		/// <returns></returns>
 		public static DragDropEffects ToDragDropEffects(this CefDragOperationsMask self)
 		{
-			DragDropEffects effects = DragDropEffects.None;
+			var effects = DragDropEffects.None;
 			if (self.HasFlag(CefDragOperationsMask.Every))
 				effects |= DragDropEffects.All;
 			if (self.HasFlag(CefDragOperationsMask.Copy))
@@ -55,14 +53,14 @@ namespace CefNet.Windows.Forms
 		}
 
 		/// <summary>
-		/// Gets the current state of the SHIFT, CTRL, and ALT keys, as well as the state of the mouse buttons.
+		///  Gets the current state of the SHIFT, CTRL, and ALT keys, as well as the state of the mouse buttons.
 		/// </summary>
-		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+		/// <param name="e">The <see cref="DragEventArgs" /> instance containing the event data.</param>
 		/// <returns></returns>
 		public static CefEventFlags GetModifiers(this DragEventArgs e)
 		{
-			CefEventFlags flags = CefEventFlags.None;
-			int state = e.KeyState;
+			var flags = CefEventFlags.None;
+			var state = e.KeyState;
 			if ((state & 1) == 1)
 				flags |= CefEventFlags.LeftMouseButton;
 			if ((state & 2) == 2)
@@ -79,15 +77,15 @@ namespace CefNet.Windows.Forms
 		}
 
 		/// <summary>
-		/// Gets the drag data.
+		///  Gets the drag data.
 		/// </summary>
-		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+		/// <param name="e">The <see cref="DragEventArgs" /> instance containing the event data.</param>
 		public static CefDragData GetCefDragData(this DragEventArgs e)
 		{
 			CefDragData dragData;
 			if (e.Data.GetDataPresent(nameof(CefDragData)))
 			{
-				dragData = (CefDragData)e.Data.GetData(nameof(CefDragData));
+				dragData = (CefDragData) e.Data.GetData(nameof(CefDragData));
 				if (dragData != null)
 				{
 					dragData.ResetFileContents();
@@ -97,18 +95,14 @@ namespace CefNet.Windows.Forms
 
 			dragData = new CefDragData();
 
-			string[] formats = e.Data.GetFormats();
+			var formats = e.Data.GetFormats();
 
 			if (formats.Contains(DataFormats.FileDrop))
-			{
-				foreach (string filePath in (string[])e.Data.GetData(DataFormats.FileDrop))
-				{
+				foreach (var filePath in (string[]) e.Data.GetData(DataFormats.FileDrop))
 					dragData.AddFile(filePath.Replace("\\", "/"), Path.GetFileName(filePath));
-				}
-			}
 
-			bool isUrl = false;
-			string s = GetUrlString(e.Data, formats);
+			var isUrl = false;
+			var s = GetUrlString(e.Data, formats);
 			if (!string.IsNullOrWhiteSpace(s))
 			{
 				isUrl = true;
@@ -117,7 +111,7 @@ namespace CefNet.Windows.Forms
 
 			if (formats.Contains(DataFormats.UnicodeText))
 			{
-				s = (string)e.Data.GetData(DataFormats.UnicodeText);
+				s = (string) e.Data.GetData(DataFormats.UnicodeText);
 
 				if (!isUrl && Uri.IsWellFormedUriString(s, UriKind.Absolute))
 					dragData.LinkUrl = s;
@@ -125,7 +119,7 @@ namespace CefNet.Windows.Forms
 			}
 			else if (formats.Contains(DataFormats.Text))
 			{
-				s = (string)e.Data.GetData(DataFormats.Text);
+				s = (string) e.Data.GetData(DataFormats.Text);
 
 				if (!isUrl && Uri.IsWellFormedUriString(s, UriKind.Absolute))
 					dragData.LinkUrl = s;
@@ -133,13 +127,11 @@ namespace CefNet.Windows.Forms
 			}
 
 			if (formats.Contains(DataFormats.Html))
-			{
-				dragData.FragmentHtml = (string)e.Data.GetData(DataFormats.Html);
-			}
+				dragData.FragmentHtml = (string) e.Data.GetData(DataFormats.Html);
 			else if (formats.Contains(CefNetDragData.DataFormatTextHtml))
-			{
-				dragData.FragmentHtml = Encoding.UTF8.GetString(((MemoryStream)e.Data.GetData(CefNetDragData.DataFormatTextHtml)).ToArray());
-			}
+				dragData.FragmentHtml =
+					Encoding.UTF8.GetString(
+						((MemoryStream) e.Data.GetData(CefNetDragData.DataFormatTextHtml)).ToArray());
 
 			return dragData;
 		}
@@ -157,12 +149,10 @@ namespace CefNet.Windows.Forms
 
 		private static string GetUrlFromDragDropData(IDataObject data, string format, Encoding encoding)
 		{
-			using (TextReader reader = new StreamReader((Stream)data.GetData(format), encoding, true, -1, false))
+			using (TextReader reader = new StreamReader((Stream) data.GetData(format), encoding, true, -1, false))
 			{
 				return reader.ReadToEnd().TrimEnd('\0');
 			}
 		}
-
 	}
-
 }

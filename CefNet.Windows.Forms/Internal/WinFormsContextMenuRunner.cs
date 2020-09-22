@@ -1,34 +1,37 @@
-﻿using CefNet.Windows.Forms;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using System;
 using System.Drawing;
-using System.Text;
+using System.Threading;
 using System.Windows.Forms;
+using CefNet.Windows.Forms;
 
 namespace CefNet.Internal
 {
-	sealed class WinFormsContextMenuRunner : IDisposable
+	internal sealed class WinFormsContextMenuRunner : IDisposable
 	{
-		private CefContextMenuParams MenuParams;
-		private CefMenuModel Model;
 		private CefRunContextMenuCallback Callback;
 		internal ContextMenuStrip Menu;
+		private CefContextMenuParams MenuParams;
+		private readonly CefMenuModel Model;
 
-		public WinFormsContextMenuRunner(CefContextMenuParams menuParams, CefMenuModel model, CefRunContextMenuCallback callback)
+		public WinFormsContextMenuRunner(CefContextMenuParams menuParams, CefMenuModel model,
+			CefRunContextMenuCallback callback)
 		{
 			MenuParams = menuParams;
 			Model = model;
 			Callback = callback;
 		}
 
+		public void Dispose()
+		{
+			Menu?.Dispose();
+		}
+
 		private void Menu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
-			object cid = e.ClickedItem.Tag;
+			var cid = e.ClickedItem.Tag;
 			if (cid != null)
 			{
-				Callback.Continue((int)cid, CefEventFlags.LeftMouseButton);
+				Callback.Continue((int) cid, CefEventFlags.LeftMouseButton);
 				Callback = null;
 			}
 		}
@@ -36,11 +39,6 @@ namespace CefNet.Internal
 		private void Menu_Closed(object sender, ToolStripDropDownClosedEventArgs e)
 		{
 			Cancel();
-		}
-
-		public void Dispose()
-		{
-			Menu?.Dispose();
 		}
 
 		public void Build()
@@ -57,8 +55,8 @@ namespace CefNet.Internal
 		private void Build(CefMenuModel model, ToolStripItemCollection menu)
 		{
 			CefColor color = default;
-			int count = model.Count;
-			for (int i = 0; i < count; i++)
+			var count = model.Count;
+			for (var i = 0; i < count; i++)
 			{
 				ToolStripMenuItem menuItem;
 				switch (model.GetTypeAt(i))
@@ -85,13 +83,17 @@ namespace CefNet.Internal
 							menuItem.DropDownItemClicked += Menu_ItemClicked;
 							Build(model.GetSubMenuAt(i), menuItem.DropDownItems);
 						}
+
 						break;
 					default:
 						continue;
 				}
+
 				menuItem.Enabled = model.IsEnabledAt(i);
 				menuItem.Tag = model.GetCommandIdAt(i);
-				menuItem.ForeColor = model.GetColorAt(i, CefMenuColorType.Text, ref color) ? Color.FromArgb(color.ToArgb()) : SystemColors.ControlText;
+				menuItem.ForeColor = model.GetColorAt(i, CefMenuColorType.Text, ref color)
+					? Color.FromArgb(color.ToArgb())
+					: SystemColors.ControlText;
 				menu.Add(menuItem);
 			}
 		}
@@ -99,8 +101,7 @@ namespace CefNet.Internal
 		public void Cancel()
 		{
 			Callback?.Cancel();
-			WindowsFormsSynchronizationContext.Current.Post(_ => { this.Dispose(); }, null);
+			SynchronizationContext.Current.Post(_ => { Dispose(); }, null);
 		}
-
 	}
 }

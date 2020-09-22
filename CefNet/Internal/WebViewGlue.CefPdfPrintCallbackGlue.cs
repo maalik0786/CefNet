@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace CefNet.Internal
 {
@@ -14,11 +11,11 @@ namespace CefNet.Internal
 		}
 
 		/// <summary>
-		/// Executed when the PDF printing has completed.
+		///  Executed when the PDF printing has completed.
 		/// </summary>
 		/// <param name="path">The output path.</param>
 		/// <param name="success">
-		/// A value which indicates that the printing completed successfully.
+		///  A value which indicates that the printing completed successfully.
 		/// </param>
 		protected internal virtual void OnPdfPrintFinished(string path, bool success)
 		{

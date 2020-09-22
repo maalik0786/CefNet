@@ -11,55 +11,56 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Implement this structure to handle events related to keyboard input. The
-	/// functions of this structure will be called on the UI thread.
+	///  Implement this structure to handle events related to keyboard input. The
+	///  functions of this structure will be called on the UI thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_keyboard_handler_t
+	public unsafe struct cef_keyboard_handler_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_keyboard_handler_t* self, _cef_browser_t* browser, const const _cef_key_event_t* event, CefEventHandle os_event, int* is_keyboard_shortcut)*
+		///  int (*)(_cef_keyboard_handler_t* self, _cef_browser_t* browser, const const _cef_key_event_t* event, CefEventHandle
+		///  os_event, int* is_keyboard_shortcut)*
 		/// </summary>
 		public void* on_pre_key_event;
 
 		/// <summary>
-		/// Called before a keyboard event is sent to the renderer. |event| contains
-		/// information about the keyboard event. |os_event| is the operating system
-		/// event message, if any. Return true (1) if the event was handled or false
-		/// (0) otherwise. If the event will be handled in on_key_event() as a keyboard
-		/// shortcut set |is_keyboard_shortcut| to true (1) and return false (0).
+		///  Called before a keyboard event is sent to the renderer. |event| contains
+		///  information about the keyboard event. |os_event| is the operating system
+		///  event message, if any. Return true (1) if the event was handled or false
+		///  (0) otherwise. If the event will be handled in on_key_event() as a keyboard
+		///  shortcut set |is_keyboard_shortcut| to true (1) and return false (0).
 		/// </summary>
 		[NativeName("on_pre_key_event")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int OnPreKeyEvent(cef_browser_t* browser, [Immutable]cef_key_event_t* @event, CefEventHandle os_event, int* is_keyboard_shortcut);
+		public extern int OnPreKeyEvent(cef_browser_t* browser, [Immutable] cef_key_event_t* @event,
+			CefEventHandle os_event, int* is_keyboard_shortcut);
 
 		/// <summary>
-		/// int (*)(_cef_keyboard_handler_t* self, _cef_browser_t* browser, const const _cef_key_event_t* event, CefEventHandle os_event)*
+		///  int (*)(_cef_keyboard_handler_t* self, _cef_browser_t* browser, const const _cef_key_event_t* event, CefEventHandle
+		///  os_event)*
 		/// </summary>
 		public void* on_key_event;
 
 		/// <summary>
-		/// Called after the renderer and JavaScript in the page has had a chance to
-		/// handle the event. |event| contains information about the keyboard event.
-		/// |os_event| is the operating system event message, if any. Return true (1)
-		/// if the keyboard event was handled or false (0) otherwise.
+		///  Called after the renderer and JavaScript in the page has had a chance to
+		///  handle the event. |event| contains information about the keyboard event.
+		///  |os_event| is the operating system event message, if any. Return true (1)
+		///  if the keyboard event was handled or false (0) otherwise.
 		/// </summary>
 		[NativeName("on_key_event")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int OnKeyEvent(cef_browser_t* browser, [Immutable]cef_key_event_t* @event, CefEventHandle os_event);
+		public extern int OnKeyEvent(cef_browser_t* browser, [Immutable] cef_key_event_t* @event,
+			CefEventHandle os_event);
 	}
 }
-

@@ -1,5 +1,6 @@
 ﻿#if MODERNFORMS
 using CefNet.Modern.Forms;
+
 #else
 using CefNet.Windows.Forms;
 #endif
@@ -7,7 +8,7 @@ using CefNet.Windows.Forms;
 namespace CefNet.Internal
 {
 #if MODERNFORMS
-	public interface IModernFormsWebViewPrivate: IChromiumWebViewPrivate
+	public interface IModernFormsWebViewPrivate : IChromiumWebViewPrivate
 #else
 	public interface IWinFormsWebViewPrivate: IChromiumWebViewPrivate
 #endif

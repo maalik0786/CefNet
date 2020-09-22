@@ -1,38 +1,34 @@
 ﻿using CefNet.CApi;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 namespace CefNet
 {
 	public unsafe partial class CefTaskRunner
 	{
-
 #if USESAFECACHE
-
-		private static readonly HashSet<WeakReference<CefTaskRunner>> WeakRefs = new HashSet<WeakReference<CefTaskRunner>>();
+		private static readonly HashSet<WeakReference<CefTaskRunner>> WeakRefs =
+ new HashSet<WeakReference<CefTaskRunner>>();
 
 #endif
 
 		/// <summary>
-		/// Returns the task runner for the current thread. Only CEF threads will have
-		/// task runners. An NULL reference will be returned if this function is called
-		/// on an invalid thread.
+		///  Returns the task runner for the current thread. Only CEF threads will have
+		///  task runners. An NULL reference will be returned if this function is called
+		///  on an invalid thread.
 		/// </summary>
 		public static CefTaskRunner GetForCurrentThread()
 		{
-			return CefTaskRunner.Wrap(CefTaskRunner.Create, CefNativeApi.cef_task_runner_get_for_current_thread());
+			return Wrap(Create, CefNativeApi.cef_task_runner_get_for_current_thread());
 		}
 
 		/// <summary>
-		/// Returns the task runner for the specified CEF thread.
+		///  Returns the task runner for the specified CEF thread.
 		/// </summary>
 		public static CefTaskRunner GetForThread(CefThreadId threadId)
 		{
-			return CefTaskRunner.Wrap(CefTaskRunner.Create, CefNativeApi.cef_task_runner_get_for_thread(threadId));
+			return Wrap(Create, CefNativeApi.cef_task_runner_get_for_thread(threadId));
 		}
 
 #if USESAFECACHE
-
 		public unsafe static CefTaskRunner Wrap(Func<IntPtr, CefTaskRunner> create, cef_task_runner_t* instance)
 		{
 			if (instance == null)
@@ -88,6 +84,5 @@ namespace CefNet
 		}
 
 #endif
-
 	}
 }

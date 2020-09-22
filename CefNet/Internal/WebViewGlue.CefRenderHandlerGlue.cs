@@ -1,15 +1,12 @@
-﻿using CefNet.WinApi;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
+using CefNet.WinApi;
 
 namespace CefNet.Internal
 {
 	public partial class WebViewGlue
 	{
-
 		internal CefAccessibilityHandler GetAccessibilityHandler()
 		{
 			return null;
@@ -20,7 +17,7 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual bool GetRootScreenRect(CefBrowser browser, ref CefRect rect)
+		protected internal virtual bool GetRootScreenRect(CefBrowser browser, ref CefRect rect)
 		{
 			rect = WebView.GetCefRootBounds();
 			return !rect.IsNullSize;
@@ -31,7 +28,7 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void GetViewRect(CefBrowser browser, ref CefRect rect)
+		protected internal virtual void GetViewRect(CefBrowser browser, ref CefRect rect)
 		{
 			rect = WebView.GetCefViewBounds();
 		}
@@ -41,7 +38,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual bool GetScreenPoint(CefBrowser browser, int viewX, int viewY, ref int screenX, ref int screenY)
+		protected internal virtual bool GetScreenPoint(CefBrowser browser, int viewX, int viewY, ref int screenX,
+			ref int screenY)
 		{
 			var point = new CefPoint(viewX, viewY);
 			if (WebView.CefPointToScreen(ref point))
@@ -50,6 +48,7 @@ namespace CefNet.Internal
 				screenY = point.Y;
 				return true;
 			}
+
 			return false;
 		}
 
@@ -58,7 +57,7 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual bool GetScreenInfo(CefBrowser browser, ref CefScreenInfo screenInfo)
+		protected internal virtual bool GetScreenInfo(CefBrowser browser, ref CefScreenInfo screenInfo)
 		{
 			if (WebView.GetCefScreenInfo(ref screenInfo))
 				return true;
@@ -66,8 +65,8 @@ namespace CefNet.Internal
 			if (!PlatformInfo.IsWindows)
 				return false;
 
-			float devicePixelRatio = WebView.GetDevicePixelRatio();
-			IntPtr hMonitor = NativeMethods.MonitorFromWindow(IntPtr.Zero, MonitorFlag.MONITOR_DEFAULTTOPRIMARY);
+			var devicePixelRatio = WebView.GetDevicePixelRatio();
+			var hMonitor = NativeMethods.MonitorFromWindow(IntPtr.Zero, MonitorFlag.MONITOR_DEFAULTTOPRIMARY);
 
 			var monitorInfo = new MONITORINFO();
 			monitorInfo.Size = Marshal.SizeOf(typeof(MONITORINFO));
@@ -93,7 +92,7 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnPopupShow(CefBrowser browser, bool show)
+		protected internal virtual void OnPopupShow(CefBrowser browser, bool show)
 		{
 			if (!show) WebView.RaisePopupShow(new PopupShowEventArgs());
 		}
@@ -103,7 +102,7 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnPopupSize(CefBrowser browser, CefRect rect)
+		protected internal virtual void OnPopupSize(CefBrowser browser, CefRect rect)
 		{
 			WebView.RaisePopupShow(new PopupShowEventArgs(rect));
 		}
@@ -113,7 +112,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnPaint(CefBrowser browser, CefPaintElementType type, CefRect[] dirtyRects, IntPtr buffer, int width, int height)
+		protected internal virtual void OnPaint(CefBrowser browser, CefPaintElementType type, CefRect[] dirtyRects,
+			IntPtr buffer, int width, int height)
 		{
 			WebView.RaiseCefPaint(new CefPaintEventArgs(browser, type, dirtyRects, buffer, width, height));
 		}
@@ -123,9 +123,9 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnAcceleratedPaint(CefBrowser browser, CefPaintElementType type, CefRect[] dirtyRects, IntPtr sharedHandle)
+		protected internal virtual void OnAcceleratedPaint(CefBrowser browser, CefPaintElementType type,
+			CefRect[] dirtyRects, IntPtr sharedHandle)
 		{
-
 		}
 
 		internal bool AvoidOnCursorChange()
@@ -133,15 +133,16 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnCursorChange(CefBrowser browser, IntPtr cursor, CefCursorType type, CefCursorInfo customCursorInfo)
+		protected internal virtual void OnCursorChange(CefBrowser browser, IntPtr cursor, CefCursorType type,
+			CefCursorInfo customCursorInfo)
 		{
-
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		internal extern bool AvoidStartDragging();
 
-		internal protected virtual bool StartDragging(CefBrowser browser, CefDragData dragData, CefDragOperationsMask allowedOps, int x, int y)
+		protected internal virtual bool StartDragging(CefBrowser browser, CefDragData dragData,
+			CefDragOperationsMask allowedOps, int x, int y)
 		{
 			return false;
 		}
@@ -149,9 +150,8 @@ namespace CefNet.Internal
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		internal extern bool AvoidUpdateDragCursor();
 
-		internal protected virtual void UpdateDragCursor(CefBrowser browser, CefDragOperationsMask operation)
+		protected internal virtual void UpdateDragCursor(CefBrowser browser, CefDragOperationsMask operation)
 		{
-
 		}
 
 		internal bool AvoidOnScrollOffsetChanged()
@@ -159,9 +159,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnScrollOffsetChanged(CefBrowser browser, double x, double y)
+		protected internal virtual void OnScrollOffsetChanged(CefBrowser browser, double x, double y)
 		{
-
 		}
 
 		internal bool AvoidOnImeCompositionRangeChanged()
@@ -169,9 +168,9 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnImeCompositionRangeChanged(CefBrowser browser, CefRange selectedRange, CefRect[] characterBounds)
+		protected internal virtual void OnImeCompositionRangeChanged(CefBrowser browser, CefRange selectedRange,
+			CefRect[] characterBounds)
 		{
-
 		}
 
 		internal bool AvoidOnTextSelectionChanged()
@@ -179,9 +178,9 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnTextSelectionChanged(CefBrowser browser, string selectedText, CefRange selectedRange)
+		protected internal virtual void OnTextSelectionChanged(CefBrowser browser, string selectedText,
+			CefRange selectedRange)
 		{
-
 		}
 
 		internal bool AvoidOnVirtualKeyboardRequested()
@@ -189,9 +188,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnVirtualKeyboardRequested(CefBrowser browser, CefTextInputMode inputMode)
+		protected internal virtual void OnVirtualKeyboardRequested(CefBrowser browser, CefTextInputMode inputMode)
 		{
-
 		}
 	}
 }

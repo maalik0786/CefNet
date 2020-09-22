@@ -11,33 +11,27 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Windows COM initialization mode. Specifies how COM will be initialized for a
-	/// new thread.
+	///  Windows COM initialization mode. Specifies how COM will be initialized for a
+	///  new thread.
 	/// </summary>
 	public enum CefComInitMode
 	{
 		/// <summary>
-		/// No COM initialization.
+		///  No COM initialization.
 		/// </summary>
 		None = 0,
 
 		/// <summary>
-		/// Initialize COM using single-threaded apartments.
+		///  Initialize COM using single-threaded apartments.
 		/// </summary>
 		Sta = 1,
 
 		/// <summary>
-		/// Initialize COM using multi-threaded apartments.
+		///  Initialize COM using multi-threaded apartments.
 		/// </summary>
-		Mta = 2,
+		Mta = 2
 	}
 }
-

@@ -1,45 +1,43 @@
-﻿using CefNet.CApi;
-using System;
+﻿using System;
 using System.IO;
+using CefNet.CApi;
 
 namespace CefNet
 {
 	public unsafe partial class CefStreamReader
 	{
 		/// <summary>
-		/// Create a new CefStreamReader object from a file.
+		///  Create a new CefStreamReader object from a file.
 		/// </summary>
 		public CefStreamReader(string filename)
 			: this(CreateFromFile(filename))
 		{
-
 		}
 
 		/// <summary>
-		/// Create a new CefStreamReader object from data.
+		///  Create a new CefStreamReader object from data.
 		/// </summary>
 		public CefStreamReader(IntPtr data, int length)
-			: this(CefNativeApi.cef_stream_reader_create_for_data((void*)data, length >= 0 ? unchecked((UIntPtr)length) : throw new ArgumentOutOfRangeException(nameof(length))))
+			: this(CefNativeApi.cef_stream_reader_create_for_data((void*) data,
+				length >= 0 ? (UIntPtr) length : throw new ArgumentOutOfRangeException(nameof(length))))
 		{
-
 		}
 
 		/// <summary>
-		/// Create a new CefStreamReader object from a custom handler.
+		///  Create a new CefStreamReader object from a custom handler.
 		/// </summary>
 		public CefStreamReader(CefReadHandler handler)
-			: this(CefNativeApi.cef_stream_reader_create_for_handler((handler ?? throw new ArgumentNullException(nameof(handler))).GetNativeInstance()))
+			: this(CefNativeApi.cef_stream_reader_create_for_handler(
+				(handler ?? throw new ArgumentNullException(nameof(handler))).GetNativeInstance()))
 		{
-
 		}
 
 		/// <summary>
-		/// Create a new cef_stream_reader_t object from buffer.
+		///  Create a new cef_stream_reader_t object from buffer.
 		/// </summary>
 		public CefStreamReader(byte[] buffer)
 			: this(CreateFromBuffer(buffer))
 		{
-			
 		}
 
 		private static cef_stream_reader_t* CreateFromFile(string filename)
@@ -51,9 +49,9 @@ namespace CefNet
 
 			fixed (char* s = filename)
 			{
-				cef_string_t cstr = new cef_string_t();
+				var cstr = new cef_string_t();
 				cstr.Base.str = s;
-				cstr.Base.length = unchecked((UIntPtr)filename.Length);
+				cstr.Base.length = (UIntPtr) filename.Length;
 				return CefNativeApi.cef_stream_reader_create_for_file(&cstr);
 			}
 		}
@@ -64,9 +62,8 @@ namespace CefNet
 				throw new ArgumentNullException(nameof(buffer));
 			fixed (void* data = buffer)
 			{
-				return CefNativeApi.cef_stream_reader_create_for_data(data, unchecked((UIntPtr)buffer.Length));
+				return CefNativeApi.cef_stream_reader_create_for_data(data, (UIntPtr) buffer.Length);
 			}
 		}
-
 	}
 }

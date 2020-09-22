@@ -12,77 +12,49 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing cursor information. |buffer| will be
-	/// |size.width|*|size.height|*4 bytes in size and represents a BGRA image with
-	/// an upper-left origin.
+	///  Structure representing cursor information. |buffer| will be
+	///  |size.width|*|size.height|*4 bytes in size and represents a BGRA image with
+	///  an upper-left origin.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefCursorInfo
+	public unsafe struct CefCursorInfo
 	{
 		private cef_cursor_info_t _instance;
 
 		public CefPoint Hotspot
 		{
-			get
-			{
-				return _instance.hotspot;
-			}
-			set
-			{
-				_instance.hotspot = value;
-			}
+			get => _instance.hotspot;
+			set => _instance.hotspot = value;
 		}
 
 		public float ImageScaleFactor
 		{
-			get
-			{
-				return _instance.image_scale_factor;
-			}
-			set
-			{
-				_instance.image_scale_factor = value;
-			}
+			get => _instance.image_scale_factor;
+			set => _instance.image_scale_factor = value;
 		}
 
 		public IntPtr Buffer
 		{
-			get
-			{
-				return new IntPtr(_instance.buffer);
-			}
-			set
-			{
-				_instance.buffer = (void*)value;
-			}
+			get => new IntPtr(_instance.buffer);
+			set => _instance.buffer = (void*) value;
 		}
 
 		public CefSize Size
 		{
-			get
-			{
-				return _instance.size;
-			}
-			set
-			{
-				_instance.size = value;
-			}
+			get => _instance.size;
+			set => _instance.size = value;
 		}
 
 		public static implicit operator CefCursorInfo(cef_cursor_info_t instance)
 		{
-			return new CefCursorInfo { _instance = instance };
+			return new CefCursorInfo {_instance = instance};
 		}
 
 		public static implicit operator cef_cursor_info_t(CefCursorInfo instance)

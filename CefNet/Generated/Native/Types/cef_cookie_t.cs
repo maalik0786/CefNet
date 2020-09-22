@@ -11,80 +11,76 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Cookie information.
+	///  Cookie information.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_cookie_t
+	public struct cef_cookie_t
 	{
 		/// <summary>
-		/// The cookie name.
+		///  The cookie name.
 		/// </summary>
 		public cef_string_t name;
 
 		/// <summary>
-		/// The cookie value.
+		///  The cookie value.
 		/// </summary>
 		public cef_string_t value;
 
 		/// <summary>
-		/// If |domain| is empty a host cookie will be created instead of a domain
-		/// cookie. Domain cookies are stored with a leading &quot;.&quot; and are visible to
-		/// sub-domains whereas host cookies are not.
+		///  If |domain| is empty a host cookie will be created instead of a domain
+		///  cookie. Domain cookies are stored with a leading &quot;.&quot; and are visible to
+		///  sub-domains whereas host cookies are not.
 		/// </summary>
 		public cef_string_t domain;
 
 		/// <summary>
-		/// If |path| is non-empty only URLs at or below the path will get the cookie
-		/// value.
+		///  If |path| is non-empty only URLs at or below the path will get the cookie
+		///  value.
 		/// </summary>
 		public cef_string_t path;
 
 		/// <summary>
-		/// If |secure| is true the cookie will only be sent for HTTPS requests.
+		///  If |secure| is true the cookie will only be sent for HTTPS requests.
 		/// </summary>
 		public int secure;
 
 		/// <summary>
-		/// If |httponly| is true the cookie will only be sent for HTTP requests.
+		///  If |httponly| is true the cookie will only be sent for HTTP requests.
 		/// </summary>
 		public int httponly;
 
 		/// <summary>
-		/// The cookie creation date. This is automatically populated by the system on
-		/// cookie creation.
+		///  The cookie creation date. This is automatically populated by the system on
+		///  cookie creation.
 		/// </summary>
 		public cef_time_t creation;
 
 		/// <summary>
-		/// The cookie last access date. This is automatically populated by the system
-		/// on access.
+		///  The cookie last access date. This is automatically populated by the system
+		///  on access.
 		/// </summary>
 		public cef_time_t last_access;
 
 		/// <summary>
-		/// The cookie expiration date is only valid if |has_expires| is true.
+		///  The cookie expiration date is only valid if |has_expires| is true.
 		/// </summary>
 		public int has_expires;
 
 		public cef_time_t expires;
 
 		/// <summary>
-		/// Same site.
+		///  Same site.
 		/// </summary>
 		public CefCookieSameSite same_site;
 
 		/// <summary>
-		/// Priority.
+		///  Priority.
 		/// </summary>
 		public CefCookiePriority priority;
 	}
 }
-

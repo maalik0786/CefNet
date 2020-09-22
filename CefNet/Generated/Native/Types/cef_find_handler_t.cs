@@ -11,41 +11,40 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Implement this structure to handle events related to find results. The
-	/// functions of this structure will be called on the UI thread.
+	///  Implement this structure to handle events related to find results. The
+	///  functions of this structure will be called on the UI thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_find_handler_t
+	public unsafe struct cef_find_handler_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_find_handler_t* self, _cef_browser_t* browser, int identifier, int count, const cef_rect_t* selectionRect, int activeMatchOrdinal, int finalUpdate)*
+		///  void (*)(_cef_find_handler_t* self, _cef_browser_t* browser, int identifier, int count, const cef_rect_t*
+		///  selectionRect, int activeMatchOrdinal, int finalUpdate)*
 		/// </summary>
 		public void* on_find_result;
 
 		/// <summary>
-		/// Called to report find results returned by cef_browser_host_t::find().
-		/// |identifer| is the identifier passed to find(), |count| is the number of
-		/// matches currently identified, |selectionRect| is the location of where the
-		/// match was found (in window coordinates), |activeMatchOrdinal| is the
-		/// current position in the search results, and |finalUpdate| is true (1) if
-		/// this is the last find notification.
+		///  Called to report find results returned by cef_browser_host_t::find().
+		///  |identifer| is the identifier passed to find(), |count| is the number of
+		///  matches currently identified, |selectionRect| is the location of where the
+		///  match was found (in window coordinates), |activeMatchOrdinal| is the
+		///  current position in the search results, and |finalUpdate| is true (1) if
+		///  this is the last find notification.
 		/// </summary>
 		[NativeName("on_find_result")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void OnFindResult(cef_browser_t* browser, int identifier, int count, [Immutable]cef_rect_t* selectionRect, int activeMatchOrdinal, int finalUpdate);
+		public extern void OnFindResult(cef_browser_t* browser, int identifier, int count,
+			[Immutable] cef_rect_t* selectionRect, int activeMatchOrdinal, int finalUpdate);
 	}
 }
-

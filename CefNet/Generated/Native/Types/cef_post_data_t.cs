@@ -12,111 +12,109 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure used to represent post data for a web request. The functions of
-	/// this structure may be called on any thread.
+	///  Structure used to represent post data for a web request. The functions of
+	///  this structure may be called on any thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_post_data_t
+	public unsafe struct cef_post_data_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_post_data_t* self)*
+		///  int (*)(_cef_post_data_t* self)*
 		/// </summary>
 		public void* is_read_only;
 
 		/// <summary>
-		/// Returns true (1) if this object is read-only.
+		///  Returns true (1) if this object is read-only.
 		/// </summary>
 		[NativeName("is_read_only")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsReadOnly();
+		public extern int IsReadOnly();
 
 		/// <summary>
-		/// int (*)(_cef_post_data_t* self)*
+		///  int (*)(_cef_post_data_t* self)*
 		/// </summary>
 		public void* has_excluded_elements;
 
 		/// <summary>
-		/// Returns true (1) if the underlying POST data includes elements that are not
-		/// represented by this cef_post_data_t object (for example, multi-part file
-		/// upload data). Modifying cef_post_data_t objects with excluded elements may
-		/// result in the request failing.
+		///  Returns true (1) if the underlying POST data includes elements that are not
+		///  represented by this cef_post_data_t object (for example, multi-part file
+		///  upload data). Modifying cef_post_data_t objects with excluded elements may
+		///  result in the request failing.
 		/// </summary>
 		[NativeName("has_excluded_elements")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int HasExcludedElements();
+		public extern int HasExcludedElements();
 
 		/// <summary>
-		/// size_t (*)(_cef_post_data_t* self)*
+		///  size_t (*)(_cef_post_data_t* self)*
 		/// </summary>
 		public void* get_element_count;
 
 		/// <summary>
-		/// Returns the number of existing post data elements.
+		///  Returns the number of existing post data elements.
 		/// </summary>
 		[NativeName("get_element_count")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern UIntPtr GetElementCount();
+		public extern UIntPtr GetElementCount();
 
 		/// <summary>
-		/// void (*)(_cef_post_data_t* self, size_t* elementsCount, _cef_post_data_element_t** elements)*
+		///  void (*)(_cef_post_data_t* self, size_t* elementsCount, _cef_post_data_element_t** elements)*
 		/// </summary>
 		public void* get_elements;
 
 		/// <summary>
-		/// Retrieve the post data elements.
+		///  Retrieve the post data elements.
 		/// </summary>
 		[NativeName("get_elements")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void GetElements(UIntPtr* elementsCount, cef_post_data_element_t** elements);
+		public extern void GetElements(UIntPtr* elementsCount, cef_post_data_element_t** elements);
 
 		/// <summary>
-		/// int (*)(_cef_post_data_t* self, _cef_post_data_element_t* element)*
+		///  int (*)(_cef_post_data_t* self, _cef_post_data_element_t* element)*
 		/// </summary>
 		public void* remove_element;
 
 		/// <summary>
-		/// Remove the specified post data element.  Returns true (1) if the removal
-		/// succeeds.
+		///  Remove the specified post data element.  Returns true (1) if the removal
+		///  succeeds.
 		/// </summary>
 		[NativeName("remove_element")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int RemoveElement(cef_post_data_element_t* element);
+		public extern int RemoveElement(cef_post_data_element_t* element);
 
 		/// <summary>
-		/// int (*)(_cef_post_data_t* self, _cef_post_data_element_t* element)*
+		///  int (*)(_cef_post_data_t* self, _cef_post_data_element_t* element)*
 		/// </summary>
 		public void* add_element;
 
 		/// <summary>
-		/// Add the specified post data element.  Returns true (1) if the add succeeds.
+		///  Add the specified post data element.  Returns true (1) if the add succeeds.
 		/// </summary>
 		[NativeName("add_element")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int AddElement(cef_post_data_element_t* element);
+		public extern int AddElement(cef_post_data_element_t* element);
 
 		/// <summary>
-		/// void (*)(_cef_post_data_t* self)*
+		///  void (*)(_cef_post_data_t* self)*
 		/// </summary>
 		public void* remove_elements;
 
 		/// <summary>
-		/// Remove all existing post data elements.
+		///  Remove all existing post data elements.
 		/// </summary>
 		[NativeName("remove_elements")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void RemoveElements();
+		public extern void RemoveElements();
 	}
 }
-

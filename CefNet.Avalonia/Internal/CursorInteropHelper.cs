@@ -1,18 +1,19 @@
-﻿using Avalonia.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using Avalonia.Input;
 
 namespace CefNet.Internal
 {
 	public static class CursorInteropHelper
 	{
 		private static readonly Dictionary<IntPtr, Cursor> _Cursors = new Dictionary<IntPtr, Cursor>();
-		private static readonly Dictionary<StandardCursorType, Cursor> _StdCursors = new Dictionary<StandardCursorType, Cursor>();
+
+		private static readonly Dictionary<StandardCursorType, Cursor> _StdCursors =
+			new Dictionary<StandardCursorType, Cursor>();
 
 		static CursorInteropHelper()
 		{
-			foreach(StandardCursorType cursorType in Enum.GetValues(typeof(StandardCursorType)))
+			foreach (StandardCursorType cursorType in Enum.GetValues(typeof(StandardCursorType)))
 			{
 				var cursor = new Cursor(cursorType);
 				if (_Cursors.ContainsKey(cursor.PlatformCursor.Handle))
@@ -25,7 +26,7 @@ namespace CefNet.Internal
 
 		public static Cursor Create(IntPtr cursorHandle)
 		{
-			if (_Cursors.TryGetValue(cursorHandle, out Cursor cursor))
+			if (_Cursors.TryGetValue(cursorHandle, out var cursor))
 				return cursor;
 			return Cursor.Default;
 		}
@@ -41,8 +42,8 @@ namespace CefNet.Internal
 					_StdCursors[cursorType] = cursor;
 				}
 			}
+
 			return cursor;
 		}
-
 	}
 }

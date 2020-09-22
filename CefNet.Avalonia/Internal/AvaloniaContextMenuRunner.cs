@@ -1,10 +1,8 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Media;
-using CefNet.Avalonia;
-using System;
 
 namespace CefNet.Internal
 {
@@ -27,7 +25,7 @@ namespace CefNet.Internal
 
 			Menu = new ContextMenu();
 			Menu.MenuClosed += Menu_Closed;
-			Build(Model, (AvaloniaList<object>)Menu.Items);
+			Build(Model, (AvaloniaList<object>) Menu.Items);
 		}
 
 		private void Menu_Closed(object sender, RoutedEventArgs e)
@@ -38,20 +36,20 @@ namespace CefNet.Internal
 		private void MenuItem_Click(object sender, RoutedEventArgs e)
 		{
 			var clickedItem = sender as MenuItem;
-			object cid = clickedItem?.Tag;
+			var cid = clickedItem?.Tag;
 			if (cid != null)
 			{
-				Callback.Continue((int)cid, CefEventFlags.LeftMouseButton);
+				Callback.Continue((int) cid, CefEventFlags.LeftMouseButton);
 				Callback = null;
 			}
 		}
 
 		private void Build(MenuModel model, AvaloniaList<object> menu)
 		{
-			int count = model.Count;
-			for (int i = 0; i < count; i++)
+			var count = model.Count;
+			for (var i = 0; i < count; i++)
 			{
-				bool isSubmenu = false;
+				var isSubmenu = false;
 				MenuItem menuItem;
 				switch (model.GetTypeAt(i))
 				{
@@ -60,11 +58,21 @@ namespace CefNet.Internal
 						continue;
 					case CefMenuItemType.Check:
 						menuItem = new MenuItem();
-						menuItem.Icon = new CheckBox() { IsChecked = model.IsCheckedAt(i), Margin = new Thickness(-2, 0, 0, 0), BorderThickness = new Thickness() };
+						menuItem.Icon = new CheckBox
+						{
+							IsChecked = model.IsCheckedAt(i),
+							Margin = new Thickness(-2, 0, 0, 0),
+							BorderThickness = new Thickness()
+						};
 						break;
 					case CefMenuItemType.Radio:
 						menuItem = new MenuItem();
-						menuItem.Icon = new RadioButton() { IsChecked = model.IsCheckedAt(i), Margin = new Thickness(-2, 0, 0, 0), BorderThickness = new Thickness() };
+						menuItem.Icon = new RadioButton
+						{
+							IsChecked = model.IsCheckedAt(i),
+							Margin = new Thickness(-2, 0, 0, 0),
+							BorderThickness = new Thickness()
+						};
 						break;
 					case CefMenuItemType.Command:
 						menuItem = new MenuItem();
@@ -72,19 +80,18 @@ namespace CefNet.Internal
 					case CefMenuItemType.Submenu:
 						isSubmenu = true;
 						menuItem = new MenuItem();
-						if (model.IsEnabledAt(i))
-						{
-							Build(model.GetSubMenuAt(i), (AvaloniaList<object>)menuItem.Items);
-						}
+						if (model.IsEnabledAt(i)) Build(model.GetSubMenuAt(i), (AvaloniaList<object>) menuItem.Items);
 						break;
 					default:
 						continue;
 				}
+
 				if (!isSubmenu)
 				{
 					menuItem.Click += MenuItem_Click;
 					menuItem.Tag = model.GetCommandIdAt(i);
 				}
+
 				menuItem.Header = model.GetLabelAt(i).Replace('&', '_');
 				menuItem.IsEnabled = model.IsEnabledAt(i);
 				//menuItem.Foreground = model.GetColorAt(i, CefMenuColorType.Text, out CefColor color) ? new SolidColorBrush(color.ToColor()) : SystemColors.MenuTextBrush;
@@ -106,6 +113,5 @@ namespace CefNet.Internal
 			Callback?.Cancel();
 			Callback = null;
 		}
-
 	}
 }

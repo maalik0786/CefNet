@@ -11,45 +11,41 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing IME composition underline information. This is a thin
-	/// wrapper around Blink&apos;s WebCompositionUnderline class and should be kept in
-	/// sync with that.
+	///  Structure representing IME composition underline information. This is a thin
+	///  wrapper around Blink&apos;s WebCompositionUnderline class and should be kept in
+	///  sync with that.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_composition_underline_t
+	public struct cef_composition_underline_t
 	{
 		/// <summary>
-		/// Underline character range.
+		///  Underline character range.
 		/// </summary>
 		public cef_range_t range;
 
 		/// <summary>
-		/// Text color.
+		///  Text color.
 		/// </summary>
 		public cef_color_t color;
 
 		/// <summary>
-		/// Background color.
+		///  Background color.
 		/// </summary>
 		public cef_color_t background_color;
 
 		/// <summary>
-		/// Set to true (1) for thick underline.
+		///  Set to true (1) for thick underline.
 		/// </summary>
 		public int thick;
 
 		/// <summary>
-		/// Style.
+		///  Style.
 		/// </summary>
 		public CefCompositionUnderlineStyle style;
 	}
 }
-

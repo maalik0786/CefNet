@@ -12,64 +12,64 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback structure for cef_media_sink_t::GetDeviceInfo. The functions of this
-	/// structure will be called on the browser process UI thread.
+	///  Callback structure for cef_media_sink_t::GetDeviceInfo. The functions of this
+	///  structure will be called on the browser process UI thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefMediaSinkDeviceInfoCallback : CefBaseRefCounted<cef_media_sink_device_info_callback_t>, ICefMediaSinkDeviceInfoCallbackPrivate
+	public unsafe class CefMediaSinkDeviceInfoCallback : CefBaseRefCounted<cef_media_sink_device_info_callback_t>,
+		ICefMediaSinkDeviceInfoCallbackPrivate
 	{
 		private static readonly OnMediaSinkDeviceInfoDelegate fnOnMediaSinkDeviceInfo = OnMediaSinkDeviceInfoImpl;
 
-		internal static unsafe CefMediaSinkDeviceInfoCallback Create(IntPtr instance)
-		{
-			return new CefMediaSinkDeviceInfoCallback((cef_media_sink_device_info_callback_t*)instance);
-		}
-
 		public CefMediaSinkDeviceInfoCallback()
 		{
-			cef_media_sink_device_info_callback_t* self = this.NativeInstance;
-			self->on_media_sink_device_info = (void*)Marshal.GetFunctionPointerForDelegate(fnOnMediaSinkDeviceInfo);
+			var self = NativeInstance;
+			self->on_media_sink_device_info = (void*) Marshal.GetFunctionPointerForDelegate(fnOnMediaSinkDeviceInfo);
 		}
 
 		public CefMediaSinkDeviceInfoCallback(cef_media_sink_device_info_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefMediaSinkDeviceInfoCallbackPrivate.AvoidOnMediaSinkDeviceInfo();
 
-		/// <summary>
-		/// Method that will be executed asyncronously once device information has been
-		/// retrieved.
-		/// </summary>
-		protected internal unsafe virtual void OnMediaSinkDeviceInfo(CefMediaSinkDeviceInfo deviceInfo)
+		internal static CefMediaSinkDeviceInfoCallback Create(IntPtr instance)
 		{
+			return new CefMediaSinkDeviceInfoCallback((cef_media_sink_device_info_callback_t*) instance);
+		}
+
+		/// <summary>
+		///  Method that will be executed asyncronously once device information has been
+		///  retrieved.
+		/// </summary>
+		protected internal virtual void OnMediaSinkDeviceInfo(CefMediaSinkDeviceInfo deviceInfo)
+		{
+		}
+
+		// void (*)(_cef_media_sink_device_info_callback_t* self, const const _cef_media_sink_device_info_t* device_info)*
+		private static void OnMediaSinkDeviceInfoImpl(cef_media_sink_device_info_callback_t* self,
+			cef_media_sink_device_info_t* device_info)
+		{
+			var instance = GetInstance((IntPtr) self) as CefMediaSinkDeviceInfoCallback;
+			if (instance == null ||
+			    ((ICefMediaSinkDeviceInfoCallbackPrivate) instance).AvoidOnMediaSinkDeviceInfo()) return;
+			instance.OnMediaSinkDeviceInfo(*(CefMediaSinkDeviceInfo*) device_info);
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnMediaSinkDeviceInfoDelegate(cef_media_sink_device_info_callback_t* self, cef_media_sink_device_info_t* device_info);
-
-		// void (*)(_cef_media_sink_device_info_callback_t* self, const const _cef_media_sink_device_info_t* device_info)*
-		private static unsafe void OnMediaSinkDeviceInfoImpl(cef_media_sink_device_info_callback_t* self, cef_media_sink_device_info_t* device_info)
-		{
-			var instance = GetInstance((IntPtr)self) as CefMediaSinkDeviceInfoCallback;
-			if (instance == null || ((ICefMediaSinkDeviceInfoCallbackPrivate)instance).AvoidOnMediaSinkDeviceInfo())
-			{
-				return;
-			}
-			instance.OnMediaSinkDeviceInfo(*(CefMediaSinkDeviceInfo*)device_info);
-		}
+		private delegate void OnMediaSinkDeviceInfoDelegate(cef_media_sink_device_info_callback_t* self,
+			cef_media_sink_device_info_t* device_info);
 	}
 }

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace CefNet.WinApi
 {
-	static class NativeMethods
+	internal static class NativeMethods
 	{
 		[DllImport("user32.dll")]
 		public static extern IntPtr GetKeyboardLayout(uint idThread);
@@ -19,7 +19,8 @@ namespace CefNet.WinApi
 		public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
 
 		[DllImport("Dwmapi.dll", CharSet = CharSet.Auto)]
-		public static unsafe extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, void* value, int size);
+		public static extern unsafe int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, void* value,
+			int size);
 
 		[DllImport("Dwmapi.dll", CharSet = CharSet.Auto, PreserveSig = false)]
 		public static extern bool DwmIsCompositionEnabled();

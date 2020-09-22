@@ -11,18 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefResourceRequestHandlerGlue: CefResourceRequestHandler, ICefResourceRequestHandlerPrivate
+	internal sealed class CefResourceRequestHandlerGlue : CefResourceRequestHandler, ICefResourceRequestHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefResourceRequestHandlerGlue(WebViewGlue impl)
 		{
@@ -34,19 +27,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidGetCookieAccessFilter();
 		}
 
-		protected internal unsafe override CefCookieAccessFilter GetCookieAccessFilter(CefBrowser browser, CefFrame frame, CefRequest request)
-		{
-			return _implementation.GetCookieAccessFilter(browser, frame, request);
-		}
-
 		bool ICefResourceRequestHandlerPrivate.AvoidOnBeforeResourceLoad()
 		{
 			return _implementation.AvoidOnBeforeResourceLoad();
-		}
-
-		protected internal unsafe override CefReturnValue OnBeforeResourceLoad(CefBrowser browser, CefFrame frame, CefRequest request, CefRequestCallback callback)
-		{
-			return _implementation.OnBeforeResourceLoad(browser, frame, request, callback);
 		}
 
 		bool ICefResourceRequestHandlerPrivate.AvoidGetResourceHandler()
@@ -54,19 +37,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidGetResourceHandler();
 		}
 
-		protected internal unsafe override CefResourceHandler GetResourceHandler(CefBrowser browser, CefFrame frame, CefRequest request)
-		{
-			return _implementation.GetResourceHandler(browser, frame, request);
-		}
-
 		bool ICefResourceRequestHandlerPrivate.AvoidOnResourceRedirect()
 		{
 			return _implementation.AvoidOnResourceRedirect();
-		}
-
-		protected internal unsafe override void OnResourceRedirect(CefBrowser browser, CefFrame frame, CefRequest request, CefResponse response, ref string newUrl)
-		{
-			_implementation.OnResourceRedirect(browser, frame, request, response, ref newUrl);
 		}
 
 		bool ICefResourceRequestHandlerPrivate.AvoidOnResourceResponse()
@@ -74,19 +47,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnResourceResponse();
 		}
 
-		protected internal unsafe override bool OnResourceResponse(CefBrowser browser, CefFrame frame, CefRequest request, CefResponse response)
-		{
-			return _implementation.OnResourceResponse(browser, frame, request, response);
-		}
-
 		bool ICefResourceRequestHandlerPrivate.AvoidGetResourceResponseFilter()
 		{
 			return _implementation.AvoidGetResourceResponseFilter();
-		}
-
-		protected internal unsafe override CefResponseFilter GetResourceResponseFilter(CefBrowser browser, CefFrame frame, CefRequest request, CefResponse response)
-		{
-			return _implementation.GetResourceResponseFilter(browser, frame, request, response);
 		}
 
 		bool ICefResourceRequestHandlerPrivate.AvoidOnResourceLoadComplete()
@@ -94,20 +57,57 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnResourceLoadComplete();
 		}
 
-		protected internal unsafe override void OnResourceLoadComplete(CefBrowser browser, CefFrame frame, CefRequest request, CefResponse response, CefUrlRequestStatus status, long receivedContentLength)
-		{
-			_implementation.OnResourceLoadComplete(browser, frame, request, response, status, receivedContentLength);
-		}
-
 		bool ICefResourceRequestHandlerPrivate.AvoidOnProtocolExecution()
 		{
 			return _implementation.AvoidOnProtocolExecution();
 		}
 
-		protected internal unsafe override void OnProtocolExecution(CefBrowser browser, CefFrame frame, CefRequest request, ref int allowOsExecution)
+		protected internal override CefCookieAccessFilter GetCookieAccessFilter(CefBrowser browser, CefFrame frame,
+			CefRequest request)
+		{
+			return _implementation.GetCookieAccessFilter(browser, frame, request);
+		}
+
+		protected internal override CefReturnValue OnBeforeResourceLoad(CefBrowser browser, CefFrame frame,
+			CefRequest request, CefRequestCallback callback)
+		{
+			return _implementation.OnBeforeResourceLoad(browser, frame, request, callback);
+		}
+
+		protected internal override CefResourceHandler GetResourceHandler(CefBrowser browser, CefFrame frame,
+			CefRequest request)
+		{
+			return _implementation.GetResourceHandler(browser, frame, request);
+		}
+
+		protected internal override void OnResourceRedirect(CefBrowser browser, CefFrame frame, CefRequest request,
+			CefResponse response, ref string newUrl)
+		{
+			_implementation.OnResourceRedirect(browser, frame, request, response, ref newUrl);
+		}
+
+		protected internal override bool OnResourceResponse(CefBrowser browser, CefFrame frame, CefRequest request,
+			CefResponse response)
+		{
+			return _implementation.OnResourceResponse(browser, frame, request, response);
+		}
+
+		protected internal override CefResponseFilter GetResourceResponseFilter(CefBrowser browser, CefFrame frame,
+			CefRequest request, CefResponse response)
+		{
+			return _implementation.GetResourceResponseFilter(browser, frame, request, response);
+		}
+
+		protected internal override void OnResourceLoadComplete(CefBrowser browser, CefFrame frame, CefRequest request,
+			CefResponse response, CefUrlRequestStatus status, long receivedContentLength)
+		{
+			_implementation.OnResourceLoadComplete(browser, frame, request, response, status, receivedContentLength);
+		}
+
+		protected internal override void OnProtocolExecution(CefBrowser browser, CefFrame frame, CefRequest request,
+			ref int allowOsExecution)
 		{
 			_implementation.OnProtocolExecution(browser, frame, request, ref allowOsExecution);
 		}
-
 	}
 }

@@ -1,36 +1,33 @@
-﻿using CefNet;
-using CefNet.Internal;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CefNet;
+using Timer = System.Threading.Timer;
 
 namespace WinFormsCoreApp
 {
-	static class Program
+	internal static class Program
 	{
 		private static readonly int messagePumpDelay = 10;
 		private static SynchronizationContext UIContext;
-		private static System.Threading.Timer messagePump;
+		private static Timer messagePump;
 
 		/// <summary>
 		///  The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
 			Application.SetHighDpiMode(HighDpiMode.SystemAware);
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
 
-			string cefPath = Path.Combine(Path.GetDirectoryName(GetProjectPath()), "cef");
-			bool externalMessagePump = args.Contains("--external-message-pump");
+			var cefPath = Path.Combine(Path.GetDirectoryName(GetProjectPath()), "cef");
+			var externalMessagePump = args.Contains("--external-message-pump");
 
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 			Application.ThreadException += Application_ThreadException;
@@ -45,7 +42,7 @@ namespace WinFormsCoreApp
 			settings.LogSeverity = CefLogSeverity.Warning;
 			settings.IgnoreCertificateErrors = true;
 			settings.UncaughtExceptionStackSize = 8;
-			
+
 			var app = new CefAppImpl();
 			app.ScheduleMessagePumpWorkCallback = OnScheduleMessagePumpWork;
 			app.CefProcessMessageReceived += ScriptableObjectTests.HandleScriptableObjectTestMessage;
@@ -57,10 +54,9 @@ namespace WinFormsCoreApp
 				app.Initialize(Path.Combine(cefPath, "Release"), settings);
 
 				if (externalMessagePump)
-				{
-					messagePump = new System.Threading.Timer(_ => UIContext.Post(_ => CefApi.DoMessageLoopWork(), null), null, messagePumpDelay, messagePumpDelay);
-				}
-				
+					messagePump = new Timer(_ => UIContext.Post(_ => CefApi.DoMessageLoopWork(), null), null,
+						messagePumpDelay, messagePumpDelay);
+
 				Application.Run(new MainForm());
 			}
 			finally
@@ -73,7 +69,7 @@ namespace WinFormsCoreApp
 
 		private static async void OnScheduleMessagePumpWork(long delayMs)
 		{
-			await Task.Delay((int)delayMs);
+			await Task.Delay((int) delayMs);
 			UIContext.Post(_ => CefApi.DoMessageLoopWork(), null);
 		}
 
@@ -82,7 +78,7 @@ namespace WinFormsCoreApp
 			ShowUnhandledException(e.ExceptionObject as Exception, "AppDomain::UnhandledException");
 		}
 
-		private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+		private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
 		{
 			ShowUnhandledException(e.Exception, "Application::ThreadException");
 		}
@@ -91,21 +87,23 @@ namespace WinFormsCoreApp
 		{
 			if (exception == null)
 				return;
-			MessageBox.Show(string.Format("{0}: {1}\r\n{2}", exception.GetType().Name, exception.Message, exception.StackTrace), from);
+			MessageBox.Show(
+				string.Format("{0}: {1}\r\n{2}", exception.GetType().Name, exception.Message, exception.StackTrace),
+				from);
 		}
 
 		private static string GetProjectPath()
 		{
-			string projectPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
-			string rootPath = Path.GetPathRoot(projectPath);
+			var projectPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+			var rootPath = Path.GetPathRoot(projectPath);
 			while (Path.GetFileName(projectPath) != "WinFormsCoreApp")
 			{
 				if (projectPath == rootPath)
 					throw new DirectoryNotFoundException("Could not find the project directory.");
 				projectPath = Path.GetDirectoryName(projectPath);
 			}
+
 			return projectPath;
 		}
-
 	}
 }

@@ -11,18 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefCookieAccessFilterGlue: CefCookieAccessFilter, ICefCookieAccessFilterPrivate
+	internal sealed class CefCookieAccessFilterGlue : CefCookieAccessFilter, ICefCookieAccessFilterPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefCookieAccessFilterGlue(WebViewGlue impl)
 		{
@@ -34,20 +27,21 @@ namespace CefNet.Internal
 			return _implementation.AvoidCanSendCookie();
 		}
 
-		protected internal unsafe override bool CanSendCookie(CefBrowser browser, CefFrame frame, CefRequest request, CefCookie cookie)
-		{
-			return _implementation.CanSendCookie(browser, frame, request, cookie);
-		}
-
 		bool ICefCookieAccessFilterPrivate.AvoidCanSaveCookie()
 		{
 			return _implementation.AvoidCanSaveCookie();
 		}
 
-		protected internal unsafe override bool CanSaveCookie(CefBrowser browser, CefFrame frame, CefRequest request, CefResponse response, CefCookie cookie)
+		protected internal override bool CanSendCookie(CefBrowser browser, CefFrame frame, CefRequest request,
+			CefCookie cookie)
+		{
+			return _implementation.CanSendCookie(browser, frame, request, cookie);
+		}
+
+		protected internal override bool CanSaveCookie(CefBrowser browser, CefFrame frame, CefRequest request,
+			CefResponse response, CefCookie cookie)
 		{
 			return _implementation.CanSaveCookie(browser, frame, request, response, cookie);
 		}
-
 	}
 }

@@ -12,75 +12,74 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Implemented by the client to observe MediaRouter events and registered via
-	/// cef_media_router_t::AddObserver. The functions of this structure will be
-	/// called on the browser process UI thread.
+	///  Implemented by the client to observe MediaRouter events and registered via
+	///  cef_media_router_t::AddObserver. The functions of this structure will be
+	///  called on the browser process UI thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_media_observer_t
+	public unsafe struct cef_media_observer_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_media_observer_t* self, size_t sinksCount, const _cef_media_sink_t** sinks)*
+		///  void (*)(_cef_media_observer_t* self, size_t sinksCount, const _cef_media_sink_t** sinks)*
 		/// </summary>
 		public void* on_sinks;
 
 		/// <summary>
-		/// The list of available media sinks has changed or
-		/// cef_media_router_t::NotifyCurrentSinks was called.
+		///  The list of available media sinks has changed or
+		///  cef_media_router_t::NotifyCurrentSinks was called.
 		/// </summary>
 		[NativeName("on_sinks")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void OnSinks(UIntPtr sinksCount, [Immutable]cef_media_sink_t** sinks);
+		public extern void OnSinks(UIntPtr sinksCount, [Immutable] cef_media_sink_t** sinks);
 
 		/// <summary>
-		/// void (*)(_cef_media_observer_t* self, size_t routesCount, const _cef_media_route_t** routes)*
+		///  void (*)(_cef_media_observer_t* self, size_t routesCount, const _cef_media_route_t** routes)*
 		/// </summary>
 		public void* on_routes;
 
 		/// <summary>
-		/// The list of available media routes has changed or
-		/// cef_media_router_t::NotifyCurrentRoutes was called.
+		///  The list of available media routes has changed or
+		///  cef_media_router_t::NotifyCurrentRoutes was called.
 		/// </summary>
 		[NativeName("on_routes")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void OnRoutes(UIntPtr routesCount, [Immutable]cef_media_route_t** routes);
+		public extern void OnRoutes(UIntPtr routesCount, [Immutable] cef_media_route_t** routes);
 
 		/// <summary>
-		/// void (*)(_cef_media_observer_t* self, _cef_media_route_t* route, cef_media_route_connection_state_t state)*
+		///  void (*)(_cef_media_observer_t* self, _cef_media_route_t* route, cef_media_route_connection_state_t state)*
 		/// </summary>
 		public void* on_route_state_changed;
 
 		/// <summary>
-		/// The connection state of |route| has changed.
+		///  The connection state of |route| has changed.
 		/// </summary>
 		[NativeName("on_route_state_changed")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void OnRouteStateChanged(cef_media_route_t* route, CefMediaRouteConnectionState state);
+		public extern void OnRouteStateChanged(cef_media_route_t* route, CefMediaRouteConnectionState state);
 
 		/// <summary>
-		/// void (*)(_cef_media_observer_t* self, _cef_media_route_t* route, const void* message, size_t message_size)*
+		///  void (*)(_cef_media_observer_t* self, _cef_media_route_t* route, const void* message, size_t message_size)*
 		/// </summary>
 		public void* on_route_message_received;
 
 		/// <summary>
-		/// A message was recieved over |route|. |message| is only valid for the scope
-		/// of this callback and should be copied if necessary.
+		///  A message was recieved over |route|. |message| is only valid for the scope
+		///  of this callback and should be copied if necessary.
 		/// </summary>
 		[NativeName("on_route_message_received")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void OnRouteMessageReceived(cef_media_route_t* route, [Immutable]void* message, UIntPtr message_size);
+		public extern void OnRouteMessageReceived(cef_media_route_t* route, [Immutable] void* message,
+			UIntPtr message_size);
 	}
 }
-

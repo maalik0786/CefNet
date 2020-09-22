@@ -11,16 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Specifies how a menu will be anchored for non-RTL languages. The opposite
-	/// position will be used for RTL languages.
+	///  Specifies how a menu will be anchored for non-RTL languages. The opposite
+	///  position will be used for RTL languages.
 	/// </summary>
 	public enum CefMenuAnchorPosition
 	{
@@ -28,7 +23,6 @@ namespace CefNet
 
 		Topright = 1,
 
-		Bottomcenter = 2,
+		Bottomcenter = 2
 	}
 }
-

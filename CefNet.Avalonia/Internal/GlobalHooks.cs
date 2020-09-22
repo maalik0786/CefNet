@@ -1,29 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
-using System.Runtime.InteropServices;
 using Avalonia.VisualTree;
-using CefNet.WinApi;
 using CefNet.Avalonia;
+using CefNet.WinApi;
 
 namespace CefNet.Internal
 {
-	sealed class GlobalHooks
+	internal sealed class GlobalHooks
 	{
 		private static bool IsInitialized;
 
-		private static Dictionary<IntPtr, GlobalHooks> _HookedWindows = new Dictionary<IntPtr, GlobalHooks>();
-		private static List<WeakReference<WebView>> _Views = new List<WeakReference<WebView>>();
+		private static readonly Dictionary<IntPtr, GlobalHooks> _HookedWindows = new Dictionary<IntPtr, GlobalHooks>();
+		private static readonly List<WeakReference<WebView>> _Views = new List<WeakReference<WebView>>();
+
+		private readonly WindowsHwndSource _source;
+		private readonly WeakReference<Window> _windowRef;
+
+		private GlobalHooks(WindowsHwndSource source, Window window)
+		{
+			_source = source;
+			_windowRef = new WeakReference<Window>(window);
+			source.WndProcCallback = WndProc;
+		}
 
 		internal static void Initialize(WebView view)
 		{
 			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 				return;
 
-			lock(_Views)
+			lock (_Views)
 			{
 				_Views.Add(new WeakReference<WebView>(view));
 			}
@@ -41,20 +51,7 @@ namespace CefNet.Internal
 			Window.WindowOpenedEvent.AddClassHandler(typeof(Window), TryAddGlobalHook, handledEventsToo: true);
 			//EventManager.RegisterClassHandler(typeof(Window), FrameworkElement.SizeChangedEvent, new RoutedEventHandler(TryAddGlobalHook));
 
-			foreach (Window window in lifetime.Windows)
-			{
-				TryAddGlobalHook(window);
-			}
-		}
-
-		private WindowsHwndSource _source;
-		private WeakReference<Window> _windowRef;
-
-		private GlobalHooks(WindowsHwndSource source, Window window)
-		{
-			_source = source;
-			_windowRef = new WeakReference<Window>(window);
-			source.WndProcCallback = WndProc;
+			foreach (var window in lifetime.Windows) TryAddGlobalHook(window);
 		}
 
 		private unsafe IntPtr WndProc(IntPtr hwnd, int message, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -66,44 +63,30 @@ namespace CefNet.Internal
 			{
 				case 0x0002: // WM_DESTROY
 					_source.WndProcCallback = null;
-					foreach (var tuple in GetViews(hwnd))
-					{
-						tuple.Item1.Close();
-					}
+					foreach (var tuple in GetViews(hwnd)) tuple.Item1.Close();
 					lock (_HookedWindows)
 					{
 						_HookedWindows.Remove(_source.Handle);
 						_source.Dispose();
 					}
+
 					break;
 				case 0x0047: //WM_WINDOWPOSCHANGED
-					WINDOWPOS* windowPos = (WINDOWPOS*)lParam;
+					var windowPos = (WINDOWPOS*) lParam;
 					if ((windowPos->flags & 0x0002) != 0) // SWP_NOMOVE
 						break;
-					foreach (var tuple in GetViews(hwnd))
-					{
-						tuple.Item1.OnUpdateRootBounds();
-					}
+					foreach (var tuple in GetViews(hwnd)) tuple.Item1.OnUpdateRootBounds();
 					break;
 				case 0x0231: // WM_ENTERSIZEMOVE
-					foreach (var tuple in GetViews(hwnd))
-					{
-						tuple.Item1.OnRootResizeBegin(EventArgs.Empty);
-					}
+					foreach (var tuple in GetViews(hwnd)) tuple.Item1.OnRootResizeBegin(EventArgs.Empty);
 					break;
 				case 0x0232: // WM_EXITSIZEMOVE
-					foreach (var tuple in GetViews(hwnd))
-					{
-						tuple.Item1.OnRootResizeEnd(EventArgs.Empty);
-					}
+					foreach (var tuple in GetViews(hwnd)) tuple.Item1.OnRootResizeEnd(EventArgs.Empty);
 					break;
 				case 0x0112: // WM_SYSCOMMAND
 					const int SC_KEYMENU = 0xF100;
 					// Menu loop must not be runned with Alt key
-					if ((int)(wParam.ToInt64() & 0xFFF0) == SC_KEYMENU && lParam == IntPtr.Zero)
-					{
-						handled = true;
-					}
+					if ((int) (wParam.ToInt64() & 0xFFF0) == SC_KEYMENU && lParam == IntPtr.Zero) handled = true;
 					break;
 				case WM_ENTERMENULOOP:
 					if (wParam == IntPtr.Zero)
@@ -114,6 +97,7 @@ namespace CefNet.Internal
 						CefApi.SetOSModalLoop(false);
 					break;
 			}
+
 			return IntPtr.Zero;
 		}
 
@@ -128,15 +112,12 @@ namespace CefNet.Internal
 
 			lock (_Views)
 			{
-				for (int i = 0; i < _Views.Count; i++)
+				for (var i = 0; i < _Views.Count; i++)
 				{
-					WeakReference<WebView> viewRef = _Views[i];
-					if (viewRef.TryGetTarget(out WebView view))
+					var viewRef = _Views[i];
+					if (viewRef.TryGetTarget(out var view))
 					{
-						if (view.GetVisualRoot() == window)
-						{
-							yield return new ValueTuple<WebView, Window>(view, window);
-						}
+						if (view.GetVisualRoot() == window) yield return new ValueTuple<WebView, Window>(view, window);
 					}
 					else
 					{
@@ -156,17 +137,16 @@ namespace CefNet.Internal
 			if (window == null)
 				return;
 
-			IntPtr hwnd = window.PlatformImpl.Handle.Handle;
+			var hwnd = window.PlatformImpl.Handle.Handle;
 
 			if (_HookedWindows.ContainsKey(hwnd))
 				return;
 
-			WindowsHwndSource source = WindowsHwndSource.FromHwnd(hwnd);
+			var source = WindowsHwndSource.FromHwnd(hwnd);
 			if (source == null)
 				return;
 
 			_HookedWindows.Add(hwnd, new GlobalHooks(source, window));
 		}
-	
 	}
 }

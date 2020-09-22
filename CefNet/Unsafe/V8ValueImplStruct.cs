@@ -1,16 +1,13 @@
-﻿using CefNet.CApi;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
+using CefNet.CApi;
 
 namespace CefNet.Unsafe
 {
 	[StructLayout(LayoutKind.Sequential)]
 #if DEBUG
-	public
+	public unsafe struct V8ValueImplLayout
 #endif
-	unsafe struct V8ValueImplLayout
 	{
 		public IntPtr v8value_vtable;
 		public IntPtr refcounted_vtable;
@@ -20,38 +17,28 @@ namespace CefNet.Unsafe
 		public V8ValueImplHandleLayout* handle;
 		public IntPtr last_exception;
 
-		public CefV8ValueType Type
-		{
-			get { return (CefV8ValueType)(type.ToInt64() & 0xFFFFFFFF); }
-		}
+		public CefV8ValueType Type => (CefV8ValueType) (type.ToInt64() & 0xFFFFFFFF);
 	}
 
 
 	[StructLayout(LayoutKind.Explicit)]
 #if DEBUG
-	public
-#endif
-	unsafe struct V8ValueImpl_ValueUnion
+	public struct V8ValueImpl_ValueUnion
+#endif 
 	{
-		[FieldOffset(0)]
-		public byte bool_value_;
-		[FieldOffset(0)]
-		public int int_value_;
-		[FieldOffset(0)]
-		public uint uint_value_;
-		[FieldOffset(0)]
-		public double double_value_;
-		[FieldOffset(0)]
-		public cef_time_t date_value_;
-		[FieldOffset(0)]
-		public cef_string_t string_value_;
+		[FieldOffset(0)] public byte bool_value_;
+		[FieldOffset(0)] public int int_value_;
+		[FieldOffset(0)] public uint uint_value_;
+		[FieldOffset(0)] public double double_value_;
+		[FieldOffset(0)] public cef_time_t date_value_;
+		[FieldOffset(0)] public cef_string_t string_value_;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
 #if DEBUG
 	public
 #endif
-	unsafe struct V8ValueImplHandleLayout
+		unsafe struct V8ValueImplHandleLayout
 	{
 		public void* v8value_handle_vtable;
 		public void* atomic_refcount;

@@ -12,178 +12,176 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure that supports the reading of zip archives via the zlib unzip API.
-	/// The functions of this structure should only be called on the thread that
-	/// creates the object.
+	///  Structure that supports the reading of zip archives via the zlib unzip API.
+	///  The functions of this structure should only be called on the thread that
+	///  creates the object.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_zip_reader_t
+	public unsafe struct cef_zip_reader_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_zip_reader_t* self)*
+		///  int (*)(_cef_zip_reader_t* self)*
 		/// </summary>
 		public void* move_to_first_file;
 
 		/// <summary>
-		/// Moves the cursor to the first file in the archive. Returns true (1) if the
-		/// cursor position was set successfully.
+		///  Moves the cursor to the first file in the archive. Returns true (1) if the
+		///  cursor position was set successfully.
 		/// </summary>
 		[NativeName("move_to_first_file")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int MoveToFirstFile();
+		public extern int MoveToFirstFile();
 
 		/// <summary>
-		/// int (*)(_cef_zip_reader_t* self)*
+		///  int (*)(_cef_zip_reader_t* self)*
 		/// </summary>
 		public void* move_to_next_file;
 
 		/// <summary>
-		/// Moves the cursor to the next file in the archive. Returns true (1) if the
-		/// cursor position was set successfully.
+		///  Moves the cursor to the next file in the archive. Returns true (1) if the
+		///  cursor position was set successfully.
 		/// </summary>
 		[NativeName("move_to_next_file")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int MoveToNextFile();
+		public extern int MoveToNextFile();
 
 		/// <summary>
-		/// int (*)(_cef_zip_reader_t* self, const cef_string_t* fileName, int caseSensitive)*
+		///  int (*)(_cef_zip_reader_t* self, const cef_string_t* fileName, int caseSensitive)*
 		/// </summary>
 		public void* move_to_file;
 
 		/// <summary>
-		/// Moves the cursor to the specified file in the archive. If |caseSensitive|
-		/// is true (1) then the search will be case sensitive. Returns true (1) if the
-		/// cursor position was set successfully.
+		///  Moves the cursor to the specified file in the archive. If |caseSensitive|
+		///  is true (1) then the search will be case sensitive. Returns true (1) if the
+		///  cursor position was set successfully.
 		/// </summary>
 		[NativeName("move_to_file")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int MoveToFile([Immutable]cef_string_t* fileName, int caseSensitive);
+		public extern int MoveToFile([Immutable] cef_string_t* fileName, int caseSensitive);
 
 		/// <summary>
-		/// int (*)(_cef_zip_reader_t* self)*
+		///  int (*)(_cef_zip_reader_t* self)*
 		/// </summary>
 		public void* close;
 
 		/// <summary>
-		/// Closes the archive. This should be called directly to ensure that cleanup
-		/// occurs on the correct thread.
+		///  Closes the archive. This should be called directly to ensure that cleanup
+		///  occurs on the correct thread.
 		/// </summary>
 		[NativeName("close")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int Close();
+		public extern int Close();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_zip_reader_t* self)*
+		///  cef_string_userfree_t (*)(_cef_zip_reader_t* self)*
 		/// </summary>
 		public void* get_file_name;
 
 		/// <summary>
-		/// Returns the name of the file.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the name of the file.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_file_name")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetFileName();
+		public extern cef_string_userfree_t GetFileName();
 
 		/// <summary>
-		/// int64 (*)(_cef_zip_reader_t* self)*
+		///  int64 (*)(_cef_zip_reader_t* self)*
 		/// </summary>
 		public void* get_file_size;
 
 		/// <summary>
-		/// Returns the uncompressed size of the file.
+		///  Returns the uncompressed size of the file.
 		/// </summary>
 		[NativeName("get_file_size")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern long GetFileSize();
+		public extern long GetFileSize();
 
 		/// <summary>
-		/// cef_time_t (*)(_cef_zip_reader_t* self)*
+		///  cef_time_t (*)(_cef_zip_reader_t* self)*
 		/// </summary>
 		public void* get_file_last_modified;
 
 		/// <summary>
-		/// Returns the last modified timestamp for the file.
+		///  Returns the last modified timestamp for the file.
 		/// </summary>
 		[NativeName("get_file_last_modified")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_time_t GetFileLastModified();
+		public extern cef_time_t GetFileLastModified();
 
 		/// <summary>
-		/// int (*)(_cef_zip_reader_t* self, const cef_string_t* password)*
+		///  int (*)(_cef_zip_reader_t* self, const cef_string_t* password)*
 		/// </summary>
 		public void* open_file;
 
 		/// <summary>
-		/// Opens the file for reading of uncompressed data. A read password may
-		/// optionally be specified.
+		///  Opens the file for reading of uncompressed data. A read password may
+		///  optionally be specified.
 		/// </summary>
 		[NativeName("open_file")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int OpenFile([Immutable]cef_string_t* password);
+		public extern int OpenFile([Immutable] cef_string_t* password);
 
 		/// <summary>
-		/// int (*)(_cef_zip_reader_t* self)*
+		///  int (*)(_cef_zip_reader_t* self)*
 		/// </summary>
 		public void* close_file;
 
 		/// <summary>
-		/// Closes the file.
+		///  Closes the file.
 		/// </summary>
 		[NativeName("close_file")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int CloseFile();
+		public extern int CloseFile();
 
 		/// <summary>
-		/// int (*)(_cef_zip_reader_t* self, void* buffer, size_t bufferSize)*
+		///  int (*)(_cef_zip_reader_t* self, void* buffer, size_t bufferSize)*
 		/// </summary>
 		public void* read_file;
 
 		/// <summary>
-		/// Read uncompressed file contents into the specified buffer. Returns 
-		/// &lt;
-		/// 0 if
-		/// an error occurred, 0 if at the end of file, or the number of bytes read.
+		///  Read uncompressed file contents into the specified buffer. Returns
+		///  &lt;
+		///  0 if
+		///  an error occurred, 0 if at the end of file, or the number of bytes read.
 		/// </summary>
 		[NativeName("read_file")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int ReadFile(void* buffer, UIntPtr bufferSize);
+		public extern int ReadFile(void* buffer, UIntPtr bufferSize);
 
 		/// <summary>
-		/// int64 (*)(_cef_zip_reader_t* self)*
+		///  int64 (*)(_cef_zip_reader_t* self)*
 		/// </summary>
 		public void* tell;
 
 		/// <summary>
-		/// Returns the current offset in the uncompressed file contents.
+		///  Returns the current offset in the uncompressed file contents.
 		/// </summary>
 		[NativeName("tell")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern long Tell();
+		public extern long Tell();
 
 		/// <summary>
-		/// int (*)(_cef_zip_reader_t* self)*
+		///  int (*)(_cef_zip_reader_t* self)*
 		/// </summary>
 		public void* eof;
 
 		/// <summary>
-		/// Returns true (1) if at end of the file contents.
+		///  Returns true (1) if at end of the file contents.
 		/// </summary>
 		[NativeName("eof")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int Eof();
+		public extern int Eof();
 	}
 }
-

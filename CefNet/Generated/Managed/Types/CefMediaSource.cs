@@ -12,67 +12,45 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Represents a source from which media can be routed. Instances of this object
-	/// are retrieved via cef_media_router_t::GetSource. The functions of this
-	/// structure may be called on any browser process thread unless otherwise
-	/// indicated.
+	///  Represents a source from which media can be routed. Instances of this object
+	///  are retrieved via cef_media_router_t::GetSource. The functions of this
+	///  structure may be called on any browser process thread unless otherwise
+	///  indicated.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefMediaSource : CefBaseRefCounted<cef_media_source_t>
+	public unsafe class CefMediaSource : CefBaseRefCounted<cef_media_source_t>
 	{
-		internal static unsafe CefMediaSource Create(IntPtr instance)
-		{
-			return new CefMediaSource((cef_media_source_t*)instance);
-		}
-
 		public CefMediaSource(cef_media_source_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets the ID (media source URN or URL) for this source.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the ID (media source URN or URL) for this source.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string Id
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetId()));
-			}
-		}
+		public virtual string Id => SafeCall(CefString.ReadAndFree(NativeInstance->GetId()));
 
 		/// <summary>
-		/// Gets a value indicating whether this source outputs its content via Cast.
+		///  Gets a value indicating whether this source outputs its content via Cast.
 		/// </summary>
-		public unsafe virtual bool IsCastSource
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsCastSource() != 0);
-			}
-		}
+		public virtual bool IsCastSource => SafeCall(NativeInstance->IsCastSource() != 0);
 
 		/// <summary>
-		/// Gets a value indicating whether this source outputs its content via DIAL.
+		///  Gets a value indicating whether this source outputs its content via DIAL.
 		/// </summary>
-		public unsafe virtual bool IsDialSource
+		public virtual bool IsDialSource => SafeCall(NativeInstance->IsDialSource() != 0);
+
+		internal static CefMediaSource Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(NativeInstance->IsDialSource() != 0);
-			}
+			return new CefMediaSource((cef_media_source_t*) instance);
 		}
 	}
 }

@@ -12,45 +12,41 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback structure for asynchronous continuation of print dialog requests.
+	///  Callback structure for asynchronous continuation of print dialog requests.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefPrintDialogCallback : CefBaseRefCounted<cef_print_dialog_callback_t>
+	public unsafe class CefPrintDialogCallback : CefBaseRefCounted<cef_print_dialog_callback_t>
 	{
-		internal static unsafe CefPrintDialogCallback Create(IntPtr instance)
+		public CefPrintDialogCallback(cef_print_dialog_callback_t* instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
-			return new CefPrintDialogCallback((cef_print_dialog_callback_t*)instance);
 		}
 
-		public CefPrintDialogCallback(cef_print_dialog_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+		internal static CefPrintDialogCallback Create(IntPtr instance)
 		{
+			return new CefPrintDialogCallback((cef_print_dialog_callback_t*) instance);
 		}
 
 		/// <summary>
-		/// Continue printing with the specified |settings|.
+		///  Continue printing with the specified |settings|.
 		/// </summary>
-		public unsafe virtual void Continue(CefPrintSettings settings)
+		public virtual void Continue(CefPrintSettings settings)
 		{
-			NativeInstance->Continue((settings != null) ? settings.GetNativeInstance() : null);
+			NativeInstance->Continue(settings != null ? settings.GetNativeInstance() : null);
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Cancel the printing.
+		///  Cancel the printing.
 		/// </summary>
-		public unsafe virtual void Cancel()
+		public virtual void Cancel()
 		{
 			NativeInstance->Cancel();
 			GC.KeepAlive(this);

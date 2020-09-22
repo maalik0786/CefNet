@@ -11,170 +11,111 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Settings used when initializing a CefBoxLayout.
+	///  Settings used when initializing a CefBoxLayout.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefBoxLayoutSettings
+	public struct CefBoxLayoutSettings
 	{
 		private cef_box_layout_settings_t _instance;
 
 		/// <summary>
-		/// If true (1) the layout will be horizontal, otherwise the layout will be
-		/// vertical.
+		///  If true (1) the layout will be horizontal, otherwise the layout will be
+		///  vertical.
 		/// </summary>
 		public bool Horizontal
 		{
-			get
-			{
-				return _instance.horizontal != 0;
-			}
-			set
-			{
-				_instance.horizontal = value ? 1 : 0;
-			}
+			get => _instance.horizontal != 0;
+			set => _instance.horizontal = value ? 1 : 0;
 		}
 
 		/// <summary>
-		/// Adds additional horizontal space between the child view area and the host
-		/// view border.
+		///  Adds additional horizontal space between the child view area and the host
+		///  view border.
 		/// </summary>
 		public int InsideBorderHorizontalSpacing
 		{
-			get
-			{
-				return _instance.inside_border_horizontal_spacing;
-			}
-			set
-			{
-				_instance.inside_border_horizontal_spacing = value;
-			}
+			get => _instance.inside_border_horizontal_spacing;
+			set => _instance.inside_border_horizontal_spacing = value;
 		}
 
 		/// <summary>
-		/// Adds additional vertical space between the child view area and the host
-		/// view border.
+		///  Adds additional vertical space between the child view area and the host
+		///  view border.
 		/// </summary>
 		public int InsideBorderVerticalSpacing
 		{
-			get
-			{
-				return _instance.inside_border_vertical_spacing;
-			}
-			set
-			{
-				_instance.inside_border_vertical_spacing = value;
-			}
+			get => _instance.inside_border_vertical_spacing;
+			set => _instance.inside_border_vertical_spacing = value;
 		}
 
 		/// <summary>
-		/// Adds additional space around the child view area.
+		///  Adds additional space around the child view area.
 		/// </summary>
 		public CefInsets InsideBorderInsets
 		{
-			get
-			{
-				return _instance.inside_border_insets;
-			}
-			set
-			{
-				_instance.inside_border_insets = value;
-			}
+			get => _instance.inside_border_insets;
+			set => _instance.inside_border_insets = value;
 		}
 
 		/// <summary>
-		/// Adds additional space between child views.
+		///  Adds additional space between child views.
 		/// </summary>
 		public int BetweenChildSpacing
 		{
-			get
-			{
-				return _instance.between_child_spacing;
-			}
-			set
-			{
-				_instance.between_child_spacing = value;
-			}
+			get => _instance.between_child_spacing;
+			set => _instance.between_child_spacing = value;
 		}
 
 		/// <summary>
-		/// Specifies where along the main axis the child views should be laid out.
+		///  Specifies where along the main axis the child views should be laid out.
 		/// </summary>
 		public CefMainAxisAlignment MainAxisAlignment
 		{
-			get
-			{
-				return _instance.main_axis_alignment;
-			}
-			set
-			{
-				_instance.main_axis_alignment = value;
-			}
+			get => _instance.main_axis_alignment;
+			set => _instance.main_axis_alignment = value;
 		}
 
 		/// <summary>
-		/// Specifies where along the cross axis the child views should be laid out.
+		///  Specifies where along the cross axis the child views should be laid out.
 		/// </summary>
 		public CefCrossAxisAlignment CrossAxisAlignment
 		{
-			get
-			{
-				return _instance.cross_axis_alignment;
-			}
-			set
-			{
-				_instance.cross_axis_alignment = value;
-			}
+			get => _instance.cross_axis_alignment;
+			set => _instance.cross_axis_alignment = value;
 		}
 
 		/// <summary>
-		/// Minimum cross axis size.
+		///  Minimum cross axis size.
 		/// </summary>
 		public int MinimumCrossAxisSize
 		{
-			get
-			{
-				return _instance.minimum_cross_axis_size;
-			}
-			set
-			{
-				_instance.minimum_cross_axis_size = value;
-			}
+			get => _instance.minimum_cross_axis_size;
+			set => _instance.minimum_cross_axis_size = value;
 		}
 
 		/// <summary>
-		/// Default flex for views when none is specified via CefBoxLayout methods.
-		/// Using the preferred size as the basis, free space along the main axis is
-		/// distributed to views in the ratio of their flex weights. Similarly, if the
-		/// views will overflow the parent, space is subtracted in these ratios. A flex
-		/// of 0 means this view is not resized. Flex values must not be negative.
+		///  Default flex for views when none is specified via CefBoxLayout methods.
+		///  Using the preferred size as the basis, free space along the main axis is
+		///  distributed to views in the ratio of their flex weights. Similarly, if the
+		///  views will overflow the parent, space is subtracted in these ratios. A flex
+		///  of 0 means this view is not resized. Flex values must not be negative.
 		/// </summary>
 		public int DefaultFlex
 		{
-			get
-			{
-				return _instance.default_flex;
-			}
-			set
-			{
-				_instance.default_flex = value;
-			}
+			get => _instance.default_flex;
+			set => _instance.default_flex = value;
 		}
 
 		public static implicit operator CefBoxLayoutSettings(cef_box_layout_settings_t instance)
 		{
-			return new CefBoxLayoutSettings { _instance = instance };
+			return new CefBoxLayoutSettings {_instance = instance};
 		}
 
 		public static implicit operator cef_box_layout_settings_t(CefBoxLayoutSettings instance)

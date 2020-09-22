@@ -12,64 +12,61 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure to implement to be notified of asynchronous completion via
-	/// cef_cookie_manager_t::delete_cookies().
+	///  Structure to implement to be notified of asynchronous completion via
+	///  cef_cookie_manager_t::delete_cookies().
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefDeleteCookiesCallback : CefBaseRefCounted<cef_delete_cookies_callback_t>, ICefDeleteCookiesCallbackPrivate
+	public unsafe class CefDeleteCookiesCallback : CefBaseRefCounted<cef_delete_cookies_callback_t>,
+		ICefDeleteCookiesCallbackPrivate
 	{
 		private static readonly OnCompleteDelegate fnOnComplete = OnCompleteImpl;
 
-		internal static unsafe CefDeleteCookiesCallback Create(IntPtr instance)
-		{
-			return new CefDeleteCookiesCallback((cef_delete_cookies_callback_t*)instance);
-		}
-
 		public CefDeleteCookiesCallback()
 		{
-			cef_delete_cookies_callback_t* self = this.NativeInstance;
-			self->on_complete = (void*)Marshal.GetFunctionPointerForDelegate(fnOnComplete);
+			var self = NativeInstance;
+			self->on_complete = (void*) Marshal.GetFunctionPointerForDelegate(fnOnComplete);
 		}
 
 		public CefDeleteCookiesCallback(cef_delete_cookies_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefDeleteCookiesCallbackPrivate.AvoidOnComplete();
 
-		/// <summary>
-		/// Method that will be called upon completion. |num_deleted| will be the
-		/// number of cookies that were deleted.
-		/// </summary>
-		protected internal unsafe virtual void OnComplete(int numDeleted)
+		internal static CefDeleteCookiesCallback Create(IntPtr instance)
 		{
+			return new CefDeleteCookiesCallback((cef_delete_cookies_callback_t*) instance);
+		}
+
+		/// <summary>
+		///  Method that will be called upon completion. |num_deleted| will be the
+		///  number of cookies that were deleted.
+		/// </summary>
+		protected internal virtual void OnComplete(int numDeleted)
+		{
+		}
+
+		// void (*)(_cef_delete_cookies_callback_t* self, int num_deleted)*
+		private static void OnCompleteImpl(cef_delete_cookies_callback_t* self, int num_deleted)
+		{
+			var instance = GetInstance((IntPtr) self) as CefDeleteCookiesCallback;
+			if (instance == null || ((ICefDeleteCookiesCallbackPrivate) instance).AvoidOnComplete()) return;
+			instance.OnComplete(num_deleted);
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnCompleteDelegate(cef_delete_cookies_callback_t* self, int num_deleted);
-
-		// void (*)(_cef_delete_cookies_callback_t* self, int num_deleted)*
-		private static unsafe void OnCompleteImpl(cef_delete_cookies_callback_t* self, int num_deleted)
-		{
-			var instance = GetInstance((IntPtr)self) as CefDeleteCookiesCallback;
-			if (instance == null || ((ICefDeleteCookiesCallbackPrivate)instance).AvoidOnComplete())
-			{
-				return;
-			}
-			instance.OnComplete(num_deleted);
-		}
+		private delegate void OnCompleteDelegate(cef_delete_cookies_callback_t* self, int num_deleted);
 	}
 }

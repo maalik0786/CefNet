@@ -1,23 +1,16 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-
 
 namespace CefNet.JSInterop
 {
 	[StructLayout(LayoutKind.Explicit, Pack = 4, Size = 20)]
 	public struct XrayHandle
 	{
-		[FieldOffset(0)]
-		public long frame;
-		[FieldOffset(8)]
-		public XrayDataType dataType;
-		[FieldOffset(12)]
-		public IntPtr gcHandle;
-		[FieldOffset(12)]
-		public double fRaw;
-		[FieldOffset(12)]
-		public long iRaw;
+		[FieldOffset(0)] public long frame;
+		[FieldOffset(8)] public XrayDataType dataType;
+		[FieldOffset(12)] public IntPtr gcHandle;
+		[FieldOffset(12)] public double fRaw;
+		[FieldOffset(12)] public long iRaw;
 
 		public XrayHandle(long frameid, IntPtr handle, XrayDataType dataType)
 		{
@@ -25,14 +18,14 @@ namespace CefNet.JSInterop
 			iRaw = 0;
 			fRaw = 0;
 			frame = frameid;
-			this.gcHandle = handle;
+			gcHandle = handle;
 		}
 
 		public void Release()
 		{
 			if (gcHandle == IntPtr.Zero)
 				return;
-			GCHandle handle = GCHandle.FromIntPtr(this.gcHandle);
+			var handle = GCHandle.FromIntPtr(gcHandle);
 			gcHandle = IntPtr.Zero;
 			if (handle.Target is XrayObject obj)
 				obj.ReleaseHandle();
@@ -40,14 +33,14 @@ namespace CefNet.JSInterop
 
 		public XrayObject GetTarget(CefFrame frame)
 		{
-			if (this.gcHandle == IntPtr.Zero)
+			if (gcHandle == IntPtr.Zero)
 				return null;
 
-			if(frame is null || frame.Identifier != this.frame)
+			if (frame is null || frame.Identifier != this.frame)
 				throw new ObjectDeadException();
 
-			GCHandle handle = GCHandle.FromIntPtr(this.gcHandle);
-			return (XrayObject)handle.Target;
+			var handle = GCHandle.FromIntPtr(gcHandle);
+			return (XrayObject) handle.Target;
 		}
 
 		public static readonly XrayHandle Zero;
@@ -63,7 +56,7 @@ namespace CefNet.JSInterop
 		public unsafe CefBinaryValue ToCfxBinaryValue()
 		{
 			CefBinaryValue value;
-			GCHandle handle = GCHandle.Alloc(this, GCHandleType.Pinned);
+			var handle = GCHandle.Alloc(this, GCHandleType.Pinned);
 			value = new CefBinaryValue(handle.AddrOfPinnedObject(), sizeof(XrayHandle));
 			handle.Free();
 			return value;
@@ -71,7 +64,7 @@ namespace CefNet.JSInterop
 
 		public object ToObject()
 		{
-			switch(this.dataType)
+			switch (dataType)
 			{
 				case XrayDataType.Date:
 					return DateTime.FromBinary(iRaw);
@@ -80,23 +73,24 @@ namespace CefNet.JSInterop
 				case XrayDataType.CorsRedirect:
 					return this;
 			}
+
 			throw new NotSupportedException();
 		}
 
 		internal CefV8Value ToCefV8Value(CefFrame frame)
 		{
-			switch (this.dataType)
+			switch (dataType)
 			{
 				case XrayDataType.Date:
 					return new CefV8Value(DateTime.FromBinary(iRaw));
 				case XrayDataType.Object:
 				case XrayDataType.Function:
-					XrayObject xray = this.GetTarget(frame);
+					var xray = GetTarget(frame);
 					if (xray == null)
 						throw new InvalidCastException();
 					return xray.Value;
-
 			}
+
 			throw new NotSupportedException();
 		}
 
@@ -110,23 +104,23 @@ namespace CefNet.JSInterop
 		//	return string.Join(", ", buffer);
 		//}
 
-		public unsafe static XrayHandle FromCfxBinaryValue(CefBinaryValue v)
+		public static unsafe XrayHandle FromCfxBinaryValue(CefBinaryValue v)
 		{
 			var xray = new XrayHandle();
-			v.GetData((IntPtr)(void*)&xray, sizeof(XrayHandle), 0);
+			v.GetData((IntPtr) (&xray), sizeof(XrayHandle), 0);
 			return xray;
 		}
 
 		public static unsafe bool operator ==(XrayHandle a, XrayHandle b)
 		{
-			ulong* a64 = (ulong*)&a;
-			ulong* b64 = (ulong*)&b;
-			uint* a32 = (uint*)&a;
-			uint* b32 = (uint*)&b;
+			var a64 = (ulong*) &a;
+			var b64 = (ulong*) &b;
+			var a32 = (uint*) &a;
+			var b32 = (uint*) &b;
 			return *a64 == *b64 && *(a64 + 1) == *(b64 + 1) && *(a32 + 4) == *(b32 + 4);
 		}
 
-		public static unsafe bool operator !=(XrayHandle a, XrayHandle b)
+		public static bool operator !=(XrayHandle a, XrayHandle b)
 		{
 			return !(a == b);
 		}

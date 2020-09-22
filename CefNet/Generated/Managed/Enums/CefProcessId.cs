@@ -11,27 +11,21 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Existing process IDs.
+	///  Existing process IDs.
 	/// </summary>
 	public enum CefProcessId
 	{
 		/// <summary>
-		/// Browser process.
+		///  Browser process.
 		/// </summary>
 		Browser = 0,
 
 		/// <summary>
-		/// Renderer process.
+		///  Renderer process.
 		/// </summary>
-		Renderer = 1,
+		Renderer = 1
 	}
 }
-

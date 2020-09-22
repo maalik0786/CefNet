@@ -12,68 +12,68 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure to implement for visiting the DOM. The functions of this structure
-	/// will be called on the render process main thread.
+	///  Structure to implement for visiting the DOM. The functions of this structure
+	///  will be called on the render process main thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefDOMVisitor : CefBaseRefCounted<cef_domvisitor_t>, ICefDOMVisitorPrivate
+	public unsafe class CefDOMVisitor : CefBaseRefCounted<cef_domvisitor_t>, ICefDOMVisitorPrivate
 	{
 		private static readonly VisitDelegate fnVisit = VisitImpl;
 
-		internal static unsafe CefDOMVisitor Create(IntPtr instance)
-		{
-			return new CefDOMVisitor((cef_domvisitor_t*)instance);
-		}
-
 		public CefDOMVisitor()
 		{
-			cef_domvisitor_t* self = this.NativeInstance;
-			self->visit = (void*)Marshal.GetFunctionPointerForDelegate(fnVisit);
+			var self = NativeInstance;
+			self->visit = (void*) Marshal.GetFunctionPointerForDelegate(fnVisit);
 		}
 
 		public CefDOMVisitor(cef_domvisitor_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefDOMVisitorPrivate.AvoidVisit();
 
-		/// <summary>
-		/// Method executed for visiting the DOM. The document object passed to this
-		/// function represents a snapshot of the DOM at the time this function is
-		/// executed. DOM objects are only valid for the scope of this function. Do not
-		/// keep references to or attempt to access any DOM objects outside the scope
-		/// of this function.
-		/// </summary>
-		protected internal unsafe virtual void Visit(CefDOMDocument document)
+		internal static CefDOMVisitor Create(IntPtr instance)
 		{
+			return new CefDOMVisitor((cef_domvisitor_t*) instance);
+		}
+
+		/// <summary>
+		///  Method executed for visiting the DOM. The document object passed to this
+		///  function represents a snapshot of the DOM at the time this function is
+		///  executed. DOM objects are only valid for the scope of this function. Do not
+		///  keep references to or attempt to access any DOM objects outside the scope
+		///  of this function.
+		/// </summary>
+		protected internal virtual void Visit(CefDOMDocument document)
+		{
+		}
+
+		// void (*)(_cef_domvisitor_t* self, _cef_domdocument_t* document)*
+		private static void VisitImpl(cef_domvisitor_t* self, cef_domdocument_t* document)
+		{
+			var instance = GetInstance((IntPtr) self) as CefDOMVisitor;
+			if (instance == null || ((ICefDOMVisitorPrivate) instance).AvoidVisit())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) document);
+				return;
+			}
+
+			instance.Visit(CefDOMDocument.Wrap(CefDOMDocument.Create, document));
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void VisitDelegate(cef_domvisitor_t* self, cef_domdocument_t* document);
-
-		// void (*)(_cef_domvisitor_t* self, _cef_domdocument_t* document)*
-		private static unsafe void VisitImpl(cef_domvisitor_t* self, cef_domdocument_t* document)
-		{
-			var instance = GetInstance((IntPtr)self) as CefDOMVisitor;
-			if (instance == null || ((ICefDOMVisitorPrivate)instance).AvoidVisit())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)document);
-				return;
-			}
-			instance.Visit(CefDOMDocument.Wrap(CefDOMDocument.Create, document));
-		}
+		private delegate void VisitDelegate(cef_domvisitor_t* self, cef_domdocument_t* document);
 	}
 }

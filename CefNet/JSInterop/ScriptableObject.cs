@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace CefNet.JSInterop
 {
 	[DebuggerNonUserCode]
 	public class ScriptableObject : DynamicObject, IEquatable<ScriptableObject>
 	{
-		private XrayProxy _instance;
+		private readonly XrayProxy _instance;
 
 		protected internal ScriptableObject(ScriptableObject instance)
 		{
@@ -26,7 +22,7 @@ namespace CefNet.JSInterop
 		}
 
 		/// <summary>
-		/// The number of milliseconds to wait for a response from a renderer process.
+		///  The number of milliseconds to wait for a response from a renderer process.
 		/// </summary>
 		public static int Timeout { get; set; } = ScriptableRequestInfo.DefaultTimeout;
 
@@ -34,10 +30,9 @@ namespace CefNet.JSInterop
 		{
 			get
 			{
-
-				if (_instance.TryGetHandle(out XrayHandle handle))
+				if (_instance.TryGetHandle(out var handle))
 					return handle;
-				throw new ObjectDisposedException(this.GetType().Name);
+				throw new ObjectDisposedException(GetType().Name);
 			}
 		}
 
@@ -45,27 +40,18 @@ namespace CefNet.JSInterop
 		{
 			get
 			{
-				ScriptableObjectProvider provider = _instance.Provider;
+				var provider = _instance.Provider;
 				if (provider == null)
-					throw new ObjectDisposedException(this.GetType().Name);
+					throw new ObjectDisposedException(GetType().Name);
 				return provider;
 			}
 		}
 
-		public bool IsFunction
-		{
-			get
-			{
-				return Instance.dataType == XrayDataType.Function;
-			}
-		}
+		public bool IsFunction => Instance.dataType == XrayDataType.Function;
 
 		public object this[string name]
 		{
-			get
-			{
-				return WrapResult(Provider.GetProperty(Instance, name));
-			}
+			get => WrapResult(Provider.GetProperty(Instance, name));
 			set
 			{
 				var wrapper = value as ScriptableObject;
@@ -77,10 +63,7 @@ namespace CefNet.JSInterop
 
 		public object this[int index]
 		{
-			get
-			{
-				return WrapResult(Provider.GetProperty(Instance, index));
-			}
+			get => WrapResult(Provider.GetProperty(Instance, index));
 			set
 			{
 				var wrapper = value as ScriptableObject;
@@ -88,6 +71,22 @@ namespace CefNet.JSInterop
 					value = wrapper.Instance;
 				Provider.SetProperty(Instance, index, value);
 			}
+		}
+
+		public bool Equals(ScriptableObject scriptableObject)
+		{
+			if (scriptableObject is null)
+				return false;
+			if (ReferenceEquals(this, scriptableObject))
+				return true;
+
+			try
+			{
+				if (Provider.Equals(scriptableObject.Provider)) return scriptableObject.Instance == Instance;
+			}
+			catch (ObjectDisposedException) { }
+
+			return false;
 		}
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
@@ -98,7 +97,7 @@ namespace CefNet.JSInterop
 
 		private object GetMember(string name)
 		{
-			return WrapResult(this.Provider.GetProperty(Instance, name));
+			return WrapResult(Provider.GetProperty(Instance, name));
 		}
 
 		public override bool TrySetMember(SetMemberBinder binder, object value)
@@ -119,13 +118,14 @@ namespace CefNet.JSInterop
 		{
 			try
 			{
-				result = WrapResult(this.Provider.InvokeMember(this.Instance, name, args));
+				result = WrapResult(Provider.InvokeMember(Instance, name, args));
 			}
 			catch (InvalidOperationException)
 			{
 				result = null;
 				return false;
 			}
+
 			//throw new MissingMethodException();
 			return true;
 		}
@@ -137,41 +137,21 @@ namespace CefNet.JSInterop
 				result = null;
 				return false;
 			}
-			result = WrapResult(this.Provider.Invoke(this.Instance, args));
+
+			result = WrapResult(Provider.Invoke(Instance, args));
 			return true;
 		}
 
 
 		protected virtual object WrapResult(object value)
 		{
-			if (value is XrayHandle v8obj)
-			{
-				return new ScriptableObject(v8obj, this.Provider);
-			}
+			if (value is XrayHandle v8obj) return new ScriptableObject(v8obj, Provider);
 			return value;
 		}
 
 		public override bool Equals(object obj)
 		{
 			return Equals(obj as ScriptableObject);
-		}
-
-		public bool Equals(ScriptableObject scriptableObject)
-		{
-			if (scriptableObject is null)
-				return false;
-			if (ReferenceEquals(this, scriptableObject))
-				return true;
-
-			try
-			{
-				if (this.Provider.Equals(scriptableObject.Provider))
-				{
-					return (scriptableObject.Instance == Instance);
-				}
-			}
-			catch (ObjectDisposedException) { }
-			return false;
 		}
 
 		public override int GetHashCode()
@@ -197,6 +177,5 @@ namespace CefNet.JSInterop
 		{
 			return me.Instance;
 		}
-
 	}
 }

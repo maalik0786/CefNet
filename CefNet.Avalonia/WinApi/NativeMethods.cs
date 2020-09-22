@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace CefNet.WinApi
 {
-	static class NativeMethods
+	internal static class NativeMethods
 	{
 		[DllImport("user32.dll")]
 		public static extern IntPtr GetKeyboardLayout(uint idThread);
@@ -20,8 +18,7 @@ namespace CefNet.WinApi
 		{
 			if (IntPtr.Size == 8)
 				return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
-			else
-				return new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
+			return new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
 		}
 
 		[DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Auto, SetLastError = true)]
@@ -31,13 +28,15 @@ namespace CefNet.WinApi
 		private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+		public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, int msg, IntPtr wParam,
+			IntPtr lParam);
 
 		[DllImport("user32.dll", SetLastError = true)]
 		public static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr pPid);
 
 		[DllImport("Dwmapi.dll", CharSet = CharSet.Auto)]
-		public static unsafe extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, void* value, int size);
+		public static extern unsafe int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, void* value,
+			int size);
 
 		[DllImport("Dwmapi.dll", CharSet = CharSet.Auto, PreserveSig = false)]
 		public static extern bool DwmIsCompositionEnabled();

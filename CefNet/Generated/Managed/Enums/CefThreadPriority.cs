@@ -11,37 +11,31 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Thread priority values listed in increasing order of importance.
+	///  Thread priority values listed in increasing order of importance.
 	/// </summary>
 	public enum CefThreadPriority
 	{
 		/// <summary>
-		/// Suitable for threads that shouldn&apos;t disrupt high priority work.
+		///  Suitable for threads that shouldn&apos;t disrupt high priority work.
 		/// </summary>
 		Background = 0,
 
 		/// <summary>
-		/// Default priority level.
+		///  Default priority level.
 		/// </summary>
 		Normal = 1,
 
 		/// <summary>
-		/// Suitable for threads which generate data for the display (at ~60Hz).
+		///  Suitable for threads which generate data for the display (at ~60Hz).
 		/// </summary>
 		Display = 2,
 
 		/// <summary>
-		/// Suitable for low-latency, glitch-resistant audio.
+		///  Suitable for low-latency, glitch-resistant audio.
 		/// </summary>
-		RealtimeAudio = 3,
+		RealtimeAudio = 3
 	}
 }
-

@@ -11,27 +11,15 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefBrowserProcessHandlerGlue: CefBrowserProcessHandler, ICefBrowserProcessHandlerPrivate
+	internal sealed class CefBrowserProcessHandlerGlue : CefBrowserProcessHandler, ICefBrowserProcessHandlerPrivate
 	{
-		private CefAppGlue _implementation;
+		private readonly CefAppGlue _implementation;
 
 		public CefBrowserProcessHandlerGlue(CefAppGlue impl)
 		{
 			_implementation = impl;
-		}
-
-		protected internal unsafe override void OnContextInitialized()
-		{
-			_implementation.OnContextInitialized();
 		}
 
 		bool ICefBrowserProcessHandlerPrivate.AvoidOnBeforeChildProcessLaunch()
@@ -39,25 +27,29 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnBeforeChildProcessLaunch();
 		}
 
-		protected internal unsafe override void OnBeforeChildProcessLaunch(CefCommandLine commandLine)
-		{
-			_implementation.OnBeforeChildProcessLaunch(commandLine);
-		}
-
-		protected internal unsafe override CefPrintHandler GetPrintHandler()
-		{
-			return _implementation.GetPrintHandler();
-		}
-
 		bool ICefBrowserProcessHandlerPrivate.AvoidOnScheduleMessagePumpWork()
 		{
 			return _implementation.AvoidOnScheduleMessagePumpWork();
 		}
 
-		protected internal unsafe override void OnScheduleMessagePumpWork(long delayMs)
+		protected internal override void OnContextInitialized()
+		{
+			_implementation.OnContextInitialized();
+		}
+
+		protected internal override void OnBeforeChildProcessLaunch(CefCommandLine commandLine)
+		{
+			_implementation.OnBeforeChildProcessLaunch(commandLine);
+		}
+
+		protected internal override CefPrintHandler GetPrintHandler()
+		{
+			return _implementation.GetPrintHandler();
+		}
+
+		protected internal override void OnScheduleMessagePumpWork(long delayMs)
 		{
 			_implementation.OnScheduleMessagePumpWork(delayMs);
 		}
-
 	}
 }

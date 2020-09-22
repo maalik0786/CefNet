@@ -11,18 +11,15 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Popup window features.
+	///  Popup window features.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_popup_features_t
+	public struct cef_popup_features_t
 	{
 		public int x;
 
@@ -49,4 +46,3 @@ namespace CefNet.CApi
 		public int scrollbarsVisible;
 	}
 }
-

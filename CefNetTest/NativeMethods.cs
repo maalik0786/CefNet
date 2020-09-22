@@ -18,7 +18,7 @@ namespace CefNetTest
 		private static extern IntPtr LoadLibraryW(string filename);
 
 		[DllImport("libdl", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
-		private static extern IntPtr dlopen (string path, int mode);
+		private static extern IntPtr dlopen(string path, int mode);
 
 		public static IntPtr LoadLibrary(string filename)
 		{
@@ -32,7 +32,6 @@ namespace CefNetTest
 
 		[DllImport("X11", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int XSetIOErrorHandler(X11IOErrorHandlerDelegate callback);
-
 	}
 
 	public struct XErrorEvent

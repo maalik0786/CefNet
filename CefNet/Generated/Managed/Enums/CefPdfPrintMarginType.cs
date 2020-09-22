@@ -11,37 +11,31 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Margin type for PDF printing.
+	///  Margin type for PDF printing.
 	/// </summary>
 	public enum CefPdfPrintMarginType
 	{
 		/// <summary>
-		/// Default margins.
+		///  Default margins.
 		/// </summary>
 		Default = 0,
 
 		/// <summary>
-		/// No margins.
+		///  No margins.
 		/// </summary>
 		None = 1,
 
 		/// <summary>
-		/// Minimum margins.
+		///  Minimum margins.
 		/// </summary>
 		Minimum = 2,
 
 		/// <summary>
-		/// Custom margins using the |margin_*| values from cef_pdf_print_settings_t.
+		///  Custom margins using the |margin_*| values from cef_pdf_print_settings_t.
 		/// </summary>
-		Custom = 3,
+		Custom = 3
 	}
 }
-

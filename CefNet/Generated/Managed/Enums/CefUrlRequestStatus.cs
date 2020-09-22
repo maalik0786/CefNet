@@ -11,43 +11,37 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Flags that represent CefURLRequest status.
+	///  Flags that represent CefURLRequest status.
 	/// </summary>
 	public enum CefUrlRequestStatus
 	{
 		/// <summary>
-		/// Unknown status.
+		///  Unknown status.
 		/// </summary>
 		Unknown = 0,
 
 		/// <summary>
-		/// Request succeeded.
+		///  Request succeeded.
 		/// </summary>
 		Success = 1,
 
 		/// <summary>
-		/// An IO request is pending, and the caller will be informed when it is
-		/// completed.
+		///  An IO request is pending, and the caller will be informed when it is
+		///  completed.
 		/// </summary>
 		IOPending = 2,
 
 		/// <summary>
-		/// Request was canceled programatically.
+		///  Request was canceled programatically.
 		/// </summary>
 		Canceled = 3,
 
 		/// <summary>
-		/// Request failed for some reason.
+		///  Request failed for some reason.
 		/// </summary>
-		Failed = 4,
+		Failed = 4
 	}
 }
-

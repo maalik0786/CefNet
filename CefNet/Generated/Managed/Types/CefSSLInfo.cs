@@ -12,53 +12,38 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing SSL information.
+	///  Structure representing SSL information.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefSSLInfo : CefBaseRefCounted<cef_sslinfo_t>
+	public unsafe class CefSSLInfo : CefBaseRefCounted<cef_sslinfo_t>
 	{
-		internal static unsafe CefSSLInfo Create(IntPtr instance)
-		{
-			return new CefSSLInfo((cef_sslinfo_t*)instance);
-		}
-
 		public CefSSLInfo(cef_sslinfo_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets a bitmask containing any and all problems verifying the server
-		/// certificate.
+		///  Gets a bitmask containing any and all problems verifying the server
+		///  certificate.
 		/// </summary>
-		public unsafe virtual CefCertStatus CertStatus
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetCertStatus());
-			}
-		}
+		public virtual CefCertStatus CertStatus => SafeCall(NativeInstance->GetCertStatus());
 
 		/// <summary>
-		/// Gets the X.509 certificate.
+		///  Gets the X.509 certificate.
 		/// </summary>
-		public unsafe virtual CefX509Certificate X509certificate
+		public virtual CefX509Certificate X509certificate =>
+			SafeCall(CefX509Certificate.Wrap(CefX509Certificate.Create, NativeInstance->GetX509certificate()));
+
+		internal static CefSSLInfo Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(CefX509Certificate.Wrap(CefX509Certificate.Create, NativeInstance->GetX509certificate()));
-			}
+			return new CefSSLInfo((cef_sslinfo_t*) instance);
 		}
 	}
 }

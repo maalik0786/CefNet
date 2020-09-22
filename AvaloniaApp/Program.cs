@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Linq;
 using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Logging.Serilog;
 
 namespace AvaloniaApp
 {
-	class Program
+	internal class Program
 	{
 		// Initialization code. Don't use any Avalonia, third-party APIs or any
 		// SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -15,16 +13,18 @@ namespace AvaloniaApp
 		public static void Main(string[] args)
 		{
 			BuildAvaloniaApp()
-			// workaround for https://github.com/AvaloniaUI/Avalonia/issues/3533
-			.With(new AvaloniaNativePlatformOptions { UseGpu = false })
-			.StartWithClassicDesktopLifetime(args);
+				// workaround for https://github.com/AvaloniaUI/Avalonia/issues/3533
+				.With(new AvaloniaNativePlatformOptions {UseGpu = false})
+				.StartWithClassicDesktopLifetime(args);
 		}
 
 
 		// Avalonia configuration, don't remove; also used by visual designer.
 		public static AppBuilder BuildAvaloniaApp()
-			=> AppBuilder.Configure<App>()
+		{
+			return AppBuilder.Configure<App>()
 				.UsePlatformDetect()
 				.LogToDebug();
+		}
 	}
 }

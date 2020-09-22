@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CefNet
+﻿namespace CefNet
 {
 	public class AddressChangeEventArgs : NavigatedEventArgs
 	{
 		public AddressChangeEventArgs(CefFrame frame, string url)
 			: base(frame, url)
 		{
-
 		}
 
-		public bool IsMainFrame
-		{
-			get { return Frame?.IsMain ?? false; }
-		}
-
+		public bool IsMainFrame => Frame?.IsMain ?? false;
 	}
 }

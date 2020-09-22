@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace CefNet.JSInterop
 {
 	internal sealed class V8CallTask : CefTask
 	{
-		private ManualResetEvent _event;
 		private readonly Delegate _method;
-		private volatile object _result;
+		private readonly ManualResetEvent _event;
 		private volatile Exception _exception;
+		private volatile object _result;
 
 		public V8CallTask(Func<object> func)
 		{
@@ -19,7 +17,7 @@ namespace CefNet.JSInterop
 
 			_event = new ManualResetEvent(false);
 			_method = func;
-			this.AddRef();
+			AddRef();
 		}
 
 		public V8CallTask(Action action)
@@ -33,7 +31,6 @@ namespace CefNet.JSInterop
 		protected internal override void Execute()
 		{
 			if (_method is Func<object> func)
-			{
 				try
 				{
 					_result = func();
@@ -47,8 +44,8 @@ namespace CefNet.JSInterop
 					try { _event.Set(); }
 					catch (ObjectDisposedException) { }
 				}
-			}
-			((Action)_method)();
+
+			((Action) _method)();
 		}
 
 		public object GetResult()
@@ -65,6 +62,5 @@ namespace CefNet.JSInterop
 			_event?.Dispose();
 			base.Dispose(disposing);
 		}
-
 	}
 }

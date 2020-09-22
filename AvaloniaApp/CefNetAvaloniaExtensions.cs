@@ -1,9 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.VisualTree;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace AvaloniaApp
 {
@@ -18,18 +15,21 @@ namespace AvaloniaApp
 					return tabControl;
 				control = control.Parent;
 			}
+
 			return null;
 		}
 
 		/// <summary>
-		/// Finds a Child of a given item in the visual tree. 
+		///  Finds a Child of a given item in the visual tree.
 		/// </summary>
 		/// <param name="parent">A direct parent of the queried item.</param>
 		/// <typeparam name="T">The type of the queried item.</typeparam>
 		/// <param name="childName">x:Name or Name of child. </param>
-		/// <returns>The first parent item that matches the submitted type parameter. 
-		/// If not matching item can be found, 
-		/// a null parent is being returned.</returns>
+		/// <returns>
+		///  The first parent item that matches the submitted type parameter.
+		///  If not matching item can be found,
+		///  a null parent is being returned.
+		/// </returns>
 		public static T FindChild<T>(this Visual parent, string childName)
 			where T : Visual
 		{
@@ -38,10 +38,10 @@ namespace AvaloniaApp
 
 			T foundChild = null;
 
-			foreach(Visual child in parent.GetVisualChildren())
-			{ 
+			foreach (Visual child in parent.GetVisualChildren())
+			{
 				// If the child is not of the request child type child
-				T childType = child as T;
+				var childType = child as T;
 				if (childType is null)
 				{
 					// recursively drill down the tree
@@ -52,25 +52,24 @@ namespace AvaloniaApp
 				}
 				else if (!string.IsNullOrEmpty(childName))
 				{
-					var frameworkElement = child as Visual;
+					var frameworkElement = child;
 					// If the child's name is set for search
 					if (frameworkElement != null && frameworkElement.Name == childName)
 					{
 						// if the child's name is of the request name
-						foundChild = (T)child;
+						foundChild = (T) child;
 						break;
 					}
 				}
 				else
 				{
 					// child element found.
-					foundChild = (T)child;
+					foundChild = (T) child;
 					break;
 				}
 			}
 
 			return foundChild;
 		}
-
 	}
 }

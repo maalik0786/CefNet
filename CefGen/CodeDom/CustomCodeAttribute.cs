@@ -6,21 +6,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CefGen.CodeDom
 {
 	public sealed class CustomCodeAttribute
 	{
 		public CustomCodeAttribute(Type attribute)
-			: this(attribute.Name.EndsWith("Attribute") ? attribute.Name.Remove(attribute.Name.Length - 9) : attribute.Name)
+			: this(attribute.Name.EndsWith("Attribute")
+				? attribute.Name.Remove(attribute.Name.Length - 9)
+				: attribute.Name)
 		{
-
 		}
 
 		public CustomCodeAttribute(string name)
 		{
-			this.Name = name;
+			Name = name;
 		}
 
 		public string Name { get; }
@@ -29,10 +29,10 @@ namespace CefGen.CodeDom
 
 		public void AddParameter<T>(T value)
 		{
-			Type t = typeof(T);
+			var t = typeof(T);
 			if (t.IsPrimitive)
 				Parameters.Add(value.ToString());
-			Parameters.Add(t.Name + "." + value.ToString());
+			Parameters.Add(t.Name + "." + value);
 		}
 
 		public override string ToString()

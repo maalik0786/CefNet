@@ -1,5 +1,5 @@
-﻿using Avalonia.Input;
-using System;
+﻿using System;
+using Avalonia.Input;
 
 namespace CefNet.Avalonia
 {
@@ -7,8 +7,8 @@ namespace CefNet.Avalonia
 	{
 		public CursorChangeEventArgs(Cursor cursor, CefCursorType cursorType)
 		{
-			this.Cursor = cursor;
-			this.CursorType = cursorType;
+			Cursor = cursor;
+			CursorType = cursorType;
 		}
 
 		public Cursor Cursor { get; }

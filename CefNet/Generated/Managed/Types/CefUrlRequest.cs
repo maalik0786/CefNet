@@ -12,108 +12,76 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure used to make a URL request. URL requests are not associated with a
-	/// browser instance so no cef_client_t callbacks will be executed. URL requests
-	/// can be created on any valid CEF thread in either the browser or render
-	/// process. Once created the functions of the URL request object must be
-	/// accessed on the same thread that created it.
+	///  Structure used to make a URL request. URL requests are not associated with a
+	///  browser instance so no cef_client_t callbacks will be executed. URL requests
+	///  can be created on any valid CEF thread in either the browser or render
+	///  process. Once created the functions of the URL request object must be
+	///  accessed on the same thread that created it.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
 	public unsafe partial class CefUrlRequest : CefBaseRefCounted<cef_urlrequest_t>
 	{
-		internal static unsafe CefUrlRequest Create(IntPtr instance)
-		{
-			return new CefUrlRequest((cef_urlrequest_t*)instance);
-		}
-
 		public CefUrlRequest(cef_urlrequest_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets the request object used to create this URL request. The returned
-		/// object is read-only and should not be modified.
+		///  Gets the request object used to create this URL request. The returned
+		///  object is read-only and should not be modified.
 		/// </summary>
-		public unsafe virtual CefRequest Request
+		public virtual CefRequest Request => SafeCall(CefRequest.Wrap(CefRequest.Create, NativeInstance->GetRequest()));
+
+		/// <summary>
+		///  Gets the client.
+		/// </summary>
+		public virtual CefUrlRequestClient Client =>
+			SafeCall(CefUrlRequestClient.Wrap(CefUrlRequestClient.Create, NativeInstance->GetClient()));
+
+		/// <summary>
+		///  Gets the request status.
+		/// </summary>
+		public virtual CefUrlRequestStatus RequestStatus => SafeCall(NativeInstance->GetRequestStatus());
+
+		/// <summary>
+		///  Gets the request error if status is UR_CANCELED or UR_FAILED, or 0
+		///  otherwise.
+		/// </summary>
+		public virtual CefErrorCode RequestError => SafeCall(NativeInstance->GetRequestError());
+
+		/// <summary>
+		///  Gets the response, or NULL if no response information is available.
+		///  Response information will only be available after the upload has completed.
+		///  The returned object is read-only and should not be modified.
+		/// </summary>
+		public virtual CefResponse Response =>
+			SafeCall(CefResponse.Wrap(CefResponse.Create, NativeInstance->GetResponse()));
+
+		internal static CefUrlRequest Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(CefRequest.Wrap(CefRequest.Create, NativeInstance->GetRequest()));
-			}
+			return new CefUrlRequest((cef_urlrequest_t*) instance);
 		}
 
 		/// <summary>
-		/// Gets the client.
+		///  Returns true (1) if the response body was served from the cache. This
+		///  includes responses for which revalidation was required.
 		/// </summary>
-		public unsafe virtual CefUrlRequestClient Client
-		{
-			get
-			{
-				return SafeCall(CefUrlRequestClient.Wrap(CefUrlRequestClient.Create, NativeInstance->GetClient()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the request status.
-		/// </summary>
-		public unsafe virtual CefUrlRequestStatus RequestStatus
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetRequestStatus());
-			}
-		}
-
-		/// <summary>
-		/// Gets the request error if status is UR_CANCELED or UR_FAILED, or 0
-		/// otherwise.
-		/// </summary>
-		public unsafe virtual CefErrorCode RequestError
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetRequestError());
-			}
-		}
-
-		/// <summary>
-		/// Gets the response, or NULL if no response information is available.
-		/// Response information will only be available after the upload has completed.
-		/// The returned object is read-only and should not be modified.
-		/// </summary>
-		public unsafe virtual CefResponse Response
-		{
-			get
-			{
-				return SafeCall(CefResponse.Wrap(CefResponse.Create, NativeInstance->GetResponse()));
-			}
-		}
-
-		/// <summary>
-		/// Returns true (1) if the response body was served from the cache. This
-		/// includes responses for which revalidation was required.
-		/// </summary>
-		public unsafe virtual bool ResponseWasCached()
+		public virtual bool ResponseWasCached()
 		{
 			return SafeCall(NativeInstance->ResponseWasCached() != 0);
 		}
 
 		/// <summary>
-		/// Cancel the request.
+		///  Cancel the request.
 		/// </summary>
-		public unsafe virtual void Cancel()
+		public virtual void Cancel()
 		{
 			NativeInstance->Cancel();
 			GC.KeepAlive(this);

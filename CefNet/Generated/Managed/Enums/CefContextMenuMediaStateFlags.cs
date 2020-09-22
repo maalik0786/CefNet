@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported context menu media state bit flags.
+	///  Supported context menu media state bit flags.
 	/// </summary>
 	public enum CefContextMenuMediaStateFlags
 	{
@@ -43,7 +38,6 @@ namespace CefNet
 
 		CanPrint = 1 << 8,
 
-		CanRotate = 1 << 9,
+		CanRotate = 1 << 9
 	}
 }
-

@@ -12,64 +12,61 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback structure that is passed to cef_v8value_t::CreateArrayBuffer.
+	///  Callback structure that is passed to cef_v8value_t::CreateArrayBuffer.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefV8ArrayBufferReleaseCallback : CefBaseRefCounted<cef_v8array_buffer_release_callback_t>, ICefV8ArrayBufferReleaseCallbackPrivate
+	public unsafe class CefV8ArrayBufferReleaseCallback : CefBaseRefCounted<cef_v8array_buffer_release_callback_t>,
+		ICefV8ArrayBufferReleaseCallbackPrivate
 	{
 		private static readonly ReleaseBufferDelegate fnReleaseBuffer = ReleaseBufferImpl;
 
-		internal static unsafe CefV8ArrayBufferReleaseCallback Create(IntPtr instance)
-		{
-			return new CefV8ArrayBufferReleaseCallback((cef_v8array_buffer_release_callback_t*)instance);
-		}
-
 		public CefV8ArrayBufferReleaseCallback()
 		{
-			cef_v8array_buffer_release_callback_t* self = this.NativeInstance;
-			self->release_buffer = (void*)Marshal.GetFunctionPointerForDelegate(fnReleaseBuffer);
+			var self = NativeInstance;
+			self->release_buffer = (void*) Marshal.GetFunctionPointerForDelegate(fnReleaseBuffer);
 		}
 
 		public CefV8ArrayBufferReleaseCallback(cef_v8array_buffer_release_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefV8ArrayBufferReleaseCallbackPrivate.AvoidReleaseBuffer();
 
-		/// <summary>
-		/// Called to release |buffer| when the ArrayBuffer JS object is garbage
-		/// collected. |buffer| is the value that was passed to CreateArrayBuffer along
-		/// with this object.
-		/// </summary>
-		protected internal unsafe virtual void ReleaseBuffer(IntPtr buffer)
+		internal static CefV8ArrayBufferReleaseCallback Create(IntPtr instance)
 		{
+			return new CefV8ArrayBufferReleaseCallback((cef_v8array_buffer_release_callback_t*) instance);
+		}
+
+		/// <summary>
+		///  Called to release |buffer| when the ArrayBuffer JS object is garbage
+		///  collected. |buffer| is the value that was passed to CreateArrayBuffer along
+		///  with this object.
+		/// </summary>
+		protected internal virtual void ReleaseBuffer(IntPtr buffer)
+		{
+		}
+
+		// void (*)(_cef_v8array_buffer_release_callback_t* self, void* buffer)*
+		private static void ReleaseBufferImpl(cef_v8array_buffer_release_callback_t* self, void* buffer)
+		{
+			var instance = GetInstance((IntPtr) self) as CefV8ArrayBufferReleaseCallback;
+			if (instance == null || ((ICefV8ArrayBufferReleaseCallbackPrivate) instance).AvoidReleaseBuffer()) return;
+			instance.ReleaseBuffer((IntPtr) buffer);
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void ReleaseBufferDelegate(cef_v8array_buffer_release_callback_t* self, void* buffer);
-
-		// void (*)(_cef_v8array_buffer_release_callback_t* self, void* buffer)*
-		private static unsafe void ReleaseBufferImpl(cef_v8array_buffer_release_callback_t* self, void* buffer)
-		{
-			var instance = GetInstance((IntPtr)self) as CefV8ArrayBufferReleaseCallback;
-			if (instance == null || ((ICefV8ArrayBufferReleaseCallbackPrivate)instance).AvoidReleaseBuffer())
-			{
-				return;
-			}
-			instance.ReleaseBuffer(unchecked((IntPtr)buffer));
-		}
+		private delegate void ReleaseBufferDelegate(cef_v8array_buffer_release_callback_t* self, void* buffer);
 	}
 }

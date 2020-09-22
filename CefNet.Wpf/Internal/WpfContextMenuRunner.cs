@@ -1,12 +1,9 @@
-﻿using CefNet.Wpf;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using CefNet.Wpf;
 
 namespace CefNet.Internal
 {
@@ -40,20 +37,20 @@ namespace CefNet.Internal
 		private void MenuItem_Click(object sender, RoutedEventArgs e)
 		{
 			var clickedItem = sender as MenuItem;
-			object cid = clickedItem?.Tag;
+			var cid = clickedItem?.Tag;
 			if (cid != null)
 			{
-				Callback.Continue((int)cid, CefEventFlags.LeftMouseButton);
+				Callback.Continue((int) cid, CefEventFlags.LeftMouseButton);
 				Callback = null;
 			}
 		}
 
 		private void Build(MenuModel model, ItemCollection menu)
 		{
-			int count = model.Count;
-			for (int i = 0; i < count; i++)
+			var count = model.Count;
+			for (var i = 0; i < count; i++)
 			{
-				bool isSubmenu = false;
+				var isSubmenu = false;
 				MenuItem menuItem;
 				switch (model.GetTypeAt(i))
 				{
@@ -68,7 +65,7 @@ namespace CefNet.Internal
 					case CefMenuItemType.Radio:
 						menuItem = new MenuItem();
 						menuItem.IsCheckable = true;
-						menuItem.Icon = new RadioButton() { IsChecked = model.IsCheckedAt(i) };
+						menuItem.Icon = new RadioButton {IsChecked = model.IsCheckedAt(i)};
 						break;
 					case CefMenuItemType.Command:
 						menuItem = new MenuItem();
@@ -76,22 +73,23 @@ namespace CefNet.Internal
 					case CefMenuItemType.Submenu:
 						isSubmenu = true;
 						menuItem = new MenuItem();
-						if (model.IsEnabledAt(i))
-						{
-							Build(model.GetSubMenuAt(i), menuItem.Items);
-						}
+						if (model.IsEnabledAt(i)) Build(model.GetSubMenuAt(i), menuItem.Items);
 						break;
 					default:
 						continue;
 				}
+
 				if (!isSubmenu)
 				{
 					menuItem.Click += MenuItem_Click;
 					menuItem.Tag = model.GetCommandIdAt(i);
 				}
+
 				menuItem.Header = model.GetLabelAt(i).Replace('&', '_');
 				menuItem.IsEnabled = model.IsEnabledAt(i);
-				menuItem.Foreground = model.GetColorAt(i, CefMenuColorType.Text, out CefColor color) ? new SolidColorBrush(color.ToColor()) : SystemColors.MenuTextBrush;
+				menuItem.Foreground = model.GetColorAt(i, CefMenuColorType.Text, out var color)
+					? new SolidColorBrush(color.ToColor())
+					: SystemColors.MenuTextBrush;
 				menu.Add(menuItem);
 			}
 		}
@@ -110,6 +108,5 @@ namespace CefNet.Internal
 			Callback?.Cancel();
 			Callback = null;
 		}
-
 	}
 }

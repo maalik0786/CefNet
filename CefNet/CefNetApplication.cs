@@ -1,20 +1,18 @@
-﻿using CefNet.Internal;
-using CefNet.JSInterop;
-using CefNet.WinApi;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
+using CefNet.Internal;
+using CefNet.JSInterop;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Provides methods and properties to manage an application, such as methods to start and stop
-	/// an application, to process messages, and properties to get information about an application.
+	///  Provides methods and properties to manage an application, such as methods to start and stop
+	///  an application, to process messages, and properties to get information about an application.
 	/// </summary>
 	public class CefNetApplication : CefApp
 	{
@@ -22,52 +20,20 @@ namespace CefNet
 		internal const string XrayResponseKey = "xray-response";
 		internal const string XrayReleaseKey = "xray-release";
 
-		/// <summary>
-		/// Occurs when a new message is received from a different process. Do not keep a
-		/// reference to or attempt to access the message outside of an event handler.
-		/// </summary>
-		public event EventHandler<CefProcessMessageReceivedEventArgs> CefProcessMessageReceived;
-
-		/// <summary>
-		/// Occurs when an exception in a frame is not caught. This event is disabled by default.
-		/// To enable set CefSettings.UncaughtExceptionStackSize &gt; 0.
-		/// </summary>
-		public event EventHandler<CefUncaughtExceptionEventArgs> CefUncaughtException;
-
-		/// <summary>
-		/// Occurs after WebKit has been initialized.
-		/// </summary>
-		public event EventHandler WebKitInitialized;
-
-		/// <summary>
-		/// Occurs immediately after the CEF context has been initialized.
-		/// </summary>
-		public event EventHandler CefContextInitialized;
-
-		/// <summary>
-		/// Occurs before a child process is launched.
-		/// </summary>
-		public event EventHandler<EventArgs> BeforeChildProcessLaunch;
-
-		/// <summary>
-		/// Occurs after loading the CEF library, but before the CEF process is initialized.
-		/// </summary>
-		public event EventHandler BeforeInitialize;
-
 		private static IntPtr _cefLibHandle;
 		private static ProcessType? _ProcessType;
 		private int _initThreadId;
 
 		static CefNetApplication()
 		{
-			using (Process process = Process.GetCurrentProcess())
+			using (var process = Process.GetCurrentProcess())
 			{
 				AllowDotnetProcess = "dotnet".Equals(process.ProcessName, StringComparison.Ordinal);
 			}
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CefNetApplication"/> class.
+		///  Initializes a new instance of the <see cref="CefNetApplication" /> class.
 		/// </summary>
 		public CefNetApplication()
 		{
@@ -77,272 +43,23 @@ namespace CefNet
 		private CefAppGlue AppGlue { get; }
 
 		/// <summary>
-		/// Gets the current <see cref="CefNetApplication"/>.
+		///  Gets the current <see cref="CefNetApplication" />.
 		/// </summary>
 		public static CefNetApplication Instance { get; private set; }
 
 		/// <summary>
-		/// Gets a value that indicates whether the <see cref="CefNetApplication"/> is initialized.
+		///  Gets a value that indicates whether the <see cref="CefNetApplication" /> is initialized.
 		/// </summary>
-		public static bool IsInitialized
-		{
-			get { return Instance != null; }
-		}
+		public static bool IsInitialized => Instance != null;
 
 		/// <summary>
-		/// Gets and sets a value indicating that the dotnet can be used to run this application,
-		/// by specifying an application DLL, such as &apos;dotnet myapp.dll&apos;.
+		///  Gets and sets a value indicating that the dotnet can be used to run this application,
+		///  by specifying an application DLL, such as &apos;dotnet myapp.dll&apos;.
 		/// </summary>
 		public static bool AllowDotnetProcess { get; set; }
 
-		private static void AssertApiVersion()
-		{
-			string hash = CefApi.CefApiHash(CefApiHashType.Universal);
-			if (CefApi.ApiHash.Equals(hash, StringComparison.OrdinalIgnoreCase))
-				return;
-
-			Version assemblyVersion = typeof(CefApi).Assembly.GetName().Version;
-			throw new CefVersionMismatchException(string.Format(
-				"CEF runtime version mismatch. Loaded version API hash: '{0}', expected: '{1}' (CEF {2}.{3}).",
-				hash,
-				CefApi.ApiHash,
-				assemblyVersion.Major,
-				assemblyVersion.Minor
-			));
-		}
-
-		private static string InitializeDllPath(string cefPath)
-		{
-			if (!string.IsNullOrWhiteSpace(cefPath))
-			{
-				cefPath = cefPath.Trim();
-				if (!Directory.Exists(cefPath))
-					throw new DirectoryNotFoundException(string.Format("The CEF runtime can't be initialized from '{0}'.", cefPath));
-
-				string path = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
-				if (PlatformInfo.IsWindows)
-				{
-					if (!path.StartsWith(cefPath, StringComparison.CurrentCultureIgnoreCase)
-						|| (path.Length > cefPath.Length && path[cefPath.Length] != ';'))
-					{
-						Environment.SetEnvironmentVariable("PATH", cefPath + ";" + path);
-					}
-					return Path.Combine(cefPath, "libcef.dll");
-				}
-				else if (PlatformInfo.IsLinux)
-				{
-					if (!path.StartsWith(cefPath, StringComparison.CurrentCulture)
-						|| (path.Length > cefPath.Length && path[cefPath.Length] != ':'))
-					{
-						Environment.SetEnvironmentVariable("PATH", cefPath + ":" + path);
-					}
-					path = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH") ?? string.Empty;
-					if (!path.StartsWith(cefPath, StringComparison.CurrentCulture)
-						|| (path.Length > cefPath.Length && path[cefPath.Length] != ';'))
-					{
-						Environment.SetEnvironmentVariable("LD_LIBRARY_PATH", cefPath + ":" + path);
-					}
-					return Path.Combine(cefPath, "libcef.so");
-				}
-				else if (PlatformInfo.IsMacOS)
-				{
-					if (!path.StartsWith(cefPath, StringComparison.CurrentCulture)
-						|| (path.Length > cefPath.Length && path[cefPath.Length] != ':'))
-					{
-						Environment.SetEnvironmentVariable("PATH", cefPath + ":" + path);
-					}
-					path = Environment.GetEnvironmentVariable("DYLD_LIBRARY_PATH") ?? string.Empty;
-					if (!path.StartsWith(cefPath, StringComparison.CurrentCulture)
-						|| (path.Length > cefPath.Length && path[cefPath.Length] != ';'))
-					{
-						Environment.SetEnvironmentVariable("DYLD_LIBRARY_PATH", cefPath + ":" + Path.Combine(cefPath, "Libraries") + ":" + path);
-					}
-					return Path.Combine(cefPath, "Chromium Embedded Framework");
-				}
-			}
-
-			if (PlatformInfo.IsWindows)
-				return "libcef.dll";
-			if (PlatformInfo.IsLinux)
-				return "libcef.so";
-			if (PlatformInfo.IsMacOS)
-				return "Chromium Embedded Framework";
-
-			throw new PlatformNotSupportedException();
-		}
-
 		/// <summary>
-		/// Initializes CEF from specified path with user-provided settings. This
-		/// function should be called on the main application thread to initialize
-		/// CEF processes.
-		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="settings"></param>
-		/// <exception cref="DllNotFoundException"></exception>
-		/// <exception cref="DirectoryNotFoundException"></exception>
-		/// <exception cref="CefVersionMismatchException"></exception>
-		/// <exception cref="InvalidOperationException"></exception>
-		public void Initialize(string path, CefSettings settings)
-		{
-			if (PlatformInfo.IsWindows)
-			{
-				if (Thread.CurrentThread.GetApartmentState() != ApartmentState.STA)
-					throw new InvalidOperationException("The calling thread must be STA");
-			}
-
-			if (IsInitialized)
-				throw new InvalidOperationException("CEF already initialized. You must call Initialize once per application process.");
-
-			path = InitializeDllPath(path);
-
-			if (PlatformInfo.IsWindows)
-			{
-				const int LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008;
-				_cefLibHandle = NativeMethods.LoadLibraryEx(path, IntPtr.Zero, LOAD_WITH_ALTERED_SEARCH_PATH);
-				if (IntPtr.Zero == _cefLibHandle)
-					throw new DllNotFoundException(string.Format("Can't load '{0}' (error: {1}).", path, Marshal.GetLastWin32Error()));
-			}
-			else if (PlatformInfo.IsLinux || PlatformInfo.IsMacOS)
-			{
-				const int RTLD_NOW = 2;
-				_cefLibHandle = NativeMethods.dlopen(path, RTLD_NOW);
-				if (IntPtr.Zero == _cefLibHandle)
-					throw new DllNotFoundException(string.Format("Can't load '{0}'.", path));
-			}
-			else
-			{
-				throw new PlatformNotSupportedException();
-			}
-
-			if (!TryInitializeDllImportResolver(_cefLibHandle) && PlatformInfo.IsMacOS)
-				throw new NotSupportedException("Requires .NET Core 3.0 or later.");
-
-			AssertApiVersion();
-
-			OnBeforeInitalize(EventArgs.Empty);
-
-			Interlocked.Exchange(ref _initThreadId, Thread.CurrentThread.ManagedThreadId);
-			Instance = this;
-
-			// Main args
-			CefMainArgs main_args = CefMainArgs.CreateDefault();
-			int retval = CefApi.ExecuteProcess(main_args, this, IntPtr.Zero);
-			if (retval != -1)
-				Environment.Exit(retval);
-
-			if (!CefApi.Initialize(main_args, settings, this, IntPtr.Zero))
-				throw new CefRuntimeException("Failed to initialize the CEF browser process.");
-
-			GC.KeepAlive(settings);
-		}
-
-		/// <summary>
-		/// Initializes a callback for resolving native library imports from an assembly.
-		/// </summary>
-		/// <param name="libcefHandle">The Chromium Embedded Framework library handle.</param>
-		protected virtual bool TryInitializeDllImportResolver(IntPtr libcefHandle)
-		{
-			Type nativeLibraryType = Type.GetType("System.Runtime.InteropServices.NativeLibrary");
-			if (nativeLibraryType is null)
-				return false;
-
-			Type dllImportResolverDelegateType = Type.GetType("System.Runtime.InteropServices.DllImportResolver");
-			if (dllImportResolverDelegateType is null)
-				return false;
-
-			MethodInfo setDllImportResolver = nativeLibraryType.GetMethod("SetDllImportResolver", new[] { typeof(Assembly), dllImportResolverDelegateType });
-			if (setDllImportResolver is null)
-				return false;
-
-			setDllImportResolver.Invoke(null, new object[] {
-				typeof(CefApi).Assembly,
-				Delegate.CreateDelegate(dllImportResolverDelegateType, this, new Func<string, Assembly, DllImportSearchPath?, IntPtr>(ResolveNativeLibrary).Method)
-			});
-
-			return true;
-		}
-
-		/// <summary>
-		/// Resolves native library loads initiated by this assembly.
-		/// </summary>
-		/// <param name="libname">The native library to resolve.</param>
-		/// <param name="assembly">The assembly requesting the resolution.</param>
-		/// <param name="paths">
-		/// The <see cref="DefaultDllImportSearchPathsAttribute"/> on the PInvoke, if any.
-		/// Otherwise, the <see cref="DefaultDllImportSearchPathsAttribute"/> on the assembly, if any.
-		/// Otherwise null.
-		/// </param>
-		/// <returns>
-		/// The handle for the loaded native library on success, or <see cref="IntPtr.Zero"/> on failure.
-		/// </returns>
-		protected virtual IntPtr ResolveNativeLibrary(string libname, Assembly assembly, DllImportSearchPath? paths)
-		{
-			if ("libcef".Equals(libname, StringComparison.Ordinal))
-				return _cefLibHandle;
-			return IntPtr.Zero;
-		}
-
-		/// <summary>
-		/// Checks that the current thread is the main application thread.
-		/// </summary>
-		/// <returns>
-		/// true if the calling thread is the main application thread; otherwise, false.
-		/// </returns>
-		public bool CheckAccess()
-		{
-			return _initThreadId == Thread.CurrentThread.ManagedThreadId;
-		}
-
-		/// <summary>
-		/// Checks that the current thread is the main application thread and throws if not.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">
-		/// The current thread is not the UI thread.
-		/// </exception>
-		public void AssertAccess()
-		{
-			if (!CheckAccess())
-				throw new InvalidOperationException("Cross-thread operation not valid.");
-		}
-
-		/// <summary>
-		/// Begins running a standard application message loop on the current thread.<para/>
-		/// This function should only be called on the main application thread and only if
-		/// <see cref="Initialize"/> is called with a <see cref="CefSettings.MultiThreadedMessageLoop"/>
-		/// value of false. This function will block until a quit message is received by the system.
-		/// </summary>
-		/// <remarks>
-		/// Use this function instead of an application-provided message loop to get the best
-		/// balance between performance and CPU usage. 
-		/// </remarks>
-		public static void Run()
-		{
-			if (Instance is null || !Instance.CheckAccess())
-				throw new InvalidOperationException("Cross-thread operation not valid.");
-			CefApi.RunMessageLoop();
-		}
-
-		/// <summary>
-		/// Quit the CEF message loop that was started by calling <see cref="Run"/>.<para/>
-		/// This function should only be called on the main application thread and only
-		/// if <see cref="Run"/> was used.
-		/// </summary>
-		public static void Exit()
-		{
-			CefApi.QuitMessageLoop();
-		}
-
-		/// <summary>
-		/// Shuts down a CEF application.
-		/// </summary>
-		public void Shutdown()
-		{
-			AssertAccess();
-			CefApi.Shutdown();
-		}
-
-		/// <summary>
-		/// Gets the type of the current process.
+		///  Gets the type of the current process.
 		/// </summary>
 		public static ProcessType ProcessType
 		{
@@ -351,7 +68,7 @@ namespace CefNet
 				if (_ProcessType != null)
 					return _ProcessType.Value;
 
-				string type = Environment.GetCommandLineArgs().FirstOrDefault(arg => arg.StartsWith("--type="));
+				var type = Environment.GetCommandLineArgs().FirstOrDefault(arg => arg.StartsWith("--type="));
 				if (type is null)
 				{
 					_ProcessType = ProcessType.Main;
@@ -385,15 +102,294 @@ namespace CefNet
 						_ProcessType = ProcessType.Other;
 						break;
 				}
+
 				return _ProcessType.Value;
 			}
 		}
 
 		/// <summary>
-		/// Raises the <see cref="BeforeInitialize"/> event.
+		///  Occurs when a new message is received from a different process. Do not keep a
+		///  reference to or attempt to access the message outside of an event handler.
+		/// </summary>
+		public event EventHandler<CefProcessMessageReceivedEventArgs> CefProcessMessageReceived;
+
+		/// <summary>
+		///  Occurs when an exception in a frame is not caught. This event is disabled by default.
+		///  To enable set CefSettings.UncaughtExceptionStackSize &gt; 0.
+		/// </summary>
+		public event EventHandler<CefUncaughtExceptionEventArgs> CefUncaughtException;
+
+		/// <summary>
+		///  Occurs after WebKit has been initialized.
+		/// </summary>
+		public event EventHandler WebKitInitialized;
+
+		/// <summary>
+		///  Occurs immediately after the CEF context has been initialized.
+		/// </summary>
+		public event EventHandler CefContextInitialized;
+
+		/// <summary>
+		///  Occurs before a child process is launched.
+		/// </summary>
+		public event EventHandler<EventArgs> BeforeChildProcessLaunch;
+
+		/// <summary>
+		///  Occurs after loading the CEF library, but before the CEF process is initialized.
+		/// </summary>
+		public event EventHandler BeforeInitialize;
+
+		private static void AssertApiVersion()
+		{
+			string hash = CefApi.CefApiHash(CefApiHashType.Universal);
+			if (CefApi.ApiHash.Equals(hash, StringComparison.OrdinalIgnoreCase))
+				return;
+
+			var assemblyVersion = typeof(CefApi).Assembly.GetName().Version;
+			throw new CefVersionMismatchException(string.Format(
+				"CEF runtime version mismatch. Loaded version API hash: '{0}', expected: '{1}' (CEF {2}.{3}).",
+				hash,
+				CefApi.ApiHash,
+				assemblyVersion.Major,
+				assemblyVersion.Minor
+			));
+		}
+
+		private static string InitializeDllPath(string cefPath)
+		{
+			if (!string.IsNullOrWhiteSpace(cefPath))
+			{
+				cefPath = cefPath.Trim();
+				if (!Directory.Exists(cefPath))
+					throw new DirectoryNotFoundException(
+						string.Format("The CEF runtime can't be initialized from '{0}'.", cefPath));
+
+				var path = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+				if (PlatformInfo.IsWindows)
+				{
+					if (!path.StartsWith(cefPath, StringComparison.CurrentCultureIgnoreCase)
+					    || path.Length > cefPath.Length && path[cefPath.Length] != ';')
+						Environment.SetEnvironmentVariable("PATH", cefPath + ";" + path);
+					return Path.Combine(cefPath, "libcef.dll");
+				}
+
+				if (PlatformInfo.IsLinux)
+				{
+					if (!path.StartsWith(cefPath, StringComparison.CurrentCulture)
+					    || path.Length > cefPath.Length && path[cefPath.Length] != ':')
+						Environment.SetEnvironmentVariable("PATH", cefPath + ":" + path);
+					path = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH") ?? string.Empty;
+					if (!path.StartsWith(cefPath, StringComparison.CurrentCulture)
+					    || path.Length > cefPath.Length && path[cefPath.Length] != ';')
+						Environment.SetEnvironmentVariable("LD_LIBRARY_PATH", cefPath + ":" + path);
+					return Path.Combine(cefPath, "libcef.so");
+				}
+
+				if (PlatformInfo.IsMacOS)
+				{
+					if (!path.StartsWith(cefPath, StringComparison.CurrentCulture)
+					    || path.Length > cefPath.Length && path[cefPath.Length] != ':')
+						Environment.SetEnvironmentVariable("PATH", cefPath + ":" + path);
+					path = Environment.GetEnvironmentVariable("DYLD_LIBRARY_PATH") ?? string.Empty;
+					if (!path.StartsWith(cefPath, StringComparison.CurrentCulture)
+					    || path.Length > cefPath.Length && path[cefPath.Length] != ';')
+						Environment.SetEnvironmentVariable("DYLD_LIBRARY_PATH",
+							cefPath + ":" + Path.Combine(cefPath, "Libraries") + ":" + path);
+					return Path.Combine(cefPath, "Chromium Embedded Framework");
+				}
+			}
+
+			if (PlatformInfo.IsWindows)
+				return "libcef.dll";
+			if (PlatformInfo.IsLinux)
+				return "libcef.so";
+			if (PlatformInfo.IsMacOS)
+				return "Chromium Embedded Framework";
+
+			throw new PlatformNotSupportedException();
+		}
+
+		/// <summary>
+		///  Initializes CEF from specified path with user-provided settings. This
+		///  function should be called on the main application thread to initialize
+		///  CEF processes.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="settings"></param>
+		/// <exception cref="DllNotFoundException"></exception>
+		/// <exception cref="DirectoryNotFoundException"></exception>
+		/// <exception cref="CefVersionMismatchException"></exception>
+		/// <exception cref="InvalidOperationException"></exception>
+		public void Initialize(string path, CefSettings settings)
+		{
+			if (PlatformInfo.IsWindows)
+				if (Thread.CurrentThread.GetApartmentState() != ApartmentState.STA)
+					throw new InvalidOperationException("The calling thread must be STA");
+
+			if (IsInitialized)
+				throw new InvalidOperationException(
+					"CEF already initialized. You must call Initialize once per application process.");
+
+			path = InitializeDllPath(path);
+
+			if (PlatformInfo.IsWindows)
+			{
+				const int LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008;
+				_cefLibHandle = NativeMethods.LoadLibraryEx(path, IntPtr.Zero, LOAD_WITH_ALTERED_SEARCH_PATH);
+				if (IntPtr.Zero == _cefLibHandle)
+					throw new DllNotFoundException(string.Format("Can't load '{0}' (error: {1}).", path,
+						Marshal.GetLastWin32Error()));
+			}
+			else if (PlatformInfo.IsLinux || PlatformInfo.IsMacOS)
+			{
+				const int RTLD_NOW = 2;
+				_cefLibHandle = NativeMethods.dlopen(path, RTLD_NOW);
+				if (IntPtr.Zero == _cefLibHandle)
+					throw new DllNotFoundException(string.Format("Can't load '{0}'.", path));
+			}
+			else
+			{
+				throw new PlatformNotSupportedException();
+			}
+
+			if (!TryInitializeDllImportResolver(_cefLibHandle) && PlatformInfo.IsMacOS)
+				throw new NotSupportedException("Requires .NET Core 3.0 or later.");
+
+			AssertApiVersion();
+
+			OnBeforeInitalize(EventArgs.Empty);
+
+			Interlocked.Exchange(ref _initThreadId, Thread.CurrentThread.ManagedThreadId);
+			Instance = this;
+
+			// Main args
+			var main_args = CefMainArgs.CreateDefault();
+			int retval = CefApi.ExecuteProcess(main_args, this, IntPtr.Zero);
+			if (retval != -1)
+				Environment.Exit(retval);
+
+			if (!CefApi.Initialize(main_args, settings, this, IntPtr.Zero))
+				throw new CefRuntimeException("Failed to initialize the CEF browser process.");
+
+			GC.KeepAlive(settings);
+		}
+
+		/// <summary>
+		///  Initializes a callback for resolving native library imports from an assembly.
+		/// </summary>
+		/// <param name="libcefHandle">The Chromium Embedded Framework library handle.</param>
+		protected virtual bool TryInitializeDllImportResolver(IntPtr libcefHandle)
+		{
+			var nativeLibraryType = Type.GetType("System.Runtime.InteropServices.NativeLibrary");
+			if (nativeLibraryType is null)
+				return false;
+
+			var dllImportResolverDelegateType = Type.GetType("System.Runtime.InteropServices.DllImportResolver");
+			if (dllImportResolverDelegateType is null)
+				return false;
+
+			var setDllImportResolver = nativeLibraryType.GetMethod("SetDllImportResolver",
+				new[] {typeof(Assembly), dllImportResolverDelegateType});
+			if (setDllImportResolver is null)
+				return false;
+
+			setDllImportResolver.Invoke(null,
+				new object[]
+				{
+					typeof(CefApi).Assembly,
+					Delegate.CreateDelegate(dllImportResolverDelegateType, this,
+						new Func<string, Assembly, DllImportSearchPath?, IntPtr>(ResolveNativeLibrary).Method)
+				});
+
+			return true;
+		}
+
+		/// <summary>
+		///  Resolves native library loads initiated by this assembly.
+		/// </summary>
+		/// <param name="libname">The native library to resolve.</param>
+		/// <param name="assembly">The assembly requesting the resolution.</param>
+		/// <param name="paths">
+		///  The <see cref="DefaultDllImportSearchPathsAttribute" /> on the PInvoke, if any.
+		///  Otherwise, the <see cref="DefaultDllImportSearchPathsAttribute" /> on the assembly, if any.
+		///  Otherwise null.
+		/// </param>
+		/// <returns>
+		///  The handle for the loaded native library on success, or <see cref="IntPtr.Zero" /> on failure.
+		/// </returns>
+		protected virtual IntPtr ResolveNativeLibrary(string libname, Assembly assembly, DllImportSearchPath? paths)
+		{
+			if ("libcef".Equals(libname, StringComparison.Ordinal))
+				return _cefLibHandle;
+			return IntPtr.Zero;
+		}
+
+		/// <summary>
+		///  Checks that the current thread is the main application thread.
+		/// </summary>
+		/// <returns>
+		///  true if the calling thread is the main application thread; otherwise, false.
+		/// </returns>
+		public bool CheckAccess()
+		{
+			return _initThreadId == Thread.CurrentThread.ManagedThreadId;
+		}
+
+		/// <summary>
+		///  Checks that the current thread is the main application thread and throws if not.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">
+		///  The current thread is not the UI thread.
+		/// </exception>
+		public void AssertAccess()
+		{
+			if (!CheckAccess())
+				throw new InvalidOperationException("Cross-thread operation not valid.");
+		}
+
+		/// <summary>
+		///  Begins running a standard application message loop on the current thread.
+		///  <para />
+		///  This function should only be called on the main application thread and only if
+		///  <see cref="Initialize" /> is called with a <see cref="CefSettings.MultiThreadedMessageLoop" />
+		///  value of false. This function will block until a quit message is received by the system.
+		/// </summary>
+		/// <remarks>
+		///  Use this function instead of an application-provided message loop to get the best
+		///  balance between performance and CPU usage.
+		/// </remarks>
+		public static void Run()
+		{
+			if (Instance is null || !Instance.CheckAccess())
+				throw new InvalidOperationException("Cross-thread operation not valid.");
+			CefApi.RunMessageLoop();
+		}
+
+		/// <summary>
+		///  Quit the CEF message loop that was started by calling <see cref="Run" />.
+		///  <para />
+		///  This function should only be called on the main application thread and only
+		///  if <see cref="Run" /> was used.
+		/// </summary>
+		public static void Exit()
+		{
+			CefApi.QuitMessageLoop();
+		}
+
+		/// <summary>
+		///  Shuts down a CEF application.
+		/// </summary>
+		public void Shutdown()
+		{
+			AssertAccess();
+			CefApi.Shutdown();
+		}
+
+		/// <summary>
+		///  Raises the <see cref="BeforeInitialize" /> event.
 		/// </summary>
 		/// <param name="e">
-		/// The <see cref="EventArgs"/> object that contains the event data.
+		///  The <see cref="EventArgs" /> object that contains the event data.
 		/// </param>
 		protected virtual void OnBeforeInitalize(EventArgs e)
 		{
@@ -401,7 +397,7 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Returns a handler for functionality specific to the render process.
+		///  Returns a handler for functionality specific to the render process.
 		/// </summary>
 		/// <returns>A handler for functionality specific to the render process.</returns>
 		protected internal override CefRenderProcessHandler GetRenderProcessHandler()
@@ -410,8 +406,9 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Returns the handler for functionality specific to the browser process.<para/>
-		/// This function is called on multiple threads in the browser process.
+		///  Returns the handler for functionality specific to the browser process.
+		///  <para />
+		///  This function is called on multiple threads in the browser process.
 		/// </summary>
 		/// <returns>A handler for functionality specific to the browser process.</returns>
 		protected internal override CefBrowserProcessHandler GetBrowserProcessHandler()
@@ -421,19 +418,15 @@ namespace CefNet
 
 		private static bool ProcessXrayMessage(CefProcessMessage msg)
 		{
-			CefListValue args = msg.ArgumentList;
+			var args = msg.ArgumentList;
 			var sqi = ScriptableRequestInfo.Get(args.GetInt(0));
 			if (sqi is null)
 				return true;
 
 			if (args.GetSize() == 2)
-			{
 				sqi.Complete(args.GetValue(1));
-			}
 			else
-			{
 				sqi.Complete(new CefNetRemoteException(args.GetString(1), args.GetString(2), args.GetString(3)));
-			}
 			return true;
 		}
 
@@ -443,8 +436,8 @@ namespace CefNet
 			{
 				if (args.GetType(0) != CefValueType.Binary)
 					return;
-				XrayHandle handle = XrayHandle.FromCfxBinaryValue(args.GetBinary(0));
-				if ((int)(handle.frame >> 32) != (int)(e.Frame.Identifier >> 32))
+				var handle = XrayHandle.FromCfxBinaryValue(args.GetBinary(0));
+				if ((int) (handle.frame >> 32) != (int) (e.Frame.Identifier >> 32))
 					return; // Mismatch process IDs
 				handle.Release();
 			}
@@ -452,15 +445,15 @@ namespace CefNet
 
 		private static void ProcessXrayRequest(CefProcessMessageReceivedEventArgs e)
 		{
-			CefListValue args = e.Message.ArgumentList;
+			var args = e.Message.ArgumentList;
 
-			CefProcessMessage message = new CefProcessMessage(XrayResponseKey);
-			CefListValue retArgs = message.ArgumentList;
+			var message = new CefProcessMessage(XrayResponseKey);
+			var retArgs = message.ArgumentList;
 			retArgs.SetSize(2);
 			retArgs.SetValue(0, args.GetValue(0));
 
 			CefValue retval = null;
-			XrayAction queryAction = (XrayAction)args.GetInt(1);
+			var queryAction = (XrayAction) args.GetInt(1);
 
 			try
 			{
@@ -487,7 +480,7 @@ namespace CefNet
 					switch (queryAction)
 					{
 						case XrayAction.Get:
-							long corsRid = ScriptableObjectProvider.Get(v8Context, target, args, out rv);
+							var corsRid = ScriptableObjectProvider.Get(v8Context, target, args, out rv);
 							if (corsRid != 0)
 							{
 								var xray = new XrayHandle();
@@ -497,6 +490,7 @@ namespace CefNet
 								retval.SetBinary(xray.ToCfxBinaryValue());
 								retArgs.SetValue(1, retval);
 							}
+
 							break;
 						case XrayAction.Set:
 							ScriptableObjectProvider.Set(v8Context, target, args);
@@ -513,9 +507,10 @@ namespace CefNet
 						default:
 							throw new NotSupportedException();
 					}
+
 					if (rv != null)
 					{
-						retval = ScriptableObjectProvider.CastCefV8ValueToCefValue(v8Context, rv, out bool isXray);
+						retval = ScriptableObjectProvider.CastCefV8ValueToCefValue(v8Context, rv, out var isXray);
 						if (!isXray) rv.Dispose();
 						retArgs.SetValue(1, retval);
 					}
@@ -537,9 +532,7 @@ namespace CefNet
 			}
 
 
-
 			//CfxValueType t = e.Message.ArgumentList.GetType(0);
-
 
 
 			e.Frame.SendProcessMessage(CefProcessId.Browser, message);
@@ -550,10 +543,72 @@ namespace CefNet
 		}
 
 
+		/// <summary>
+		///  Raises the <see cref="CefContextInitialized" /> event.
+		///  <para />
+		///  Called on the browser process UI thread immediately after the CEF context has been initialized.
+		/// </summary>
+		protected internal virtual void OnContextInitialized()
+		{
+			CefContextInitialized?.Invoke(this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		///  Raises the <see cref="BeforeChildProcessLaunch" /> event.
+		///  <para />
+		///  Will be called on the browser process UI thread when launching a render process
+		///  and on the browser process IO thread when launching a GPU or plugin process.
+		/// </summary>
+		/// <param name="e">A <see cref="BeforeChildProcessLaunchEventArgs" /> that contains the event data.</param>
+		protected internal virtual void OnBeforeChildProcessLaunch(BeforeChildProcessLaunchEventArgs e)
+		{
+			if (AllowDotnetProcess)
+			{
+				e.CommandLine.Program = Environment.GetCommandLineArgs()[0];
+				e.CommandLine.PrependWrapper("dotnet");
+			}
+
+			BeforeChildProcessLaunch?.Invoke(this, e);
+		}
+
+		/// <summary>
+		///  Return the handler for printing on Linux.
+		///  <para />
+		///  If a print handler is not provided then printing will not be supported on the Linux platform.
+		/// </summary>
+		/// <returns>The handler for printing.</returns>
+		public virtual CefPrintHandler GetPrintHandler()
+		{
+			return null;
+		}
+
+		/// <summary>
+		///  Called from any thread when work has been scheduled for the browser process main (UI) thread.
+		///  <para />
+		///  This callback should schedule a <see cref="CefApi.DoMessageLoopWork" /> call to happen on the main (UI) thread.
+		/// </summary>
+		/// <param name="delayMs">
+		///  The requested delay in milliseconds.
+		///  <para />
+		///  If <paramref name="delayMs" /> is &lt;= 0
+		///  then the call should happen reasonably soon; otherwise the call should be scheduled
+		///  to happen after the specified delay and any currently pending scheduled call should
+		///  be cancelled.
+		/// </param>
+		/// <remarks>
+		///  This callback is used in combination with <see cref="CefSettings.ExternalMessagePump" />
+		///  and <see cref="CefApi.DoMessageLoopWork" /> in cases where the CEF message loop must be
+		///  integrated into an existing application message loop.
+		/// </remarks>
+		protected internal virtual void OnScheduleMessagePumpWork(long delayMs)
+		{
+		}
+
+
 		#region CefRenderProcessHandler
 
 		/// <summary>
-		/// Raises the <see cref="WebKitInitialized"/> event.
+		///  Raises the <see cref="WebKitInitialized" /> event.
 		/// </summary>
 		protected internal virtual void OnWebKitInitialized()
 		{
@@ -561,27 +616,25 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Called after a browser has been created.
+		///  Called after a browser has been created.
 		/// </summary>
 		/// <param name="browser">The browser instance.</param>
 		/// <param name="extraInfo">A read-only value originating from the browser creator or null.</param>
 		protected internal virtual void OnBrowserCreated(CefBrowser browser, CefDictionaryValue extraInfo)
 		{
-
 		}
 
 		/// <summary>
-		/// Called before a browser is destroyed. Release all references to the browser object
-		/// and do not attempt to execute any methods on the browser object after this method returns.
+		///  Called before a browser is destroyed. Release all references to the browser object
+		///  and do not attempt to execute any methods on the browser object after this method returns.
 		/// </summary>
 		/// <param name="browser">The browser instance.</param>
 		protected internal virtual void OnBrowserDestroyed(CefBrowser browser)
 		{
-
 		}
 
 		/// <summary>
-		/// Return a handler for browser load status events.
+		///  Return a handler for browser load status events.
 		/// </summary>
 		/// <returns>The handler for browser load status events.</returns>
 		protected internal virtual CefLoadHandler GetLoadHandler()
@@ -600,8 +653,8 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Called for global uncaught exceptions in a frame. Execution of this callback is disabled by default.
-		/// To enable set CefSettings.UncaughtExceptionStackSize &gt; 0.
+		///  Called for global uncaught exceptions in a frame. Execution of this callback is disabled by default.
+		///  To enable set CefSettings.UncaughtExceptionStackSize &gt; 0.
 		/// </summary>
 		/// <param name="e"></param>
 		protected internal virtual void OnUncaughtException(CefUncaughtExceptionEventArgs e)
@@ -611,21 +664,17 @@ namespace CefNet
 
 		protected internal virtual void OnFocusedNodeChanged(CefBrowser browser, CefFrame frame, CefDOMNode node)
 		{
-
 		}
 
 		/// <summary>
-		/// Called when a new message is received from a different process. Do not keep a
-		/// reference to or attempt to access the message outside of this callback.
+		///  Called when a new message is received from a different process. Do not keep a
+		///  reference to or attempt to access the message outside of this callback.
 		/// </summary>
 		protected internal virtual void OnCefProcessMessageReceived(CefProcessMessageReceivedEventArgs e)
 		{
 			if (e.SourceProcess == CefProcessId.Renderer)
 			{
-				if (e.Name == XrayResponseKey)
-				{
-					e.Handled = ProcessXrayMessage(e.Message);
-				}
+				if (e.Name == XrayResponseKey) e.Handled = ProcessXrayMessage(e.Message);
 			}
 			else if (e.SourceProcess == CefProcessId.Browser)
 			{
@@ -639,69 +688,10 @@ namespace CefNet
 						return;
 				}
 			}
-			if (!e.Handled)
-			{
-				CefProcessMessageReceived?.Invoke(this, e);
-			}
+
+			if (!e.Handled) CefProcessMessageReceived?.Invoke(this, e);
 		}
 
 		#endregion
-
-
-		/// <summary>
-		/// Raises the <see cref="CefContextInitialized"/> event.<para/>
-		/// Called on the browser process UI thread immediately after the CEF context has been initialized.
-		/// </summary>
-		protected internal virtual void OnContextInitialized()
-		{
-			CefContextInitialized?.Invoke(this, EventArgs.Empty);
-		}
-
-		/// <summary>
-		/// Raises the <see cref="BeforeChildProcessLaunch"/> event.<para/>
-		/// Will be called on the browser process UI thread when launching a render process
-		/// and on the browser process IO thread when launching a GPU or plugin process.
-		/// </summary>
-		/// <param name="e">A <see cref="BeforeChildProcessLaunchEventArgs"/> that contains the event data.</param>
-		protected internal virtual void OnBeforeChildProcessLaunch(BeforeChildProcessLaunchEventArgs e)
-		{
-			if (AllowDotnetProcess)
-			{
-				e.CommandLine.Program = Environment.GetCommandLineArgs()[0];
-				e.CommandLine.PrependWrapper("dotnet");
-			}
-			BeforeChildProcessLaunch?.Invoke(this, e);
-		}
-
-		/// <summary>
-		/// Return the handler for printing on Linux.<para/>
-		/// If a print handler is not provided then printing will not be supported on the Linux platform.
-		/// </summary>
-		/// <returns>The handler for printing.</returns>
-		public virtual CefPrintHandler GetPrintHandler()
-		{
-			return null;
-		}
-
-		/// <summary>
-		/// Called from any thread when work has been scheduled for the browser process main (UI) thread.<para/>
-		/// This callback should schedule a <see cref="CefApi.DoMessageLoopWork"/> call to happen on the main (UI) thread. 
-		/// </summary>
-		/// <param name="delayMs">
-		/// The requested delay in milliseconds.<para/>If <paramref name="delayMs"/> is &lt;= 0
-		/// then the call should happen reasonably soon; otherwise the call should be scheduled
-		/// to happen after the specified delay and any currently pending scheduled call should
-		/// be cancelled.
-		/// </param>
-		/// <remarks>
-		/// This callback is used in combination with <see cref="CefSettings.ExternalMessagePump"/>
-		/// and <see cref="CefApi.DoMessageLoopWork"/> in cases where the CEF message loop must be
-		/// integrated into an existing application message loop.
-		/// </remarks>
-		protected internal virtual void OnScheduleMessagePumpWork(long delayMs)
-		{
-
-		}
-
 	}
 }

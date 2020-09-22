@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Cookie same site values.
+	///  Cookie same site values.
 	/// </summary>
 	public enum CefCookieSameSite
 	{
@@ -29,7 +24,6 @@ namespace CefNet
 
 		LaxMode = 2,
 
-		StrictMode = 3,
+		StrictMode = 3
 	}
 }
-

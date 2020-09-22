@@ -14,6 +14,6 @@ namespace CefGen
 		IfThen,
 		Else,
 		Cycle,
-		Type,
+		Type
 	}
 }

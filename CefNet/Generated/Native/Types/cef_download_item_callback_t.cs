@@ -11,59 +11,56 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Callback structure used to asynchronously cancel a download.
+	///  Callback structure used to asynchronously cancel a download.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_download_item_callback_t
+	public unsafe struct cef_download_item_callback_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_download_item_callback_t* self)*
+		///  void (*)(_cef_download_item_callback_t* self)*
 		/// </summary>
 		public void* cancel;
 
 		/// <summary>
-		/// Call to cancel the download.
+		///  Call to cancel the download.
 		/// </summary>
 		[NativeName("cancel")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Cancel();
+		public extern void Cancel();
 
 		/// <summary>
-		/// void (*)(_cef_download_item_callback_t* self)*
+		///  void (*)(_cef_download_item_callback_t* self)*
 		/// </summary>
 		public void* pause;
 
 		/// <summary>
-		/// Call to pause the download.
+		///  Call to pause the download.
 		/// </summary>
 		[NativeName("pause")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Pause();
+		public extern void Pause();
 
 		/// <summary>
-		/// void (*)(_cef_download_item_callback_t* self)*
+		///  void (*)(_cef_download_item_callback_t* self)*
 		/// </summary>
 		public void* resume;
 
 		/// <summary>
-		/// Call to resume the download.
+		///  Call to resume the download.
 		/// </summary>
 		[NativeName("resume")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Resume();
+		public extern void Resume();
 	}
 }
-

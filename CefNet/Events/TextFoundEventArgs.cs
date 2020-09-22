@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Represents find results.
+	///  Represents find results.
 	/// </summary>
 	public sealed class TextFoundEventArgs : EventArgs, ITextFoundEventArgs
 	{
 		public TextFoundEventArgs(int identifier, int count, CefRect selectionRect, int index, bool finalUpdate)
 		{
-			this.ID = identifier;
-			this.Count = count;
-			this.SelectionRect = selectionRect;
-			this.Index = index;
-			this.FinalUpdate = finalUpdate;
+			ID = identifier;
+			Count = count;
+			SelectionRect = selectionRect;
+			Index = index;
+			FinalUpdate = finalUpdate;
 		}
 
 		public int ID { get; }
@@ -27,6 +25,5 @@ namespace CefNet
 		public CefRect SelectionRect { get; }
 
 		public bool FinalUpdate { get; }
-
 	}
 }

@@ -4,49 +4,46 @@
 // See the licence file in the project root for full license information.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using CefGen.CodeDom;
-using CppAst;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CefGen
 {
-	sealed class CefNetCodeGen : CodeGenBase
+	internal sealed class CefNetCodeGen : CodeGenBase
 	{
-		private delegate void CodeGenFunc(CompilationUnitSyntax unit);
-
 		public CefNetCodeGen(string basePath)
 		{
 			InputPath = Path.Combine(basePath, "Managed", "Types");
 			OutputPath = Path.Combine(basePath, "Managed", "Internal");
 		}
 
-		public string InputPath { get; private set; }
-		public string OutputPath { get; private set; }
+		public string InputPath { get; }
+		public string OutputPath { get; }
 
 		public void Generate()
 		{
-			foreach (string filename in Directory.EnumerateFiles(InputPath))
+			foreach (var filename in Directory.EnumerateFiles(InputPath))
 			{
-				string source = File.ReadAllText(filename, Encoding.UTF8);
+				var source = File.ReadAllText(filename, Encoding.UTF8);
 				if (!source.Contains("Role: Handler"))
 					continue;
 
-				SyntaxTree tree = CSharpSyntaxTree.ParseText(source, path: filename, encoding: Encoding.UTF8);
-				CompilationUnitSyntax unit = (CompilationUnitSyntax)tree.GetRoot();
+				var tree = CSharpSyntaxTree.ParseText(source, path: filename, encoding: Encoding.UTF8);
+				var unit = (CompilationUnitSyntax) tree.GetRoot();
 
-				string handlerClassName = Path.GetFileNameWithoutExtension(filename);
-				GenerateFileCode(GeneratePrivateInterfaceFileCode, Path.Combine(OutputPath, "I" + handlerClassName + "Private.cs"), unit);
+				var handlerClassName = Path.GetFileNameWithoutExtension(filename);
+				GenerateFileCode(GeneratePrivateInterfaceFileCode,
+					Path.Combine(OutputPath, "I" + handlerClassName + "Private.cs"), unit);
 
 				if (handlerClassName == "CefApp")
 					continue;
 
-				GenerateFileCode(GenerateHandlerGlueFileCode, Path.Combine(OutputPath, handlerClassName + "Glue.cs"), unit);
+				GenerateFileCode(GenerateHandlerGlueFileCode, Path.Combine(OutputPath, handlerClassName + "Glue.cs"),
+					unit);
 			}
 		}
 
@@ -75,14 +72,12 @@ namespace CefGen
 
 		private void GenerateNodePrivateInterfaceCode(SyntaxNode node)
 		{
-			foreach (SyntaxNode childNode in node.ChildNodes())
-			{
-
+			foreach (var childNode in node.ChildNodes())
 				if (childNode is NamespaceDeclarationSyntax namespaceNode)
 				{
 					WriteIndent();
 					Output.Write("namespace ");
-					Output.Write(namespaceNode.Name.ToString() + ".Internal");
+					Output.Write(namespaceNode.Name + ".Internal");
 					WriteBlockStart(CodeGenBlockType.Namespace);
 					GenerateNodePrivateInterfaceCode(namespaceNode);
 					WriteBlockEnd(CodeGenBlockType.Namespace);
@@ -102,7 +97,7 @@ namespace CefGen
 					if (methodNode.Modifiers.ToString().Contains("static"))
 						continue;
 
-					string name = methodNode.Identifier.ToString();
+					var name = methodNode.Identifier.ToString();
 					if (!name.StartsWith("Avoid"))
 						continue;
 
@@ -113,7 +108,6 @@ namespace CefGen
 					Output.Write(methodNode.ParameterList.ToString());
 					Output.WriteLine(";");
 				}
-			}
 		}
 
 		private void GenerateHandlerGlueFileCode(CompilationUnitSyntax unit)
@@ -124,21 +118,20 @@ namespace CefGen
 
 		private void GenerateNodeHandlerGlueCode(SyntaxNode node)
 		{
-			foreach (SyntaxNode childNode in node.ChildNodes())
-			{
+			foreach (var childNode in node.ChildNodes())
 				if (childNode is NamespaceDeclarationSyntax namespaceNode)
 				{
 					WriteIndent();
 					Output.Write("namespace ");
-					Output.Write(namespaceNode.Name.ToString() + ".Internal");
+					Output.Write(namespaceNode.Name + ".Internal");
 					WriteBlockStart(CodeGenBlockType.Namespace);
 					GenerateNodeHandlerGlueCode(namespaceNode);
 					WriteBlockEnd(CodeGenBlockType.Namespace);
 				}
 				else if (childNode is ClassDeclarationSyntax classNode)
 				{
-					string glueClassName = GetGlueClass(classNode.Identifier.ToString());
-					string privateInterfaceName = "I" + classNode.Identifier.ToString() + "Private";
+					var glueClassName = GetGlueClass(classNode.Identifier.ToString());
+					var privateInterfaceName = "I" + classNode.Identifier + "Private";
 					WriteIndent();
 					Output.Write("sealed partial class ");
 					Output.Write(classNode.Identifier.ToString());
@@ -166,21 +159,19 @@ namespace CefGen
 					GenerateNodeHandlerGlueMedhodCode(privateInterfaceName, classNode);
 					WriteBlockEnd(CodeGenBlockType.Type);
 				}
-			}
 		}
 
 		private void GenerateNodeHandlerGlueMedhodCode(string privateInterfaceName, SyntaxNode node)
 		{
-			foreach (SyntaxNode childNode in node.ChildNodes())
-			{
+			foreach (var childNode in node.ChildNodes())
 				if (childNode is MethodDeclarationSyntax methodNode)
 				{
 					if (methodNode.Modifiers.ToString().Contains("static"))
 						continue;
 
-					string name = methodNode.Identifier.ToString();
+					var name = methodNode.Identifier.ToString();
 
-					bool isAvoidMethod = name.StartsWith("Avoid");
+					var isAvoidMethod = name.StartsWith("Avoid");
 
 					WriteIndent();
 					if (!isAvoidMethod)
@@ -192,6 +183,7 @@ namespace CefGen
 					{
 						name = privateInterfaceName + "." + name;
 					}
+
 					Output.Write(methodNode.ReturnType.ToString());
 					Output.Write(" ");
 					Output.Write(name);
@@ -208,47 +200,47 @@ namespace CefGen
 					else
 					{
 						WriteIndent();
-						if (methodNode.ReturnType.ToString() != "void")
-						{
-							Output.Write("return ");
-						}
+						if (methodNode.ReturnType.ToString() != "void") Output.Write("return ");
 						Output.Write("_implementation.");
 						Output.Write(methodNode.Identifier.ToString());
 						Output.Write("(");
 						Output.Write(GetCallArgs(methodNode.ParameterList.Parameters));
 						Output.WriteLine(");");
 					}
+
 					WriteBlockEnd(CodeGenBlockType.Method);
 					Output.WriteLine();
 				}
-			}
 		}
 
 		private static string GetCallArgs(SeparatedSyntaxList<ParameterSyntax> args)
 		{
 			var list = new List<string>(args.Count);
-			foreach(var arg in args)
+			foreach (var arg in args)
 			{
-				string mods = arg.Modifiers.ToString();
+				var mods = arg.Modifiers.ToString();
 				if (string.IsNullOrWhiteSpace(mods))
 					list.Add(arg.Identifier.ToString());
 				else
-					list.Add(arg.Modifiers.ToString() + " " + arg.Identifier.ToString());
+					list.Add(arg.Modifiers + " " + arg.Identifier);
 			}
+
 			return string.Join(", ", list);
 		}
 
 		private string GetGlueClass(string handlerTypeName)
 		{
-			switch(handlerTypeName)
+			switch (handlerTypeName)
 			{
 				case "CefBrowserProcessHandler":
 				case "CefRenderProcessHandler":
 				case "CefResourceBundleHandler":
 					return "CefAppGlue";
 			}
+
 			return "WebViewGlue";
 		}
 
+		private delegate void CodeGenFunc(CompilationUnitSyntax unit);
 	}
 }

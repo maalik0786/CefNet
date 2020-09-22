@@ -11,7 +11,7 @@ namespace CefGen.CodeDom
 		public CodeField(string typeName, string name)
 			: base(name)
 		{
-			this.TypeName = typeName;
+			TypeName = typeName;
 		}
 
 		public string TypeName { get; set; }

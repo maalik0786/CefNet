@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CefNet.Net;
@@ -26,7 +25,8 @@ namespace CefNet.Internal
 #if NET45
 			_completionSource = new TaskCompletionSource<CefNetCookie[]>();
 #else
-			_completionSource = new TaskCompletionSource<CefNetCookie[]>(TaskCreationOptions.RunContinuationsAsynchronously);
+			_completionSource =
+ new TaskCompletionSource<CefNetCookie[]>(TaskCreationOptions.RunContinuationsAsynchronously);
 			_cancellationToken = cancellationToken;
 #endif
 			_cancellation = cancellationToken.Register(Cancel, new WeakReference<GetCookieVisitor>(this));
@@ -34,7 +34,7 @@ namespace CefNet.Internal
 
 		private static void Cancel(object state)
 		{
-			if (((WeakReference<GetCookieVisitor>)state).TryGetTarget(out GetCookieVisitor self))
+			if (((WeakReference<GetCookieVisitor>) state).TryGetTarget(out var self))
 			{
 #if NET45
 				self._completionSource.TrySetCanceled();
@@ -46,10 +46,7 @@ namespace CefNet.Internal
 			}
 		}
 
-		public Task<CefNetCookie[]> Task
-		{
-			get { return _completionSource.Task; }
-		}
+		public Task<CefNetCookie[]> Task => _completionSource.Task;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -73,6 +70,7 @@ namespace CefNet.Internal
 				_completionSource.TrySetException(e);
 				return false;
 			}
+
 			if (_filter is null || _filter(cookie))
 				_cookies.Add(new CefNetCookie(cookie));
 			return _continue;

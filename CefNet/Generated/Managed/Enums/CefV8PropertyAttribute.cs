@@ -11,38 +11,32 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// V8 property attribute values.
+	///  V8 property attribute values.
 	/// </summary>
 	public enum CefV8PropertyAttribute
 	{
 		/// <summary>
-		/// Writeable, Enumerable,
-		/// Configurable
+		///  Writeable, Enumerable,
+		///  Configurable
 		/// </summary>
 		None = 0,
 
 		/// <summary>
-		/// Not writeable
+		///  Not writeable
 		/// </summary>
 		ReadOnly = 1 << 0,
 
 		/// <summary>
-		/// Not enumerable
+		///  Not enumerable
 		/// </summary>
 		DontEnum = 1 << 1,
 
 		/// <summary>
-		/// Not configurable
+		///  Not configurable
 		/// </summary>
-		DontDelete = 1 << 2,
+		DontDelete = 1 << 2
 	}
 }
-

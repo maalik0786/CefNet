@@ -11,16 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Result codes for CefMediaRouter::CreateRoute. Should be kept in sync with
-	/// Chromium&apos;s media_router::RouteRequestResult::ResultCode type.
+	///  Result codes for CefMediaRouter::CreateRoute. Should be kept in sync with
+	///  Chromium&apos;s media_router::RouteRequestResult::ResultCode type.
 	/// </summary>
 	public enum CefMediaRouteCreateResult
 	{
@@ -43,9 +38,8 @@ namespace CefNet
 		RouteAlreadyExists = 9,
 
 		/// <summary>
-		/// The total number of values.
+		///  The total number of values.
 		/// </summary>
-		TotalCount = 11,
+		TotalCount = 11
 	}
 }
-

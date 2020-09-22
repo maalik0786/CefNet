@@ -1,30 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 using CefNet.CApi;
 using CefNet.WinApi;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Class representing window information.
+	///  Class representing window information.
 	/// </summary>
-	public unsafe sealed class CefWindowInfo : IDisposable
+	public sealed unsafe class CefWindowInfo : IDisposable
 	{
-		private static readonly int CW_USEDEFAULT = PlatformInfo.IsWindows ? unchecked((int)0x80000000) : 0;
+		private static readonly int CW_USEDEFAULT = PlatformInfo.IsWindows ? unchecked((int) 0x80000000) : 0;
 
 		private cef_window_info_t* _instance;
 
-		public static CefWindowInfo Wrap(cef_window_info_t* instance)
-		{
-			if (instance == null)
-				return null;
-			return new CefWindowInfo(instance);
-		}
-
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CefWindowInfo"/>.
+		///  Initializes a new instance of the <see cref="CefWindowInfo" />.
 		/// </summary>
 		public CefWindowInfo()
 		{
@@ -38,9 +29,9 @@ namespace CefNet
 			else
 				throw new PlatformNotSupportedException();
 
-			IntPtr mem = Marshal.AllocHGlobal(size);
+			var mem = Marshal.AllocHGlobal(size);
 			mem.InitBlock(0, size);
-			_instance = (cef_window_info_t*)mem;
+			_instance = (cef_window_info_t*) mem;
 		}
 
 		private CefWindowInfo(cef_window_info_t* instance)
@@ -49,31 +40,13 @@ namespace CefNet
 			GC.SuppressFinalize(this);
 		}
 
-#pragma warning disable CS1591 // Missing comments
-		~CefWindowInfo()
-		{
-			Dispose();
-		}
-
-		public void Dispose()
-		{
-			if (_instance != null)
-			{
-				WindowName = null;
-				Marshal.FreeHGlobal(new IntPtr(_instance));
-				_instance = null;
-				GC.SuppressFinalize(this);
-			}
-		}
-#pragma warning restore CS1591 // Missing comments
-
 		private cef_window_info_windows_t* WindowsInstance
 		{
 			get
 			{
 				if (!PlatformInfo.IsWindows)
 					throw new PlatformNotSupportedException();
-				return (cef_window_info_windows_t*)GetNativeInstance();
+				return (cef_window_info_windows_t*) GetNativeInstance();
 			}
 		}
 
@@ -83,7 +56,7 @@ namespace CefNet
 			{
 				if (!PlatformInfo.IsLinux)
 					throw new PlatformNotSupportedException();
-				return (cef_window_info_linux_t*)GetNativeInstance();
+				return (cef_window_info_linux_t*) GetNativeInstance();
 			}
 		}
 
@@ -93,33 +66,22 @@ namespace CefNet
 			{
 				if (!PlatformInfo.IsMacOS)
 					throw new PlatformNotSupportedException();
-				return (cef_window_info_mac_t*)GetNativeInstance();
+				return (cef_window_info_mac_t*) GetNativeInstance();
 			}
 		}
 
 		/// <summary>
-		/// Returns an unsafe pointer to the <see cref="cef_window_info_t"/> struct.
-		/// </summary>
-		/// <returns>A pointer to the <see cref="cef_window_info_t"/> struct.</returns>
-		public cef_window_info_t* GetNativeInstance()
-		{
-			if (_instance == null)
-				throw new ObjectDisposedException(nameof(CefWindowInfo));
-			return _instance;
-		}
-
-		/// <summary>
-		/// Gets or sets the extended window style of the window being created (Windows only).
-		/// See CreateWindowEx() for more information.
+		///  Gets or sets the extended window style of the window being created (Windows only).
+		///  See CreateWindowEx() for more information.
 		/// </summary>
 		public uint ExStyle
 		{
-			get { return WindowsInstance->ex_style; }
-			set { WindowsInstance->ex_style = value; }
+			get => WindowsInstance->ex_style;
+			set => WindowsInstance->ex_style = value;
 		}
 
 		/// <summary>
-		/// The window name.
+		///  The window name.
 		/// </summary>
 		public string WindowName
 		{
@@ -143,17 +105,17 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// The style of the window being created. See CreateWindowEx() for more
-		/// information.
+		///  The style of the window being created. See CreateWindowEx() for more
+		///  information.
 		/// </summary>
 		public WindowStyle Style
 		{
-			get { return (WindowStyle)WindowsInstance->style; }
-			set { WindowsInstance->style = (uint)value; }
+			get => (WindowStyle) WindowsInstance->style;
+			set => WindowsInstance->style = (uint) value;
 		}
 
 		/// <summary>
-		/// The initial horizontal position of the window.
+		///  The initial horizontal position of the window.
 		/// </summary>
 		public int X
 		{
@@ -177,7 +139,7 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// The initial vertical position of the window.
+		///  The initial vertical position of the window.
 		/// </summary>
 		public int Y
 		{
@@ -201,7 +163,7 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// The width of the window.
+		///  The width of the window.
 		/// </summary>
 		public int Width
 		{
@@ -225,7 +187,7 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// The height of the window.
+		///  The height of the window.
 		/// </summary>
 		public int Height
 		{
@@ -249,7 +211,7 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Gets or sets the pointer for the parent window/view.
+		///  Gets or sets the pointer for the parent window/view.
 		/// </summary>
 		public IntPtr ParentWindow
 		{
@@ -273,7 +235,7 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Gets or sets the pointer for the new browser window/view. Only used with windowed rendering.
+		///  Gets or sets the pointer for the new browser window/view. Only used with windowed rendering.
 		/// </summary>
 		public IntPtr Window
 		{
@@ -297,26 +259,26 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Gets or sets a handle to a menu, or specifies a child-window identifier, depending on the
-		/// window style (Windows only). See CreateWindowEx() for more information.
+		///  Gets or sets a handle to a menu, or specifies a child-window identifier, depending on the
+		///  window style (Windows only). See CreateWindowEx() for more information.
 		/// </summary>
 		public IntPtr Menu
 		{
-			get { return WindowsInstance->menu; }
-			set { WindowsInstance->menu = value; }
+			get => WindowsInstance->menu;
+			set => WindowsInstance->menu = value;
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the browser using windowless (off-screen)
-		/// rendering. No window will be created for the browser and all rendering will
-		/// occur via the CefRenderHandler interface. The |ParentWindow| value will be
-		/// used to identify monitor info and to act as the parent window for dialogs,
-		/// context menus, etc. If |ParentWindow| is not provided then the main screen
-		/// monitor will be used and some functionality that requires a parent window
-		/// may not function correctly. In order to create windowless browsers the
-		/// CefSettings.WindowlessRenderingEnabled value must be set to true.
-		/// Transparent painting is enabled by default but can be disabled by setting
-		/// CefBrowserSettings.BackgroundColor to an opaque value.
+		///  Gets or sets a value indicating whether the browser using windowless (off-screen)
+		///  rendering. No window will be created for the browser and all rendering will
+		///  occur via the CefRenderHandler interface. The |ParentWindow| value will be
+		///  used to identify monitor info and to act as the parent window for dialogs,
+		///  context menus, etc. If |ParentWindow| is not provided then the main screen
+		///  monitor will be used and some functionality that requires a parent window
+		///  may not function correctly. In order to create windowless browsers the
+		///  CefSettings.WindowlessRenderingEnabled value must be set to true.
+		///  Transparent painting is enabled by default but can be disabled by setting
+		///  CefBrowserSettings.BackgroundColor to an opaque value.
 		/// </summary>
 		public bool WindowlessRenderingEnabled
 		{
@@ -340,9 +302,9 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Set to true to enable shared textures for windowless rendering. Only
-		/// valid if WindowlessRenderingEnabled above is also set to true. Currently
-		/// only supported on Windows (D3D11).
+		///  Set to true to enable shared textures for windowless rendering. Only
+		///  valid if WindowlessRenderingEnabled above is also set to true. Currently
+		///  only supported on Windows (D3D11).
 		/// </summary>
 		public bool SharedTextureEnabled
 		{
@@ -366,8 +328,8 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Set to true to enable the ability to issue BeginFrame requests from the
-		/// client application by calling CefBrowserHost::SendExternalBeginFrame.
+		///  Set to true to enable the ability to issue BeginFrame requests from the
+		///  client application by calling CefBrowserHost::SendExternalBeginFrame.
 		/// </summary>
 		public bool ExternalBeginFrameEnabled
 		{
@@ -390,13 +352,32 @@ namespace CefNet
 			}
 		}
 
+		public static CefWindowInfo Wrap(cef_window_info_t* instance)
+		{
+			if (instance == null)
+				return null;
+			return new CefWindowInfo(instance);
+		}
+
 		/// <summary>
-		/// Create the browser as a child window.
+		///  Returns an unsafe pointer to the <see cref="cef_window_info_t" /> struct.
+		/// </summary>
+		/// <returns>A pointer to the <see cref="cef_window_info_t" /> struct.</returns>
+		public cef_window_info_t* GetNativeInstance()
+		{
+			if (_instance == null)
+				throw new ObjectDisposedException(nameof(CefWindowInfo));
+			return _instance;
+		}
+
+		/// <summary>
+		///  Create the browser as a child window.
 		/// </summary>
 		public void SetAsChild(IntPtr parentWindow, int left, int top, int width, int height)
 		{
 			if (PlatformInfo.IsWindows)
-				Style = WindowStyle.WS_CHILD | WindowStyle.WS_CLIPCHILDREN | WindowStyle.WS_CLIPSIBLINGS | WindowStyle.WS_TABSTOP | WindowStyle.WS_VISIBLE;
+				Style = WindowStyle.WS_CHILD | WindowStyle.WS_CLIPCHILDREN | WindowStyle.WS_CLIPSIBLINGS |
+				        WindowStyle.WS_TABSTOP | WindowStyle.WS_VISIBLE;
 
 			ParentWindow = parentWindow;
 			X = left;
@@ -406,12 +387,13 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Create the browser as a disabled child window.
+		///  Create the browser as a disabled child window.
 		/// </summary>
 		public void SetAsDisabledChild(IntPtr parentWindow)
 		{
 			if (PlatformInfo.IsWindows)
-				Style = WindowStyle.WS_CHILD | WindowStyle.WS_CLIPCHILDREN | WindowStyle.WS_CLIPSIBLINGS | WindowStyle.WS_TABSTOP | WindowStyle.WS_DISABLED;
+				Style = WindowStyle.WS_CHILD | WindowStyle.WS_CLIPCHILDREN | WindowStyle.WS_CLIPSIBLINGS |
+				        WindowStyle.WS_TABSTOP | WindowStyle.WS_DISABLED;
 
 			ParentWindow = parentWindow;
 			X = CW_USEDEFAULT;
@@ -421,13 +403,14 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Create the browser as a popup window (Windows only).
+		///  Create the browser as a popup window (Windows only).
 		/// </summary>
 		public void SetAsPopup(IntPtr parentWindow, string windowName)
 		{
 			if (PlatformInfo.IsWindows)
-				Style = WindowStyle.WS_OVERLAPPEDWINDOW | WindowStyle.WS_CLIPCHILDREN | WindowStyle.WS_CLIPSIBLINGS | WindowStyle.WS_VISIBLE;
-			
+				Style = WindowStyle.WS_OVERLAPPEDWINDOW | WindowStyle.WS_CLIPCHILDREN | WindowStyle.WS_CLIPSIBLINGS |
+				        WindowStyle.WS_VISIBLE;
+
 			ParentWindow = parentWindow;
 			X = CW_USEDEFAULT;
 			Y = CW_USEDEFAULT;
@@ -437,16 +420,16 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Create the browser using windowless (off-screen) rendering. No window
-		/// will be created for the browser and all rendering will occur via the
-		/// CefRenderHandler interface. The |parent| value will be used to identify
-		/// monitor info and to act as the parent window for dialogs, context menus,
-		/// etc. If |parent| is not provided then the main screen monitor will be used
-		/// and some functionality that requires a parent window may not function
-		/// correctly. In order to create windowless browsers the
-		/// CefSettings.WindowlessRenderingEnabled value must be set to true.
-		/// Transparent painting is enabled by default but can be disabled by setting
-		/// CefBrowserSettings.BackgroundColor to an opaque value.
+		///  Create the browser using windowless (off-screen) rendering. No window
+		///  will be created for the browser and all rendering will occur via the
+		///  CefRenderHandler interface. The |parent| value will be used to identify
+		///  monitor info and to act as the parent window for dialogs, context menus,
+		///  etc. If |parent| is not provided then the main screen monitor will be used
+		///  and some functionality that requires a parent window may not function
+		///  correctly. In order to create windowless browsers the
+		///  CefSettings.WindowlessRenderingEnabled value must be set to true.
+		///  Transparent painting is enabled by default but can be disabled by setting
+		///  CefBrowserSettings.BackgroundColor to an opaque value.
 		/// </summary>
 		public void SetAsWindowless(IntPtr parentWindow)
 		{
@@ -455,14 +438,14 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Compares two <see cref="CefWindowInfo"/> instances for reference equality.
+		///  Compares two <see cref="CefWindowInfo" /> instances for reference equality.
 		/// </summary>
 		/// <param name="obj">
-		/// The <see cref="CefWindowInfo"/> instance to compare with the current instance.
+		///  The <see cref="CefWindowInfo" /> instance to compare with the current instance.
 		/// </param>
 		/// <returns>
-		/// A <see cref="Boolean"/> value that is true if the two instances are equal;
-		/// otherwise, false.
+		///  A <see cref="Boolean" /> value that is true if the two instances are equal;
+		///  otherwise, false.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -472,13 +455,30 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Gets the hash code for the <see cref="CefWindowInfo"/>.
+		///  Gets the hash code for the <see cref="CefWindowInfo" />.
 		/// </summary>
-		/// <returns>An <see cref="Int32"/> containing the hash value.</returns>
+		/// <returns>An <see cref="Int32" /> containing the hash value.</returns>
 		public override int GetHashCode()
 		{
 			return new IntPtr(_instance).GetHashCode();
 		}
 
+#pragma warning disable CS1591 // Missing comments
+		~CefWindowInfo()
+		{
+			Dispose();
+		}
+
+		public void Dispose()
+		{
+			if (_instance != null)
+			{
+				WindowName = null;
+				Marshal.FreeHGlobal(new IntPtr(_instance));
+				_instance = null;
+				GC.SuppressFinalize(this);
+			}
+		}
+#pragma warning restore CS1591 // Missing comments
 	}
 }

@@ -11,17 +11,13 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_string_userfree_utf8_t
+	public unsafe struct cef_string_userfree_utf8_t
 	{
 		public cef_string_utf8_t* Base;
 	}
 }
-

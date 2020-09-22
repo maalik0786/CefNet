@@ -11,91 +11,88 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure used to implement browser process callbacks. The functions of this
-	/// structure will be called on the browser process main thread unless otherwise
-	/// indicated.
+	///  Structure used to implement browser process callbacks. The functions of this
+	///  structure will be called on the browser process main thread unless otherwise
+	///  indicated.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_browser_process_handler_t
+	public unsafe struct cef_browser_process_handler_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_browser_process_handler_t* self)*
+		///  void (*)(_cef_browser_process_handler_t* self)*
 		/// </summary>
 		public void* on_context_initialized;
 
 		/// <summary>
-		/// Called on the browser process UI thread immediately after the CEF context
-		/// has been initialized.
+		///  Called on the browser process UI thread immediately after the CEF context
+		///  has been initialized.
 		/// </summary>
 		[NativeName("on_context_initialized")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void OnContextInitialized();
+		public extern void OnContextInitialized();
 
 		/// <summary>
-		/// void (*)(_cef_browser_process_handler_t* self, _cef_command_line_t* command_line)*
+		///  void (*)(_cef_browser_process_handler_t* self, _cef_command_line_t* command_line)*
 		/// </summary>
 		public void* on_before_child_process_launch;
 
 		/// <summary>
-		/// Called before a child process is launched. Will be called on the browser
-		/// process UI thread when launching a render process and on the browser
-		/// process IO thread when launching a GPU or plugin process. Provides an
-		/// opportunity to modify the child process command line. Do not keep a
-		/// reference to |command_line| outside of this function.
+		///  Called before a child process is launched. Will be called on the browser
+		///  process UI thread when launching a render process and on the browser
+		///  process IO thread when launching a GPU or plugin process. Provides an
+		///  opportunity to modify the child process command line. Do not keep a
+		///  reference to |command_line| outside of this function.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		[NativeName("on_before_child_process_launch")]
-		public unsafe extern void OnBeforeChildProcessLaunch(cef_command_line_t* command_line);
+		public extern void OnBeforeChildProcessLaunch(cef_command_line_t* command_line);
 
 		/// <summary>
-		/// _cef_print_handler_t* (*)(_cef_browser_process_handler_t* self)*
+		///  _cef_print_handler_t* (*)(_cef_browser_process_handler_t* self)*
 		/// </summary>
 		public void* get_print_handler;
 
 		/// <summary>
-		/// Return the handler for printing on Linux. If a print handler is not
-		/// provided then printing will not be supported on the Linux platform.
+		///  Return the handler for printing on Linux. If a print handler is not
+		///  provided then printing will not be supported on the Linux platform.
 		/// </summary>
 		[NativeName("get_print_handler")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_print_handler_t* GetPrintHandler();
+		public extern cef_print_handler_t* GetPrintHandler();
 
 		/// <summary>
-		/// void (*)(_cef_browser_process_handler_t* self, int64 delay_ms)*
+		///  void (*)(_cef_browser_process_handler_t* self, int64 delay_ms)*
 		/// </summary>
 		public void* on_schedule_message_pump_work;
 
 		/// <summary>
-		/// Called from any thread when work has been scheduled for the browser process
-		/// main (UI) thread. This callback is used in combination with CefSettings.
-		/// external_message_pump and cef_do_message_loop_work() in cases where the CEF
-		/// message loop must be integrated into an existing application message loop
-		/// (see additional comments and warnings on CefDoMessageLoopWork). This
-		/// callback should schedule a cef_do_message_loop_work() call to happen on the
-		/// main (UI) thread. |delay_ms| is the requested delay in milliseconds. If
-		/// |delay_ms| is 
-		/// &lt;
-		/// = 0 then the call should happen reasonably soon. If
-		/// |delay_ms| is &gt; 0 then the call should be scheduled to happen after the
-		/// specified delay and any currently pending scheduled call should be
-		/// cancelled.
+		///  Called from any thread when work has been scheduled for the browser process
+		///  main (UI) thread. This callback is used in combination with CefSettings.
+		///  external_message_pump and cef_do_message_loop_work() in cases where the CEF
+		///  message loop must be integrated into an existing application message loop
+		///  (see additional comments and warnings on CefDoMessageLoopWork). This
+		///  callback should schedule a cef_do_message_loop_work() call to happen on the
+		///  main (UI) thread. |delay_ms| is the requested delay in milliseconds. If
+		///  |delay_ms| is
+		///  &lt;
+		///  = 0 then the call should happen reasonably soon. If
+		///  |delay_ms| is &gt; 0 then the call should be scheduled to happen after the
+		///  specified delay and any currently pending scheduled call should be
+		///  cancelled.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		[NativeName("on_schedule_message_pump_work")]
-		public unsafe extern void OnScheduleMessagePumpWork(long delay_ms);
+		public extern void OnScheduleMessagePumpWork(long delay_ms);
 	}
 }
-

@@ -11,27 +11,21 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Focus sources.
+	///  Focus sources.
 	/// </summary>
 	public enum CefFocusSource
 	{
 		/// <summary>
-		/// The source is explicit navigation via the API (LoadURL(), etc).
+		///  The source is explicit navigation via the API (LoadURL(), etc).
 		/// </summary>
 		Navigation = 0,
 
 		/// <summary>
-		/// The source is a system-generated focus event.
+		///  The source is a system-generated focus event.
 		/// </summary>
-		System = 1,
+		System = 1
 	}
 }
-

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CefNet
 {
@@ -8,7 +6,7 @@ namespace CefNet
 	{
 		public DocumentTitleChangedEventArgs(string title)
 		{
-			this.Title = title;
+			Title = title;
 		}
 
 		public string Title { get; }

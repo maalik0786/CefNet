@@ -11,21 +11,16 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported SSL version values. See net/ssl/ssl_connection_status_flags.h
-	/// for more information.
+	///  Supported SSL version values. See net/ssl/ssl_connection_status_flags.h
+	///  for more information.
 	/// </summary>
 	public enum CefSSLVersion
 	{
 		/// <summary>
-		/// Unknown SSL version.
+		///  Unknown SSL version.
 		/// </summary>
 		Unknown = 0,
 
@@ -41,7 +36,6 @@ namespace CefNet
 
 		Tls13 = 6,
 
-		Quic = 7,
+		Quic = 7
 	}
 }
-

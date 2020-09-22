@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// V8 access control values.
+	///  V8 access control values.
 	/// </summary>
 	public enum CefV8AccessControl
 	{
@@ -29,7 +24,6 @@ namespace CefNet
 
 		AllCanWrite = 1 << 1,
 
-		ProhibitsOverwriting = 1 << 2,
+		ProhibitsOverwriting = 1 << 2
 	}
 }
-

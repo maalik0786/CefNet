@@ -1,28 +1,27 @@
-﻿using CefNet;
-using System;
-using System.IO;
-using System.Runtime.InteropServices;
+﻿using System;
+using CefNet;
 
 namespace RCWTest
 {
-	unsafe class Program
+	internal unsafe class Program
 	{
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			IntPtr key = Test1();
+			var key = Test1();
 			Console.WriteLine("collect");
 			GC.Collect();
 			GC.WaitForPendingFinalizers();
 			Console.WriteLine("release");
 			Test2(key);
-		
-			for (int i = 0; i < 5; i++)
+
+			for (var i = 0; i < 5; i++)
 			{
 				Console.WriteLine("collect");
 				GC.Collect();
 				GC.WaitForPendingFinalizers();
 			}
+
 			Console.ReadKey();
 		}
 
@@ -30,7 +29,7 @@ namespace RCWTest
 		{
 			var test = new TestClass();
 			var app = new CefAppImpl();
-			IntPtr key = (IntPtr)app.GetNativeInstance();
+			var key = (IntPtr) app.GetNativeInstance();
 			app = null;
 			test = null;
 			return key;
@@ -38,13 +37,12 @@ namespace RCWTest
 
 		public static void Test2(IntPtr key)
 		{
-			CefAppImpl app = (CefAppImpl)CefAppImpl.GetInstance(key);
+			var app = (CefAppImpl) CefAppImpl.GetInstance(key);
 			app.Release();
 		}
-
 	}
 
-	sealed class TestClass
+	internal sealed class TestClass
 	{
 		~TestClass()
 		{
@@ -52,7 +50,7 @@ namespace RCWTest
 		}
 	}
 
-	sealed class CefAppImpl : CefApp
+	internal sealed class CefAppImpl : CefApp
 	{
 		~CefAppImpl()
 		{

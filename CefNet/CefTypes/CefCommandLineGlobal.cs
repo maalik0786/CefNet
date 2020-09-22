@@ -1,14 +1,19 @@
-﻿using CefNet.CApi;
-using System;
+﻿using System;
+using CefNet.CApi;
 
 namespace CefNet
 {
-	internal unsafe partial class CefCommandLineGlobal : CefCommandLine
+	internal unsafe class CefCommandLineGlobal : CefCommandLine
 	{
 		internal CefCommandLineGlobal()
 			: base(CefNativeApi.cef_command_line_get_global())
 		{
+		}
 
+		public override string Program
+		{
+			get => base.Program;
+			set => throw new NotSupportedException();
 		}
 
 		public override void AppendArgument(string argument)
@@ -44,18 +49,6 @@ namespace CefNet
 		public override void Reset()
 		{
 			throw new NotSupportedException();
-		}
-
-		public override string Program
-		{
-			get
-			{
-				return base.Program;
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
 		}
 
 		protected override void Dispose(bool disposing)

@@ -11,18 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefFindHandlerGlue: CefFindHandler, ICefFindHandlerPrivate
+	internal sealed class CefFindHandlerGlue : CefFindHandler, ICefFindHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefFindHandlerGlue(WebViewGlue impl)
 		{
@@ -34,10 +27,10 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnFindResult();
 		}
 
-		protected internal unsafe override void OnFindResult(CefBrowser browser, int identifier, int count, CefRect selectionRect, int activeMatchOrdinal, bool finalUpdate)
+		protected internal override void OnFindResult(CefBrowser browser, int identifier, int count,
+			CefRect selectionRect, int activeMatchOrdinal, bool finalUpdate)
 		{
 			_implementation.OnFindResult(browser, identifier, count, selectionRect, activeMatchOrdinal, finalUpdate);
 		}
-
 	}
 }

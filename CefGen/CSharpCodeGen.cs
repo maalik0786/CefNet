@@ -4,30 +4,21 @@
 // See the licence file in the project root for full license information.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Security;
-using System.Text;
 using CefGen.CodeDom;
 
 namespace CefGen
 {
-	sealed class CSharpCodeGen : CefCodeGenBase
+	internal sealed class CSharpCodeGen : CefCodeGenBase
 	{
-		public CSharpCodeGen()
-		{
-
-		}
-
 		public IList<string> Directives { get; } = new List<string>();
 
 		protected override void GenerateGlobalDirectivesCode()
 		{
-			bool insertline = true;
-			foreach(string s in Directives)
+			var insertline = true;
+			foreach (var s in Directives)
 			{
 				if (insertline) Output.WriteLine();
 				Output.WriteLine(s);
@@ -50,13 +41,10 @@ namespace CefGen
 			Output.Write(namespaceDecl.Name);
 			WriteBlockStart(CodeGenBlockType.Namespace);
 
-			foreach (CodeNamespaceImport importDecl in namespaceDecl.Imports)
-			{
-				GenerateNamespaceImportCode(importDecl);
-			}
+			foreach (var importDecl in namespaceDecl.Imports) GenerateNamespaceImportCode(importDecl);
 
-			bool insertLine = false;
-			foreach (CodeType typeDecl in namespaceDecl.Types)
+			var insertLine = false;
+			foreach (var typeDecl in namespaceDecl.Types)
 			{
 				if (insertLine)
 					Output.WriteLine();
@@ -66,7 +54,6 @@ namespace CefGen
 			}
 
 			WriteBlockEnd(CodeGenBlockType.Namespace);
-
 		}
 
 		private void WriteAttributes(CodeAttributes attributes)
@@ -93,68 +80,37 @@ namespace CefGen
 				Output.Write("private ");
 			}
 
-			if (attributes.HasFlag(CodeAttributes.Static))
-			{
-				Output.Write("static ");
-			}
+			if (attributes.HasFlag(CodeAttributes.Static)) Output.Write("static ");
 
-			if (attributes.HasFlag(CodeAttributes.ReadOnly))
-			{
-				Output.Write("readonly ");
-			}
+			if (attributes.HasFlag(CodeAttributes.ReadOnly)) Output.Write("readonly ");
 
-			if (attributes.HasFlag(CodeAttributes.Unsafe))
-			{
-				Output.Write("unsafe ");
-			}
+			if (attributes.HasFlag(CodeAttributes.Unsafe)) Output.Write("unsafe ");
 
 			if (attributes.HasFlag(CodeAttributes.Abstract))
-			{
 				Output.Write("abstract ");
-			} 
 			else if (attributes.HasFlag(CodeAttributes.Virtual))
-			{
 				Output.Write("virtual ");
-			}
-			else if (attributes.HasFlag(CodeAttributes.Overrided))
-			{
-				Output.Write("override ");
-			}
+			else if (attributes.HasFlag(CodeAttributes.Overrided)) Output.Write("override ");
 
 			if (!attributes.HasFlag(CodeAttributes.Abstract)
-				&& attributes.HasFlag(CodeAttributes.External))
-			{
+			    && attributes.HasFlag(CodeAttributes.External))
 				Output.Write("extern ");
-			}
 
-			if(attributes.HasFlag(CodeAttributes.Partial))
-			{
-				Output.Write("partial ");
-			}
+			if (attributes.HasFlag(CodeAttributes.Partial)) Output.Write("partial ");
 		}
 
 		private void GenerateTypeCode(CodeType typeDecl)
 		{
-			foreach (CodeComment commentDecl in typeDecl.Comments)
-			{
-				GenerateCommentCode(commentDecl);
-			}
+			foreach (var commentDecl in typeDecl.Comments) GenerateCommentCode(commentDecl);
 
 			WriteCustomAttributes(typeDecl.CustomAttributes);
 
 			WriteAttributes(typeDecl.Attributes);
 			if (typeDecl is CodeStruct)
-			{
 				Output.Write("struct ");
-			}
 			else if (typeDecl is CodeEnum)
-			{
 				Output.Write("enum ");
-			}
-			else if (typeDecl is CodeClass)
-			{
-				Output.Write("class ");
-			}
+			else if (typeDecl is CodeClass) Output.Write("class ");
 
 			Output.Write(typeDecl.Name);
 
@@ -166,69 +122,45 @@ namespace CefGen
 
 			WriteBlockStart(CodeGenBlockType.Type);
 
-			bool insertLine = false;
-			foreach (CodeTypeMember memberDecl in typeDecl.Members)
+			var insertLine = false;
+			foreach (var memberDecl in typeDecl.Members)
 			{
 				if (insertLine)
 					Output.WriteLine();
 
 				if (memberDecl is CodeType classDecl)
-				{
 					GenerateTypeCode(classDecl);
-				}
 				else if (memberDecl is CodeField fieldDecl)
-				{
 					GenerateFieldCode(fieldDecl);
-				}
 				else if (memberDecl is CodeMethod methodDecl)
-				{
 					GenerateMethodCode(methodDecl);
-				}
 				else if (memberDecl is CodeEnumItem itemDecl)
-				{
 					GenerateEnumItemCode(itemDecl);
-				}
 				else if (memberDecl is CodeDelegate delegateDecl)
-				{
 					GenerateDelegateCode(delegateDecl);
-				}
 				else if (memberDecl is CodeConstructor ctorDecl)
-				{
 					GenerateConstructorCode(ctorDecl);
-				}
 				else if (memberDecl is CodeProperty propDecl)
-				{
 					GeneratePropertyCode(propDecl);
-				}
 				else if (memberDecl is CodeOperator operatorDecl)
-				{
 					GenerateOperatorCode(operatorDecl);
-				}
-				else if (memberDecl is CodeFinalizer dtorDecl)
-				{
-					GenerateFinalizerCode(dtorDecl);
-				}
+				else if (memberDecl is CodeFinalizer dtorDecl) GenerateFinalizerCode(dtorDecl);
 				insertLine = true;
 			}
 
 			WriteBlockEnd(CodeGenBlockType.Type);
-
 		}
 
 		private void GenerateEnumItemCode(CodeEnumItem itemDecl)
 		{
-			foreach (CodeComment commentDecl in itemDecl.Comments)
-			{
-				GenerateCommentCode(commentDecl);
-			}
+			foreach (var commentDecl in itemDecl.Comments) GenerateCommentCode(commentDecl);
 
-			string value = itemDecl.Value;
+			var value = itemDecl.Value;
 			if (value.StartsWith("0x")
-					&& uint.TryParse(value.Substring(2), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out uint num)
-					&& num > int.MaxValue)
-			{
+			    && uint.TryParse(value.Substring(2), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture,
+				    out var num)
+			    && num > int.MaxValue)
 				value = "unchecked((int)" + value + ")";
-			}
 
 			WriteIndent();
 			Output.Write(itemDecl.Name);
@@ -239,10 +171,7 @@ namespace CefGen
 
 		private void GeneratePropertyCode(CodeProperty propDecl)
 		{
-			foreach (CodeComment commentDecl in propDecl.Comments)
-			{
-				GenerateCommentCode(commentDecl);
-			}
+			foreach (var commentDecl in propDecl.Comments) GenerateCommentCode(commentDecl);
 
 			WriteAttributes(propDecl.Attributes);
 			Output.Write(GetClrTypeName(propDecl.Type.Type));
@@ -257,6 +186,7 @@ namespace CefGen
 				GenerateMethodBodyCode(propDecl.GetterBody);
 				WriteBlockEnd(CodeGenBlockType.Method);
 			}
+
 			if (propDecl.SetterBody != null)
 			{
 				WriteIndent();
@@ -265,15 +195,13 @@ namespace CefGen
 				GenerateMethodBodyCode(propDecl.SetterBody);
 				WriteBlockEnd(CodeGenBlockType.Method);
 			}
+
 			WriteBlockEnd(CodeGenBlockType.Method);
 		}
 
 		private void GenerateFieldCode(CodeField fieldDecl)
 		{
-			foreach (CodeComment commentDecl in fieldDecl.Comments)
-			{
-				GenerateCommentCode(commentDecl);
-			}
+			foreach (var commentDecl in fieldDecl.Comments) GenerateCommentCode(commentDecl);
 
 			WriteCustomAttributes(fieldDecl.CustomAttributes);
 
@@ -286,15 +214,13 @@ namespace CefGen
 				Output.Write(" = ");
 				Output.Write(fieldDecl.Value);
 			}
+
 			Output.WriteLine(";");
 		}
 
 		private void GenerateDelegateCode(CodeDelegate delegateDecl)
 		{
-			foreach (CodeComment commentDecl in delegateDecl.Comments)
-			{
-				GenerateCommentCode(commentDecl);
-			}
+			foreach (var commentDecl in delegateDecl.Comments) GenerateCommentCode(commentDecl);
 
 			WriteCustomAttributes(delegateDecl.CustomAttributes);
 			WriteAttributes(delegateDecl.Attributes);
@@ -303,23 +229,21 @@ namespace CefGen
 			Output.Write(" ");
 			Output.Write(delegateDecl.Name);
 			Output.Write("(");
-			Output.Write(string.Join(", ", delegateDecl.Parameters.Select(arg => GetClrTypeName(arg.Type) + " " + arg.Name)));
+			Output.Write(string.Join(", ",
+				delegateDecl.Parameters.Select(arg => GetClrTypeName(arg.Type) + " " + arg.Name)));
 			Output.WriteLine(");");
-
 		}
 
 		private void GenerateConstructorCode(CodeConstructor ctorDecl)
 		{
-			foreach (CodeComment commentDecl in ctorDecl.Comments)
-			{
-				GenerateCommentCode(commentDecl);
-			}
+			foreach (var commentDecl in ctorDecl.Comments) GenerateCommentCode(commentDecl);
 
 			WriteCustomAttributes(ctorDecl.CustomAttributes);
 			WriteAttributes(ctorDecl.Attributes);
 			Output.Write(ctorDecl.Name);
 			Output.Write("(");
-			Output.Write(string.Join(", ", ctorDecl.Parameters.Select(arg => GetClrTypeName(arg.Type) + " " + arg.Name)));
+			Output.Write(
+				string.Join(", ", ctorDecl.Parameters.Select(arg => GetClrTypeName(arg.Type) + " " + arg.Name)));
 			Output.Write(")");
 			if (ctorDecl.BaseArgs.Count > 0)
 			{
@@ -329,10 +253,10 @@ namespace CefGen
 				Output.Write(string.Join(", ", ctorDecl.BaseArgs));
 				Output.Write(")");
 			}
+
 			WriteBlockStart(CodeGenBlockType.Method);
 			GenerateMethodBodyCode(ctorDecl.Body);
 			WriteBlockEnd(CodeGenBlockType.Method);
-
 		}
 
 		private void GenerateFinalizerCode(CodeFinalizer dtorDecl)
@@ -348,10 +272,7 @@ namespace CefGen
 
 		private void GenerateOperatorCode(CodeOperator opdDecl)
 		{
-			foreach (CodeComment commentDecl in opdDecl.Comments)
-			{
-				GenerateCommentCode(commentDecl);
-			}
+			foreach (var commentDecl in opdDecl.Comments) GenerateCommentCode(commentDecl);
 
 			WriteCustomAttributes(opdDecl.CustomAttributes);
 			WriteAttributes(opdDecl.Attributes);
@@ -361,19 +282,15 @@ namespace CefGen
 			Output.Write("(");
 
 			var args = new List<string>(opdDecl.Parameters.Count);
-			foreach (CodeMethodParameter param in opdDecl.Parameters)
+			foreach (var param in opdDecl.Parameters)
 			{
-				string modifier = string.Empty;
+				var modifier = string.Empty;
 				if (param.Direction == CodeMethodParameterDirection.Ref)
-				{
 					modifier = "ref ";
-				}
-				else if (param.Direction == CodeMethodParameterDirection.Out)
-				{
-					modifier = "out ";
-				}
+				else if (param.Direction == CodeMethodParameterDirection.Out) modifier = "out ";
 				args.Add(string.Format("{0}{1} {2}", modifier, param.Type, param.Name));
 			}
+
 			Output.Write(string.Join(", ", args));
 
 
@@ -381,15 +298,11 @@ namespace CefGen
 			WriteBlockStart(CodeGenBlockType.Method);
 			GenerateMethodBodyCode(opdDecl.Body);
 			WriteBlockEnd(CodeGenBlockType.Method);
-
 		}
 
 		private void GenerateMethodCode(CodeMethod methodDecl)
 		{
-			foreach (CodeComment commentDecl in methodDecl.Comments)
-			{
-				GenerateCommentCode(commentDecl);
-			}
+			foreach (var commentDecl in methodDecl.Comments) GenerateCommentCode(commentDecl);
 
 			WriteCustomAttributes(methodDecl.CustomAttributes);
 			WriteAttributes(methodDecl.Attributes);
@@ -399,25 +312,20 @@ namespace CefGen
 			Output.Write("(");
 
 			var args = new List<string>(methodDecl.Parameters.Count);
-			foreach(CodeMethodParameter param in methodDecl.Parameters)
+			foreach (var param in methodDecl.Parameters)
 			{
-				string modifier = string.Empty;
+				var modifier = string.Empty;
 				if (param.Direction == CodeMethodParameterDirection.Ref)
-				{
 					modifier = "ref ";
-				}
-				else if (param.Direction == CodeMethodParameterDirection.Out)
-				{
-					modifier = "out ";
-				}
-				string customAttributes = string.Join(", ", param.CustomAttributes.Select(a => a.ToString()));
+				else if (param.Direction == CodeMethodParameterDirection.Out) modifier = "out ";
+				var customAttributes = string.Join(", ", param.CustomAttributes.Select(a => a.ToString()));
 				if (customAttributes != null && customAttributes.Length > 0)
-				{
 					customAttributes = "[" + customAttributes + "]";
-				}
 
-				args.Add(string.Format("{3}{0}{1} {2}", modifier, GetClrTypeName(param.Type), param.Name, customAttributes));
+				args.Add(string.Format("{3}{0}{1} {2}", modifier, GetClrTypeName(param.Type), param.Name,
+					customAttributes));
 			}
+
 			Output.Write(string.Join(", ", args));
 			//Output.Write(string.Join(", ", methodDecl.Parameters.Select(arg => GetClrTypeName(arg.Type) + " " + arg.Name)));
 
@@ -428,17 +336,17 @@ namespace CefGen
 				Output.WriteLine(";");
 				return;
 			}
+
 			WriteBlockStart(CodeGenBlockType.Method);
 			GenerateMethodBodyCode(methodDecl.Body);
 			WriteBlockEnd(CodeGenBlockType.Method);
-			
 		}
 
 		private void GenerateMethodBodyCode(string body)
 		{
 			if (body == null)
 				return;
-			foreach (string line in body.Split('\n'))
+			foreach (var line in body.Split('\n'))
 			{
 				WriteIndent();
 				Output.WriteLine(line.TrimEnd('\r'));
@@ -447,7 +355,7 @@ namespace CefGen
 
 		private void WriteCustomAttributes(IList<CustomCodeAttribute> customAttributes)
 		{
-			foreach (string s in customAttributes.Select(a => a.ToString()).OrderBy(s => s.Length))
+			foreach (var s in customAttributes.Select(a => a.ToString()).OrderBy(s => s.Length))
 			{
 				WriteIndent();
 				Output.Write("[");
@@ -460,14 +368,10 @@ namespace CefGen
 		{
 			string commentPrefix;
 			if (commentDecl.IsXml)
-			{
 				commentPrefix = "/// ";
-			}
 			else
-			{
 				commentPrefix = "// ";
-			}
-			foreach (string line in commentDecl.Text.Split('\n'))
+			foreach (var line in commentDecl.Text.Split('\n'))
 			{
 				WriteIndent();
 				Output.Write(commentPrefix);
@@ -511,15 +415,15 @@ namespace CefGen
 				case "const char*":
 				case "XDisplay*":
 					return "IntPtr";
-
 			}
+
 			if (type.EndsWith('*'))
 			{
-				string t = type.Remove(type.Length - 1);
+				var t = type.Remove(type.Length - 1);
 				return GetClrTypeName(t) + "*";
 			}
+
 			return type;
 		}
-
 	}
 }

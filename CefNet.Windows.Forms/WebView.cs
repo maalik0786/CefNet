@@ -1,32 +1,28 @@
-﻿using CefNet.Internal;
-using CefNet.WinApi;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using CefNet.Internal;
+using CefNet.WinApi;
 
 namespace CefNet.Windows.Forms
 {
 	public partial class WebView : Control
 	{
-		private object SyncRoot;
-
-		private IntPtr browserWindowHandle;
 		private ContextMenuStrip _cefmenu;
 
-		private EventHandler<ITextFoundEventArgs> TextFoundEvent;
+		private IntPtr browserWindowHandle;
 		private EventHandler<IPdfPrintFinishedEventArgs> PdfPrintFinishedEvent;
 		private EventHandler<EventArgs> StatusTextChangedEvent;
+		private object SyncRoot;
+
+		private EventHandler<ITextFoundEventArgs> TextFoundEvent;
 
 		public WebView()
-			: this((WebView)null)
+			: this(null)
 		{
-
 		}
 
 		public WebView(WebView opener)
@@ -35,38 +31,104 @@ namespace CefNet.Windows.Forms
 
 			if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
 			{
-				BackColor = System.Drawing.Color.White;
+				BackColor = Color.White;
 				return;
 			}
+
 			if (opener != null)
 			{
-				this.Opener = opener;
-				this.WindowlessRenderingEnabled = opener.WindowlessRenderingEnabled;
-				this.BrowserSettings = opener.BrowserSettings;
+				Opener = opener;
+				WindowlessRenderingEnabled = opener.WindowlessRenderingEnabled;
+				BrowserSettings = opener.BrowserSettings;
 			}
+
 			Initialize();
+		}
+
+		protected SynchronizationContext UIContext { get; private set; }
+
+		protected override Size DefaultMinimumSize => new Size(1, 1);
+
+		/// <summary>
+		///  Gets or sets the tool-tip object that is displayed for this element in the user interface (UI).
+		/// </summary>
+		public ToolTip ToolTip { get; set; }
+
+		[Browsable(false)] public string StatusText { get; protected set; }
+
+		/// <inheritdoc />
+		public CefRect GetBounds()
+		{
+			var offscreenGraphics = OffscreenGraphics;
+			if (offscreenGraphics is null)
+			{
+				var r = DisplayRectangle;
+				return new CefRect(r.X, r.Y, r.Width, r.Height);
+			}
+
+			return offscreenGraphics.GetBounds();
+		}
+
+		void IChromiumWebViewPrivate.RaisePopupBrowserCreating()
+		{
+			SetState(State.Creating, true);
+			SyncRoot = new object();
+		}
+
+		bool IChromiumWebViewPrivate.RaiseRunContextMenu(CefFrame frame, CefContextMenuParams menuParams,
+			CefMenuModel model, CefRunContextMenuCallback callback)
+		{
+			if (model.Count == 0
+#if OBSOLETED_CONTROLS_3_1
+				|| ContextMenu != null
+#endif
+			    || ContextMenuStrip != null)
+			{
+				callback.Cancel();
+				return true;
+			}
+
+			var menuRunner = new WinFormsContextMenuRunner(menuParams, model, callback);
+			menuRunner.Build();
+			_cefmenu = menuRunner.Menu;
+			_cefmenu.Closed += HandleMenuCefMenuClosed;
+			var location = new CefRect(menuParams.XCoord, menuParams.YCoord, 0, 0);
+			var device = Device;
+			if (device != null)
+			{
+				device.ScaleToViewport(ref location, OffscreenGraphics.PixelsPerDip);
+				device.MoveToDevice(ref location, OffscreenGraphics.PixelsPerDip);
+			}
+			else
+			{
+				location.Scale(OffscreenGraphics.PixelsPerDip);
+			}
+
+			var ea = new ContextMenuEventArgs(menuRunner.Menu, new Point(location.X, location.Y));
+			RaiseCrossThreadEvent(OnShowContextMenu, ea, true);
+			return ea.Handled;
+		}
+
+		void IWinFormsWebViewPrivate.CefSetStatusText(string statusText)
+		{
+			StatusText = statusText;
+			RaiseCrossThreadEvent(OnStatusTextChanged, EventArgs.Empty, false);
 		}
 
 		protected override void Dispose(bool disposing)
 		{
 			lock (SyncRoot)
 			{
-				ToolTip?.Dispose();	
+				ToolTip?.Dispose();
 				base.Dispose(disposing);
 			}
 		}
 
-		protected SynchronizationContext UIContext { get; private set; }
-
 		protected void VerifyAccess()
 		{
 			if (InvokeRequired)
-				throw new InvalidOperationException("Cross-thread operation not valid. The WebView accessed from a thread other than the thread it was created on.");
-		}
-
-		protected override Size DefaultMinimumSize
-		{
-			get { return new Size(1, 1); }
+				throw new InvalidOperationException(
+					"Cross-thread operation not valid. The WebView accessed from a thread other than the thread it was created on.");
 		}
 
 		protected override void CreateHandle()
@@ -77,7 +139,7 @@ namespace CefNet.Windows.Forms
 			UIContext = SynchronizationContext.Current;
 			base.CreateHandle();
 
-			if (this.DesignMode)
+			if (DesignMode)
 				return;
 
 			OnCreateBrowser();
@@ -85,10 +147,7 @@ namespace CefNet.Windows.Forms
 
 		protected override void DestroyHandle()
 		{
-			if (GetState(State.Created) && !GetState(State.Closing))
-			{
-				OnDestroyBrowser();
-			}
+			if (GetState(State.Created) && !GetState(State.Closing)) OnDestroyBrowser();
 			base.DestroyHandle();
 		}
 
@@ -96,28 +155,22 @@ namespace CefNet.Windows.Forms
 		{
 			var propertyBag = SyncRoot as Dictionary<InitialPropertyKeys, object>;
 			if (propertyBag != null)
-			{
 				propertyBag[key] = value;
-			}
 			else
-			{
-				throw new InvalidOperationException("This property must be set before the underlying CEF browser is created.");
-			}
+				throw new InvalidOperationException(
+					"This property must be set before the underlying CEF browser is created.");
 		}
 
 		private T GetInitProperty<T>(InitialPropertyKeys key)
 		{
 			var propertyBag = SyncRoot as Dictionary<InitialPropertyKeys, object>;
-			if (propertyBag != null && propertyBag.TryGetValue(key, out object value))
-			{
-				return (T)value;
-			}
+			if (propertyBag != null && propertyBag.TryGetValue(key, out var value)) return (T) value;
 			return default;
 		}
 
 		protected virtual void OnCreateBrowser()
 		{
-			if (this.Opener != null)
+			if (Opener != null)
 				return;
 
 			if (GetState(State.Creating) || GetState(State.Created))
@@ -130,15 +183,11 @@ namespace CefNet.Windows.Forms
 			using (var windowInfo = new CefWindowInfo())
 			{
 				if (WindowlessRenderingEnabled)
-				{
 					windowInfo.SetAsWindowless(Handle);
-				}
 				else
-				{
 					// In order to avoid focus issues when creating browsers offscreen,
 					// the browser must be created with a disabled child window.
 					windowInfo.SetAsDisabledChild(Handle);
-				}
 
 				string initialUrl = null;
 				CefDictionaryValue extraInfo = null;
@@ -162,7 +211,8 @@ namespace CefNet.Windows.Forms
 				if (browserSettings == null)
 					browserSettings = DefaultBrowserSettings;
 
-				if (!CefApi.CreateBrowser(windowInfo, ViewGlue.Client, initialUrl, browserSettings, extraInfo, requestContext))
+				if (!CefApi.CreateBrowser(windowInfo, ViewGlue.Client, initialUrl, browserSettings, extraInfo,
+					requestContext))
 					throw new InvalidOperationException("Failed to create browser instance.");
 			}
 		}
@@ -172,47 +222,44 @@ namespace CefNet.Windows.Forms
 			if (GetState(State.Created) && !GetState(State.Closing))
 			{
 				SetState(State.Closing, true);
-				if (!this.DesignMode)
-				{
-					ViewGlue.BrowserObject?.Host.CloseBrowser(true);
-				}
+				if (!DesignMode) ViewGlue.BrowserObject?.Host.CloseBrowser(true);
 			}
 		}
 
 		protected virtual void Initialize()
 		{
 			SetStyle(ControlStyles.ContainerControl
-				| ControlStyles.ResizeRedraw
-				| ControlStyles.FixedWidth
-				| ControlStyles.FixedHeight
-				| ControlStyles.StandardClick
-				| ControlStyles.StandardDoubleClick
-				| ControlStyles.SupportsTransparentBackColor
-				| ControlStyles.EnableNotifyMessage
-				| ControlStyles.DoubleBuffer
-				| ControlStyles.OptimizedDoubleBuffer
-				| ControlStyles.UseTextForAccessibility
-				| ControlStyles.Opaque
-				| ControlStyles.CacheText
-				| ControlStyles.Selectable
+			         | ControlStyles.ResizeRedraw
+			         | ControlStyles.FixedWidth
+			         | ControlStyles.FixedHeight
+			         | ControlStyles.StandardClick
+			         | ControlStyles.StandardDoubleClick
+			         | ControlStyles.SupportsTransparentBackColor
+			         | ControlStyles.EnableNotifyMessage
+			         | ControlStyles.DoubleBuffer
+			         | ControlStyles.OptimizedDoubleBuffer
+			         | ControlStyles.UseTextForAccessibility
+			         | ControlStyles.Opaque
+			         | ControlStyles.CacheText
+			         | ControlStyles.Selectable
 				, false);
 
 			SetStyle(ControlStyles.UserPaint
-				| ControlStyles.ResizeRedraw
-				| ControlStyles.AllPaintingInWmPaint
-				| ControlStyles.Opaque
-				| ControlStyles.Selectable
+			         | ControlStyles.ResizeRedraw
+			         | ControlStyles.AllPaintingInWmPaint
+			         | ControlStyles.Opaque
+			         | ControlStyles.Selectable
 				, true);
 
 			SetStyle(ControlStyles.UserMouse, WindowlessRenderingEnabled);
 
-			this.BackColor = Color.White;
-			this.AllowDrop = true;
+			BackColor = Color.White;
+			AllowDrop = true;
 
-			this.ViewGlue = CreateWebViewGlue();
-			this.ToolTip = new ToolTip { ShowAlways = true };
+			ViewGlue = CreateWebViewGlue();
+			ToolTip = new ToolTip {ShowAlways = true};
 		}
-		
+
 		protected virtual WebViewGlue CreateWebViewGlue()
 		{
 			return new WinFormsWebViewGlue(this);
@@ -227,15 +274,8 @@ namespace CefNet.Windows.Forms
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets the tool-tip object that is displayed for this element in the user interface (UI).
-		/// </summary>
-		public ToolTip ToolTip { get; set; }
-
-		[Browsable(false)]
-		public string StatusText { get; protected set; }
-
-		protected virtual void RaiseCrossThreadEvent<TEventArgs>(Action<TEventArgs> raiseEvent, TEventArgs e, bool synchronous)
+		protected virtual void RaiseCrossThreadEvent<TEventArgs>(Action<TEventArgs> raiseEvent, TEventArgs e,
+			bool synchronous)
 			where TEventArgs : class
 		{
 			if (UIContext != null)
@@ -248,9 +288,9 @@ namespace CefNet.Windows.Forms
 			else
 			{
 				if (synchronous)
-					this.Invoke(new CrossThreadEventMethod<TEventArgs>(raiseEvent, e).Invoke, this);
+					Invoke(new CrossThreadEventMethod<TEventArgs>(raiseEvent, e).Invoke, this);
 				else
-					this.BeginInvoke(new CrossThreadEventMethod<TEventArgs>(raiseEvent, e).Invoke, this);
+					BeginInvoke(new CrossThreadEventMethod<TEventArgs>(raiseEvent, e).Invoke, this);
 			}
 		}
 
@@ -258,26 +298,25 @@ namespace CefNet.Windows.Forms
 			where TEventHadler : Delegate
 		{
 			TEventHadler current;
-			TEventHadler key = eventKey;
+			var key = eventKey;
 			do
 			{
 				current = key;
-				key = CefNetApi.CompareExchange<TEventHadler>(in eventKey, (TEventHadler)Delegate.Combine(current, handler), current);
-			}
-			while (key != current);
+				key = CefNetApi.CompareExchange(in eventKey, (TEventHadler) Delegate.Combine(current, handler),
+					current);
+			} while (key != current);
 		}
 
 		private void RemoveHandler<TEventHadler>(in TEventHadler eventKey, TEventHadler handler)
 			where TEventHadler : Delegate
 		{
 			TEventHadler current;
-			TEventHadler key = eventKey;
+			var key = eventKey;
 			do
 			{
 				current = key;
-				key = CefNetApi.CompareExchange<TEventHadler>(in eventKey, (TEventHadler)Delegate.Remove(current, handler), current);
-			}
-			while (key != current);
+				key = CefNetApi.CompareExchange(in eventKey, (TEventHadler) Delegate.Remove(current, handler), current);
+			} while (key != current);
 		}
 
 		protected virtual void OnBrowserCreated(EventArgs e)
@@ -289,12 +328,13 @@ namespace CefNet.Windows.Forms
 #endif
 				SyncRoot = new object(); // ugly huck
 			}
+
 			browserWindowHandle = BrowserObject.Host.WindowHandle;
 			BrowserCreated?.Invoke(this, e);
 			ResizeBrowserWindow();
 		}
 
-		protected override void OnGotFocus(System.EventArgs e)
+		protected override void OnGotFocus(EventArgs e)
 		{
 			BrowserObject?.Host.SetFocus(true);
 			base.OnGotFocus(e);
@@ -323,18 +363,6 @@ namespace CefNet.Windows.Forms
 			}
 		}
 
-		/// <inheritdoc />
-		public CefRect GetBounds()
-		{
-			OffscreenGraphics offscreenGraphics = this.OffscreenGraphics;
-			if (offscreenGraphics is null)
-			{
-				var r = this.DisplayRectangle;
-				return new CefRect(r.X, r.Y, r.Width, r.Height);
-			}
-			return offscreenGraphics.GetBounds();
-		}
-
 		internal void ResizeBrowserWindow()
 		{
 			const uint SWP_NOSIZE = 0x0001;
@@ -352,67 +380,35 @@ namespace CefNet.Windows.Forms
 			if (!IsHandleCreated)
 				return;
 
-			WindowStyle style = (WindowStyle)NativeMethods.GetWindowLong(Handle, GWL_STYLE);
+			var style = (WindowStyle) NativeMethods.GetWindowLong(Handle, GWL_STYLE);
 			if (WindowlessRenderingEnabled)
 			{
-				NativeMethods.SetWindowLong(Handle, GWL_STYLE, new IntPtr((int)(style | WindowStyle.WS_VSCROLL | WindowStyle.WS_HSCROLL)));
+				NativeMethods.SetWindowLong(Handle, GWL_STYLE,
+					new IntPtr((int) (style | WindowStyle.WS_VSCROLL | WindowStyle.WS_HSCROLL)));
 				return;
 			}
 
-			Size size = this.ClientSize;
+			var size = ClientSize;
 			if (Visible && size.Height > 0 && size.Width > 0)
 			{
 				style &= ~WindowStyle.WS_DISABLED;
-				NativeMethods.SetWindowLong(browserWindowHandle, GWL_STYLE, new IntPtr((int)(style | WindowStyle.WS_TABSTOP | WindowStyle.WS_VISIBLE)));
-				NativeMethods.SetWindowPos(browserWindowHandle, IntPtr.Zero, 0, 0, size.Width, size.Height, SWP_NOZORDER | SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_ASYNCWINDOWPOS);
+				NativeMethods.SetWindowLong(browserWindowHandle, GWL_STYLE,
+					new IntPtr((int) (style | WindowStyle.WS_TABSTOP | WindowStyle.WS_VISIBLE)));
+				NativeMethods.SetWindowPos(browserWindowHandle, IntPtr.Zero, 0, 0, size.Width, size.Height,
+					SWP_NOZORDER | SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_ASYNCWINDOWPOS);
 			}
 			else
 			{
-				NativeMethods.SetWindowLong(browserWindowHandle, GWL_STYLE, new IntPtr((int)(style | WindowStyle.WS_DISABLED)));
-				NativeMethods.SetWindowPos(browserWindowHandle, IntPtr.Zero, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_HIDEWINDOW | SWP_ASYNCWINDOWPOS);
+				NativeMethods.SetWindowLong(browserWindowHandle, GWL_STYLE,
+					new IntPtr((int) (style | WindowStyle.WS_DISABLED)));
+				NativeMethods.SetWindowPos(browserWindowHandle, IntPtr.Zero, 0, 0, 0, 0,
+					SWP_NOMOVE | SWP_NOSIZE | SWP_HIDEWINDOW | SWP_ASYNCWINDOWPOS);
 			}
-		}
-		
-		void IChromiumWebViewPrivate.RaisePopupBrowserCreating()
-		{
-			SetState(State.Creating, true);
-			SyncRoot = new object();
-		}
-
-		bool IChromiumWebViewPrivate.RaiseRunContextMenu(CefFrame frame, CefContextMenuParams menuParams, CefMenuModel model, CefRunContextMenuCallback callback)
-		{
-			if (model.Count == 0
-#if OBSOLETED_CONTROLS_3_1
-				|| ContextMenu != null
-#endif
-				|| ContextMenuStrip != null)
-			{
-				callback.Cancel();
-				return true;
-			}
-			var menuRunner = new WinFormsContextMenuRunner(menuParams, model, callback);
-			menuRunner.Build();
-			_cefmenu = menuRunner.Menu;
-			_cefmenu.Closed += HandleMenuCefMenuClosed;
-			var location = new CefRect(menuParams.XCoord, menuParams.YCoord, 0, 0);
-			VirtualDevice device = Device;
-			if (device != null)
-			{
-				device.ScaleToViewport(ref location, OffscreenGraphics.PixelsPerDip);
-				device.MoveToDevice(ref location, OffscreenGraphics.PixelsPerDip);
-			}
-			else
-			{
-				location.Scale(OffscreenGraphics.PixelsPerDip);
-			}
-			var ea = new ContextMenuEventArgs(menuRunner.Menu, new Point(location.X, location.Y));
-			RaiseCrossThreadEvent(OnShowContextMenu, ea, true);
-			return ea.Handled;
 		}
 
 		private void HandleMenuCefMenuClosed(object sender, ToolStripDropDownClosedEventArgs e)
 		{
-			ContextMenuStrip menu = _cefmenu;
+			var menu = _cefmenu;
 			if (menu != null)
 			{
 				_cefmenu = null;
@@ -422,11 +418,8 @@ namespace CefNet.Windows.Forms
 
 		private void DismissContextMenu()
 		{
-			ContextMenuStrip menu = _cefmenu;
-			if (menu != null)
-			{
-				OnHideContextMenu(new ContextMenuEventArgs(menu, new Point()));
-			}
+			var menu = _cefmenu;
+			if (menu != null) OnHideContextMenu(new ContextMenuEventArgs(menu, new Point()));
 		}
 
 		protected virtual void OnShowContextMenu(ContextMenuEventArgs e)
@@ -445,12 +438,6 @@ namespace CefNet.Windows.Forms
 			LoadingStateChange?.Invoke(this, e);
 		}
 
-		void IWinFormsWebViewPrivate.CefSetStatusText(string statusText)
-		{
-			this.StatusText = statusText;
-			RaiseCrossThreadEvent(OnStatusTextChanged, EventArgs.Empty, false);
-		}
-
 		protected override void WndProc(ref Message m)
 		{
 			if (WindowlessRenderingEnabled)
@@ -458,13 +445,12 @@ namespace CefNet.Windows.Forms
 				if (ProcessWindowlessMessage(ref m))
 					return;
 			}
-			else if(m.Msg == 0x0210) // WM_PARENTNOTIFY
+			else if (m.Msg == 0x0210) // WM_PARENTNOTIFY
 			{
 				DismissContextMenu();
 			}
 
 			base.WndProc(ref m);
 		}
-
 	}
 }

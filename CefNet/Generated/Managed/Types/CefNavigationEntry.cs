@@ -12,151 +12,88 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure used to represent an entry in navigation history.
+	///  Structure used to represent an entry in navigation history.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefNavigationEntry : CefBaseRefCounted<cef_navigation_entry_t>
+	public unsafe class CefNavigationEntry : CefBaseRefCounted<cef_navigation_entry_t>
 	{
-		internal static unsafe CefNavigationEntry Create(IntPtr instance)
-		{
-			return new CefNavigationEntry((cef_navigation_entry_t*)instance);
-		}
-
 		public CefNavigationEntry(cef_navigation_entry_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this object is valid. Do not call any other functions
-		/// if this property returns false.
+		///  Gets a value indicating whether this object is valid. Do not call any other functions
+		///  if this property returns false.
 		/// </summary>
-		public unsafe virtual bool IsValid
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsValid() != 0);
-			}
-		}
+		public virtual bool IsValid => SafeCall(NativeInstance->IsValid() != 0);
 
 		/// <summary>
-		/// Gets the actual URL of the page. For some pages this may be data: URL or
-		/// similar. Use get_display_url() to return a display-friendly version.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the actual URL of the page. For some pages this may be data: URL or
+		///  similar. Use get_display_url() to return a display-friendly version.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string Url
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetUrl()));
-			}
-		}
+		public virtual string Url => SafeCall(CefString.ReadAndFree(NativeInstance->GetUrl()));
 
 		/// <summary>
-		/// Gets a display-friendly version of the URL.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets a display-friendly version of the URL.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string DisplayUrl
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetDisplayUrl()));
-			}
-		}
+		public virtual string DisplayUrl => SafeCall(CefString.ReadAndFree(NativeInstance->GetDisplayUrl()));
 
 		/// <summary>
-		/// Gets the original URL that was entered by the user before any redirects.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the original URL that was entered by the user before any redirects.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string OriginalUrl
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetOriginalUrl()));
-			}
-		}
+		public virtual string OriginalUrl => SafeCall(CefString.ReadAndFree(NativeInstance->GetOriginalUrl()));
 
 		/// <summary>
-		/// Gets the title set by the page. This value may be NULL.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the title set by the page. This value may be NULL.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string Title
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetTitle()));
-			}
-		}
+		public virtual string Title => SafeCall(CefString.ReadAndFree(NativeInstance->GetTitle()));
 
 		/// <summary>
-		/// Gets the transition type which indicates what the user did to move to
-		/// this page from the previous page.
+		///  Gets the transition type which indicates what the user did to move to
+		///  this page from the previous page.
 		/// </summary>
-		public unsafe virtual CefTransitionType TransitionType
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetTransitionType());
-			}
-		}
+		public virtual CefTransitionType TransitionType => SafeCall(NativeInstance->GetTransitionType());
 
 		/// <summary>
-		/// Gets a value indicating whether this navigation includes post data.
+		///  Gets a value indicating whether this navigation includes post data.
 		/// </summary>
-		public unsafe virtual bool HasPostData
-		{
-			get
-			{
-				return SafeCall(NativeInstance->HasPostData() != 0);
-			}
-		}
+		public virtual bool HasPostData => SafeCall(NativeInstance->HasPostData() != 0);
 
 		/// <summary>
-		/// Gets the time for the last known successful navigation completion. A
-		/// navigation may be completed more than once if the page is reloaded. May be
-		/// 0 if the navigation has not yet completed.
+		///  Gets the time for the last known successful navigation completion. A
+		///  navigation may be completed more than once if the page is reloaded. May be
+		///  0 if the navigation has not yet completed.
 		/// </summary>
-		public unsafe virtual CefTime CompletionTime
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetCompletionTime());
-			}
-		}
+		public virtual CefTime CompletionTime => SafeCall(NativeInstance->GetCompletionTime());
 
 		/// <summary>
-		/// Gets the HTTP status code for the last known successful navigation
-		/// response. May be 0 if the response has not yet been received or if the
-		/// navigation has not yet completed.
+		///  Gets the HTTP status code for the last known successful navigation
+		///  response. May be 0 if the response has not yet been received or if the
+		///  navigation has not yet completed.
 		/// </summary>
-		public unsafe virtual int HttpStatusCode
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetHttpStatusCode());
-			}
-		}
+		public virtual int HttpStatusCode => SafeCall(NativeInstance->GetHttpStatusCode());
 
 		/// <summary>
-		/// Gets the SSL information for this navigation entry.
+		///  Gets the SSL information for this navigation entry.
 		/// </summary>
-		public unsafe virtual CefSSLStatus Sslstatus
+		public virtual CefSSLStatus Sslstatus =>
+			SafeCall(CefSSLStatus.Wrap(CefSSLStatus.Create, NativeInstance->GetSslstatus()));
+
+		internal static CefNavigationEntry Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(CefSSLStatus.Wrap(CefSSLStatus.Create, NativeInstance->GetSslstatus()));
-			}
+			return new CefNavigationEntry((cef_navigation_entry_t*) instance);
 		}
 	}
 }

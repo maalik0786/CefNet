@@ -12,191 +12,188 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Implement this structure to provide handler implementations. Methods will be
-	/// called by the process and/or thread indicated.
+	///  Implement this structure to provide handler implementations. Methods will be
+	///  called by the process and/or thread indicated.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefApp : CefBaseRefCounted<cef_app_t>, ICefAppPrivate
+	public unsafe class CefApp : CefBaseRefCounted<cef_app_t>, ICefAppPrivate
 	{
-		private static readonly OnBeforeCommandLineProcessingDelegate fnOnBeforeCommandLineProcessing = OnBeforeCommandLineProcessingImpl;
+		private static readonly OnBeforeCommandLineProcessingDelegate fnOnBeforeCommandLineProcessing =
+			OnBeforeCommandLineProcessingImpl;
 
 		private static readonly OnRegisterCustomSchemesDelegate fnOnRegisterCustomSchemes = OnRegisterCustomSchemesImpl;
 
-		private static readonly GetResourceBundleHandlerDelegate fnGetResourceBundleHandler = GetResourceBundleHandlerImpl;
+		private static readonly GetResourceBundleHandlerDelegate fnGetResourceBundleHandler =
+			GetResourceBundleHandlerImpl;
 
-		private static readonly GetBrowserProcessHandlerDelegate fnGetBrowserProcessHandler = GetBrowserProcessHandlerImpl;
+		private static readonly GetBrowserProcessHandlerDelegate fnGetBrowserProcessHandler =
+			GetBrowserProcessHandlerImpl;
 
 		private static readonly GetRenderProcessHandlerDelegate fnGetRenderProcessHandler = GetRenderProcessHandlerImpl;
 
-		internal static unsafe CefApp Create(IntPtr instance)
-		{
-			return new CefApp((cef_app_t*)instance);
-		}
-
 		public CefApp()
 		{
-			cef_app_t* self = this.NativeInstance;
-			self->on_before_command_line_processing = (void*)Marshal.GetFunctionPointerForDelegate(fnOnBeforeCommandLineProcessing);
-			self->on_register_custom_schemes = (void*)Marshal.GetFunctionPointerForDelegate(fnOnRegisterCustomSchemes);
-			self->get_resource_bundle_handler = (void*)Marshal.GetFunctionPointerForDelegate(fnGetResourceBundleHandler);
-			self->get_browser_process_handler = (void*)Marshal.GetFunctionPointerForDelegate(fnGetBrowserProcessHandler);
-			self->get_render_process_handler = (void*)Marshal.GetFunctionPointerForDelegate(fnGetRenderProcessHandler);
+			var self = NativeInstance;
+			self->on_before_command_line_processing =
+				(void*) Marshal.GetFunctionPointerForDelegate(fnOnBeforeCommandLineProcessing);
+			self->on_register_custom_schemes = (void*) Marshal.GetFunctionPointerForDelegate(fnOnRegisterCustomSchemes);
+			self->get_resource_bundle_handler =
+				(void*) Marshal.GetFunctionPointerForDelegate(fnGetResourceBundleHandler);
+			self->get_browser_process_handler =
+				(void*) Marshal.GetFunctionPointerForDelegate(fnGetBrowserProcessHandler);
+			self->get_render_process_handler = (void*) Marshal.GetFunctionPointerForDelegate(fnGetRenderProcessHandler);
 		}
 
 		public CefApp(cef_app_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefAppPrivate.AvoidOnBeforeCommandLineProcessing();
 
-		/// <summary>
-		/// Provides an opportunity to view and/or modify command-line arguments before
-		/// processing by CEF and Chromium. The |process_type| value will be NULL for
-		/// the browser process. Do not keep a reference to the cef_command_line_t
-		/// object passed to this function. The CefSettings.command_line_args_disabled
-		/// value can be used to start with an NULL command-line object. Any values
-		/// specified in CefSettings that equate to command-line arguments will be set
-		/// before this function is called. Be cautious when using this function to
-		/// modify command-line arguments for non-browser processes as this may result
-		/// in undefined behavior including crashes.
-		/// </summary>
-		protected internal unsafe virtual void OnBeforeCommandLineProcessing(string processType, CefCommandLine commandLine)
-		{
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnBeforeCommandLineProcessingDelegate(cef_app_t* self, cef_string_t* process_type, cef_command_line_t* command_line);
-
-		// void (*)(_cef_app_t* self, const cef_string_t* process_type, _cef_command_line_t* command_line)*
-		private static unsafe void OnBeforeCommandLineProcessingImpl(cef_app_t* self, cef_string_t* process_type, cef_command_line_t* command_line)
-		{
-			var instance = GetInstance((IntPtr)self) as CefApp;
-			if (instance == null || ((ICefAppPrivate)instance).AvoidOnBeforeCommandLineProcessing())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)command_line);
-				return;
-			}
-			instance.OnBeforeCommandLineProcessing(CefString.Read(process_type), CefCommandLine.Wrap(CefCommandLine.Create, command_line));
-		}
-
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefAppPrivate.AvoidOnRegisterCustomSchemes();
 
+		internal static CefApp Create(IntPtr instance)
+		{
+			return new CefApp((cef_app_t*) instance);
+		}
+
 		/// <summary>
-		/// Provides an opportunity to register custom schemes. Do not keep a reference
-		/// to the |registrar| object. This function is called on the main thread for
-		/// each process and the registered schemes should be the same across all
-		/// processes.
+		///  Provides an opportunity to view and/or modify command-line arguments before
+		///  processing by CEF and Chromium. The |process_type| value will be NULL for
+		///  the browser process. Do not keep a reference to the cef_command_line_t
+		///  object passed to this function. The CefSettings.command_line_args_disabled
+		///  value can be used to start with an NULL command-line object. Any values
+		///  specified in CefSettings that equate to command-line arguments will be set
+		///  before this function is called. Be cautious when using this function to
+		///  modify command-line arguments for non-browser processes as this may result
+		///  in undefined behavior including crashes.
 		/// </summary>
-		protected internal unsafe virtual void OnRegisterCustomSchemes(CefSchemeRegistrar registrar)
+		protected internal virtual void OnBeforeCommandLineProcessing(string processType, CefCommandLine commandLine)
 		{
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnRegisterCustomSchemesDelegate(cef_app_t* self, cef_scheme_registrar_t* registrar);
-
-		// void (*)(_cef_app_t* self, _cef_scheme_registrar_t* registrar)*
-		private static unsafe void OnRegisterCustomSchemesImpl(cef_app_t* self, cef_scheme_registrar_t* registrar)
+		// void (*)(_cef_app_t* self, const cef_string_t* process_type, _cef_command_line_t* command_line)*
+		private static void OnBeforeCommandLineProcessingImpl(cef_app_t* self, cef_string_t* process_type,
+			cef_command_line_t* command_line)
 		{
-			var instance = GetInstance((IntPtr)self) as CefApp;
-			if (instance == null || ((ICefAppPrivate)instance).AvoidOnRegisterCustomSchemes())
+			var instance = GetInstance((IntPtr) self) as CefApp;
+			if (instance == null || ((ICefAppPrivate) instance).AvoidOnBeforeCommandLineProcessing())
 			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) command_line);
 				return;
 			}
+
+			instance.OnBeforeCommandLineProcessing(CefString.Read(process_type),
+				CefCommandLine.Wrap(CefCommandLine.Create, command_line));
+		}
+
+		/// <summary>
+		///  Provides an opportunity to register custom schemes. Do not keep a reference
+		///  to the |registrar| object. This function is called on the main thread for
+		///  each process and the registered schemes should be the same across all
+		///  processes.
+		/// </summary>
+		protected internal virtual void OnRegisterCustomSchemes(CefSchemeRegistrar registrar)
+		{
+		}
+
+		// void (*)(_cef_app_t* self, _cef_scheme_registrar_t* registrar)*
+		private static void OnRegisterCustomSchemesImpl(cef_app_t* self, cef_scheme_registrar_t* registrar)
+		{
+			var instance = GetInstance((IntPtr) self) as CefApp;
+			if (instance == null || ((ICefAppPrivate) instance).AvoidOnRegisterCustomSchemes()) return;
 			instance.OnRegisterCustomSchemes(CefSchemeRegistrar.Wrap(CefSchemeRegistrar.Create, registrar));
 		}
 
 		/// <summary>
-		/// Return the handler for resource bundle events. If
-		/// CefSettings.pack_loading_disabled is true (1) a handler must be returned.
-		/// If no handler is returned resources will be loaded from pack files. This
-		/// function is called by the browser and render processes on multiple threads.
+		///  Return the handler for resource bundle events. If
+		///  CefSettings.pack_loading_disabled is true (1) a handler must be returned.
+		///  If no handler is returned resources will be loaded from pack files. This
+		///  function is called by the browser and render processes on multiple threads.
 		/// </summary>
-		protected internal unsafe virtual CefResourceBundleHandler GetResourceBundleHandler()
+		protected internal virtual CefResourceBundleHandler GetResourceBundleHandler()
 		{
 			return default;
 		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate cef_resource_bundle_handler_t* GetResourceBundleHandlerDelegate(cef_app_t* self);
 
 		// _cef_resource_bundle_handler_t* (*)(_cef_app_t* self)*
-		private static unsafe cef_resource_bundle_handler_t* GetResourceBundleHandlerImpl(cef_app_t* self)
+		private static cef_resource_bundle_handler_t* GetResourceBundleHandlerImpl(cef_app_t* self)
 		{
-			var instance = GetInstance((IntPtr)self) as CefApp;
-			if (instance == null)
-			{
-				return default;
-			}
-			CefResourceBundleHandler rv = instance.GetResourceBundleHandler();
+			var instance = GetInstance((IntPtr) self) as CefApp;
+			if (instance == null) return default;
+			var rv = instance.GetResourceBundleHandler();
 			if (rv == null)
 				return null;
-			return (rv != null) ? rv.GetNativeInstance() : null;
+			return rv != null ? rv.GetNativeInstance() : null;
 		}
 
 		/// <summary>
-		/// Return the handler for functionality specific to the browser process. This
-		/// function is called on multiple threads in the browser process.
+		///  Return the handler for functionality specific to the browser process. This
+		///  function is called on multiple threads in the browser process.
 		/// </summary>
-		protected internal unsafe virtual CefBrowserProcessHandler GetBrowserProcessHandler()
+		protected internal virtual CefBrowserProcessHandler GetBrowserProcessHandler()
 		{
 			return default;
 		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate cef_browser_process_handler_t* GetBrowserProcessHandlerDelegate(cef_app_t* self);
 
 		// _cef_browser_process_handler_t* (*)(_cef_app_t* self)*
-		private static unsafe cef_browser_process_handler_t* GetBrowserProcessHandlerImpl(cef_app_t* self)
+		private static cef_browser_process_handler_t* GetBrowserProcessHandlerImpl(cef_app_t* self)
 		{
-			var instance = GetInstance((IntPtr)self) as CefApp;
-			if (instance == null)
-			{
-				return default;
-			}
-			CefBrowserProcessHandler rv = instance.GetBrowserProcessHandler();
+			var instance = GetInstance((IntPtr) self) as CefApp;
+			if (instance == null) return default;
+			var rv = instance.GetBrowserProcessHandler();
 			if (rv == null)
 				return null;
-			return (rv != null) ? rv.GetNativeInstance() : null;
+			return rv != null ? rv.GetNativeInstance() : null;
 		}
 
 		/// <summary>
-		/// Return the handler for functionality specific to the render process. This
-		/// function is called on the render process main thread.
+		///  Return the handler for functionality specific to the render process. This
+		///  function is called on the render process main thread.
 		/// </summary>
-		protected internal unsafe virtual CefRenderProcessHandler GetRenderProcessHandler()
+		protected internal virtual CefRenderProcessHandler GetRenderProcessHandler()
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate cef_render_process_handler_t* GetRenderProcessHandlerDelegate(cef_app_t* self);
-
 		// _cef_render_process_handler_t* (*)(_cef_app_t* self)*
-		private static unsafe cef_render_process_handler_t* GetRenderProcessHandlerImpl(cef_app_t* self)
+		private static cef_render_process_handler_t* GetRenderProcessHandlerImpl(cef_app_t* self)
 		{
-			var instance = GetInstance((IntPtr)self) as CefApp;
-			if (instance == null)
-			{
-				return default;
-			}
-			CefRenderProcessHandler rv = instance.GetRenderProcessHandler();
+			var instance = GetInstance((IntPtr) self) as CefApp;
+			if (instance == null) return default;
+			var rv = instance.GetRenderProcessHandler();
 			if (rv == null)
 				return null;
-			return (rv != null) ? rv.GetNativeInstance() : null;
+			return rv != null ? rv.GetNativeInstance() : null;
 		}
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnBeforeCommandLineProcessingDelegate(cef_app_t* self, cef_string_t* process_type,
+			cef_command_line_t* command_line);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnRegisterCustomSchemesDelegate(cef_app_t* self, cef_scheme_registrar_t* registrar);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate cef_resource_bundle_handler_t* GetResourceBundleHandlerDelegate(cef_app_t* self);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate cef_browser_process_handler_t* GetBrowserProcessHandlerDelegate(cef_app_t* self);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate cef_render_process_handler_t* GetRenderProcessHandlerDelegate(cef_app_t* self);
 	}
 }

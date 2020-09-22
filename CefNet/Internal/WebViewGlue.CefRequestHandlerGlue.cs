@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CefNet.Internal
+﻿namespace CefNet.Internal
 {
 	public partial class WebViewGlue
 	{
@@ -11,7 +7,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual bool OnBeforeBrowse(CefBrowser browser, CefFrame frame, CefRequest request, bool userGesture, bool isRedirect)
+		protected internal virtual bool OnBeforeBrowse(CefBrowser browser, CefFrame frame, CefRequest request,
+			bool userGesture, bool isRedirect)
 		{
 			var ea = new BeforeBrowseEventArgs(browser, frame, request, userGesture, isRedirect);
 			WebView.RaiseBeforeBrowse(ea);
@@ -23,7 +20,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual bool OnOpenUrlFromTab(CefBrowser browser, CefFrame frame, string targetUrl, CefWindowOpenDisposition targetDisposition, bool userGesture)
+		protected internal virtual bool OnOpenUrlFromTab(CefBrowser browser, CefFrame frame, string targetUrl,
+			CefWindowOpenDisposition targetDisposition, bool userGesture)
 		{
 			return false;
 		}
@@ -33,7 +31,9 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual CefResourceRequestHandler GetResourceRequestHandler(CefBrowser browser, CefFrame frame, CefRequest request, bool isNavigation, bool isDownload, string requestInitiator, ref int disableDefaultHandling)
+		protected internal virtual CefResourceRequestHandler GetResourceRequestHandler(CefBrowser browser,
+			CefFrame frame, CefRequest request, bool isNavigation, bool isDownload, string requestInitiator,
+			ref int disableDefaultHandling)
 		{
 			return ResourceRequestGlue;
 		}
@@ -43,7 +43,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual bool GetAuthCredentials(CefBrowser browser, string originUrl, bool isProxy, string host, int port, string realm, string scheme, CefAuthCallback callback)
+		protected internal virtual bool GetAuthCredentials(CefBrowser browser, string originUrl, bool isProxy,
+			string host, int port, string realm, string scheme, CefAuthCallback callback)
 		{
 			return false;
 		}
@@ -53,7 +54,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual bool OnQuotaRequest(CefBrowser browser, string originUrl, long newSize, CefRequestCallback callback)
+		protected internal virtual bool OnQuotaRequest(CefBrowser browser, string originUrl, long newSize,
+			CefRequestCallback callback)
 		{
 			return false;
 		}
@@ -63,7 +65,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual bool OnCertificateError(CefBrowser browser, CefErrorCode certError, string requestUrl, CefSSLInfo sslInfo, CefRequestCallback callback)
+		protected internal virtual bool OnCertificateError(CefBrowser browser, CefErrorCode certError,
+			string requestUrl, CefSSLInfo sslInfo, CefRequestCallback callback)
 		{
 			return false;
 		}
@@ -73,7 +76,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual bool OnSelectClientCertificate(CefBrowser browser, bool isProxy, string host, int port, CefX509Certificate[] certificates, CefSelectClientCertificateCallback callback)
+		protected internal virtual bool OnSelectClientCertificate(CefBrowser browser, bool isProxy, string host,
+			int port, CefX509Certificate[] certificates, CefSelectClientCertificateCallback callback)
 		{
 			return false;
 		}
@@ -83,9 +87,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnPluginCrashed(CefBrowser browser, string pluginPath)
+		protected internal virtual void OnPluginCrashed(CefBrowser browser, string pluginPath)
 		{
-
 		}
 
 		internal bool AvoidOnRenderViewReady()
@@ -93,9 +96,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnRenderViewReady(CefBrowser browser)
+		protected internal virtual void OnRenderViewReady(CefBrowser browser)
 		{
-
 		}
 
 		internal bool AvoidOnRenderProcessTerminated()
@@ -103,9 +105,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnRenderProcessTerminated(CefBrowser browser, CefTerminationStatus status)
+		protected internal virtual void OnRenderProcessTerminated(CefBrowser browser, CefTerminationStatus status)
 		{
-
 		}
 
 		internal bool AvoidOnDocumentAvailableInMainFrame()
@@ -114,13 +115,11 @@ namespace CefNet.Internal
 		}
 
 		/// <summary>
-		/// Called on the browser process UI thread when the window.document object of
-		/// the main frame has been created.
+		///  Called on the browser process UI thread when the window.document object of
+		///  the main frame has been created.
 		/// </summary>
-		internal protected virtual void OnDocumentAvailableInMainFrame(CefBrowser browser)
+		protected internal virtual void OnDocumentAvailableInMainFrame(CefBrowser browser)
 		{
-
 		}
-
 	}
 }

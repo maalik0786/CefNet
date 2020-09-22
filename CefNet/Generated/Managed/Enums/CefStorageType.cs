@@ -11,21 +11,15 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Storage types.
+	///  Storage types.
 	/// </summary>
 	public enum CefStorageType
 	{
 		Localstorage = 0,
 
-		Sessionstorage = 1,
+		Sessionstorage = 1
 	}
 }
-

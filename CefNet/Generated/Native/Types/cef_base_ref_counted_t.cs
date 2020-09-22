@@ -12,73 +12,71 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// All ref-counted framework structures must include this structure first.
+	///  All ref-counted framework structures must include this structure first.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_base_ref_counted_t
+	public unsafe struct cef_base_ref_counted_t
 	{
 		/// <summary>
-		/// Size of the data structure.
+		///  Size of the data structure.
 		/// </summary>
 		public UIntPtr size;
 
 		/// <summary>
-		/// void (*)(_cef_base_ref_counted_t* self)*
+		///  void (*)(_cef_base_ref_counted_t* self)*
 		/// </summary>
 		public void* add_ref;
 
 		/// <summary>
-		/// Called to increment the reference count for the object. Should be called
-		/// for every new copy of a pointer to a given object.
+		///  Called to increment the reference count for the object. Should be called
+		///  for every new copy of a pointer to a given object.
 		/// </summary>
 		[NativeName("add_ref")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void AddRef();
+		public extern void AddRef();
 
 		/// <summary>
-		/// int (*)(_cef_base_ref_counted_t* self)*
+		///  int (*)(_cef_base_ref_counted_t* self)*
 		/// </summary>
 		public void* release;
 
 		/// <summary>
-		/// Called to decrement the reference count for the object. If the reference
-		/// count falls to 0 the object should self-delete. Returns true (1) if the
-		/// resulting reference count is 0.
+		///  Called to decrement the reference count for the object. If the reference
+		///  count falls to 0 the object should self-delete. Returns true (1) if the
+		///  resulting reference count is 0.
 		/// </summary>
 		[NativeName("release")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int Release();
+		public extern int Release();
 
 		/// <summary>
-		/// int (*)(_cef_base_ref_counted_t* self)*
+		///  int (*)(_cef_base_ref_counted_t* self)*
 		/// </summary>
 		public void* has_one_ref;
 
 		/// <summary>
-		/// Returns true (1) if the current reference count is 1.
+		///  Returns true (1) if the current reference count is 1.
 		/// </summary>
 		[NativeName("has_one_ref")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int HasOneRef();
+		public extern int HasOneRef();
 
 		/// <summary>
-		/// int (*)(_cef_base_ref_counted_t* self)*
+		///  int (*)(_cef_base_ref_counted_t* self)*
 		/// </summary>
 		public void* has_at_least_one_ref;
 
 		/// <summary>
-		/// Returns true (1) if the current reference count is at least 1.
+		///  Returns true (1) if the current reference count is at least 1.
 		/// </summary>
 		[NativeName("has_at_least_one_ref")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int HasAtLeastOneRef();
+		public extern int HasAtLeastOneRef();
 	}
 }
-

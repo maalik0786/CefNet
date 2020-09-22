@@ -11,40 +11,39 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Implement this structure to receive notification when CDM registration is
-	/// complete. The functions of this structure will be called on the browser
-	/// process UI thread.
+	///  Implement this structure to receive notification when CDM registration is
+	///  complete. The functions of this structure will be called on the browser
+	///  process UI thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_register_cdm_callback_t
+	public unsafe struct cef_register_cdm_callback_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_register_cdm_callback_t* self, cef_cdm_registration_error_t result, const cef_string_t* error_message)*
+		///  void (*)(_cef_register_cdm_callback_t* self, cef_cdm_registration_error_t result, const cef_string_t*
+		///  error_message)*
 		/// </summary>
 		public void* on_cdm_registration_complete;
 
 		/// <summary>
-		/// Method that will be called when CDM registration is complete. |result| will
-		/// be CEF_CDM_REGISTRATION_ERROR_NONE if registration completed successfully.
-		/// Otherwise, |result| and |error_message| will contain additional information
-		/// about why registration failed.
+		///  Method that will be called when CDM registration is complete. |result| will
+		///  be CEF_CDM_REGISTRATION_ERROR_NONE if registration completed successfully.
+		///  Otherwise, |result| and |error_message| will contain additional information
+		///  about why registration failed.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		[NativeName("on_cdm_registration_complete")]
-		public unsafe extern void OnCDMRegistrationComplete(CefCDMRegistrationError result, [Immutable]cef_string_t* error_message);
+		public extern void OnCDMRegistrationComplete(CefCDMRegistrationError result,
+			[Immutable] cef_string_t* error_message);
 	}
 }
-

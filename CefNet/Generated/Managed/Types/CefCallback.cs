@@ -12,45 +12,41 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Generic callback structure used for asynchronous continuation.
+	///  Generic callback structure used for asynchronous continuation.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefCallback : CefBaseRefCounted<cef_callback_t>
+	public unsafe class CefCallback : CefBaseRefCounted<cef_callback_t>
 	{
-		internal static unsafe CefCallback Create(IntPtr instance)
+		public CefCallback(cef_callback_t* instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
-			return new CefCallback((cef_callback_t*)instance);
 		}
 
-		public CefCallback(cef_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+		internal static CefCallback Create(IntPtr instance)
 		{
+			return new CefCallback((cef_callback_t*) instance);
 		}
 
 		/// <summary>
-		/// Continue processing.
+		///  Continue processing.
 		/// </summary>
-		public unsafe virtual void Continue()
+		public virtual void Continue()
 		{
 			NativeInstance->Continue();
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Cancel processing.
+		///  Cancel processing.
 		/// </summary>
-		public unsafe virtual void Cancel()
+		public virtual void Cancel()
 		{
 			NativeInstance->Cancel();
 			GC.KeepAlive(this);

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CefNet.Internal
+﻿namespace CefNet.Internal
 {
 	public partial class WebViewGlue
 	{
@@ -11,7 +7,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual bool OnDragEnter(CefBrowser browser, CefDragData dragData, CefDragOperationsMask mask)
+		protected internal virtual bool OnDragEnter(CefBrowser browser, CefDragData dragData,
+			CefDragOperationsMask mask)
 		{
 			return false;
 		}
@@ -21,9 +18,9 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnDraggableRegionsChanged(CefBrowser browser, CefFrame frame, CefDraggableRegion[] regions)
+		protected internal virtual void OnDraggableRegionsChanged(CefBrowser browser, CefFrame frame,
+			CefDraggableRegion[] regions)
 		{
-
 		}
 	}
 }

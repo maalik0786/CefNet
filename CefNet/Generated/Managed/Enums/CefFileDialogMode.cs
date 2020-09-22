@@ -11,54 +11,48 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported file dialog modes.
+	///  Supported file dialog modes.
 	/// </summary>
 	public enum CefFileDialogMode
 	{
 		/// <summary>
-		/// Requires that the file exists before allowing the user to pick it.
+		///  Requires that the file exists before allowing the user to pick it.
 		/// </summary>
 		Open = 0,
 
 		/// <summary>
-		/// Like Open, but allows picking multiple files to open.
+		///  Like Open, but allows picking multiple files to open.
 		/// </summary>
 		OpenMultiple = 1,
 
 		/// <summary>
-		/// Like Open, but selects a folder to open.
+		///  Like Open, but selects a folder to open.
 		/// </summary>
 		OpenFolder = 2,
 
 		/// <summary>
-		/// Allows picking a nonexistent file, and prompts to overwrite if the file
-		/// already exists.
+		///  Allows picking a nonexistent file, and prompts to overwrite if the file
+		///  already exists.
 		/// </summary>
 		Save = 3,
 
 		/// <summary>
-		/// General mask defining the bits used for the type values.
+		///  General mask defining the bits used for the type values.
 		/// </summary>
 		TypeMask = 0xFF,
 
 		/// <summary>
-		/// Prompt to overwrite if the user selects an existing file with the Save
-		/// dialog.
+		///  Prompt to overwrite if the user selects an existing file with the Save
+		///  dialog.
 		/// </summary>
 		OverwritepromptFlag = 0x01000000,
 
 		/// <summary>
-		/// Do not display read-only files.
+		///  Do not display read-only files.
 		/// </summary>
-		HidereadonlyFlag = 0x02000000,
+		HidereadonlyFlag = 0x02000000
 	}
 }
-

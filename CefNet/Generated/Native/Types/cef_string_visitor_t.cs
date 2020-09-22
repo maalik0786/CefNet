@@ -11,35 +11,32 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Implement this structure to receive string values asynchronously.
+	///  Implement this structure to receive string values asynchronously.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_string_visitor_t
+	public unsafe struct cef_string_visitor_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_string_visitor_t* self, const cef_string_t* string)*
+		///  void (*)(_cef_string_visitor_t* self, const cef_string_t* string)*
 		/// </summary>
 		public void* visit;
 
 		/// <summary>
-		/// Method that will be executed.
+		///  Method that will be executed.
 		/// </summary>
 		[NativeName("visit")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Visit([Immutable]cef_string_t* @string);
+		public extern void Visit([Immutable] cef_string_t* @string);
 	}
 }
-

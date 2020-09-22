@@ -1,40 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CefNet.Internal
+﻿namespace CefNet.Internal
 {
 	public partial class WebViewGlue
 	{
-		private bool _isResourceRequestGlueInitialized;
-		private CefResourceRequestHandler _resourceRequestGlue;
-		private bool _partialAvoidResourceRequestGlue;
-
-		private bool _isCookieAccessFilterGlueInitialized;
+		private CefAudioHandlerGlue _audioGlue;
+		private readonly bool _avoidAudioGlue;
+		private readonly bool _avoidJsDialogGlue;
 		private CefCookieAccessFilter _cookieAccessFilterGlue;
-
-		private bool _isFocusGlueInitialized;
+		private CefDragHandlerGlue _dragGlue;
 		private CefFocusHandlerGlue _focusGlue;
 
-		private bool _isDragGlueInitialized;
-		private CefDragHandlerGlue _dragGlue;
+		private bool _isAudioGlueInitialized;
 
-		private bool _isKeyboardGlueInitialized;
-		private CefKeyboardHandlerGlue _keyboardGlue;
+		private bool _isCookieAccessFilterGlueInitialized;
+
+		private bool _isDragGlueInitialized;
+
+		private bool _isFocusGlueInitialized;
 
 		private bool _isJSDialogGlueInitialized;
+
+		private bool _isKeyboardGlueInitialized;
+		private bool _isResourceRequestGlueInitialized;
 		private CefJSDialogHandlerGlue _jsDialogGlue;
-		private bool _avoidJsDialogGlue;
+		private CefKeyboardHandlerGlue _keyboardGlue;
+		private readonly bool _partialAvoidResourceRequestGlue;
+		private CefResourceRequestHandler _resourceRequestGlue;
 
-		private bool _isAudioGlueInitialized;
-		private CefAudioHandlerGlue _audioGlue;
-		private bool _avoidAudioGlue;
+		public WebViewGlue(IChromiumWebViewPrivate view)
+		{
+			WebView = view;
+			Client = new CefClientGlue(this);
+			LifeSpanGlue = new CefLifeSpanHandlerGlue(this);
+			RenderGlue = new CefRenderHandlerGlue(this);
+			DisplayGlue = new CefDisplayHandlerGlue(this);
+			RequestGlue = new CefRequestHandlerGlue(this);
+			DialogGlue = new CefDialogHandlerGlue(this);
+			DownloadGlue = new CefDownloadHandlerGlue(this);
+			FindGlue = new CefFindHandlerGlue(this);
 
-		protected internal IChromiumWebViewPrivate WebView { get; private set; }
+			ContextMenuGlue = new CefContextMenuHandlerGlue(this);
+			LoadGlue = new CefLoadHandlerGlue(this);
+
+			_partialAvoidResourceRequestGlue = AvoidOverloadOnBeforeResourceLoad() && AvoidGetResourceHandler()
+				&& AvoidOnResourceRedirect() && AvoidOnResourceResponse() && AvoidGetResourceResponseFilter()
+				&& AvoidOnResourceLoadComplete() && AvoidOnProtocolExecution();
+
+			_avoidJsDialogGlue = AvoidOnJSDialog() && AvoidOnBeforeUnloadDialog() && AvoidOnResetDialogState()
+			                     && AvoidOnDialogClosed();
+
+			_avoidAudioGlue = AvoidGetAudioParameters() && AvoidOnAudioStreamStarted() && AvoidOnAudioStreamPacket()
+			                  && AvoidOnAudioStreamStopped() && AvoidOnAudioStreamError();
+		}
+
+		protected internal IChromiumWebViewPrivate WebView { get; }
 
 		public CefBrowser BrowserObject { get; protected set; }
 
-		public CefClient Client { get; private set; }
+		public CefClient Client { get; }
 		private CefLifeSpanHandlerGlue LifeSpanGlue { get; }
 		private CefRenderHandlerGlue RenderGlue { get; }
 		private CefDisplayHandlerGlue DisplayGlue { get; }
@@ -46,32 +68,6 @@ namespace CefNet.Internal
 		private CefContextMenuHandlerGlue ContextMenuGlue { get; }
 		private CefLoadHandlerGlue LoadGlue { get; }
 
-		public WebViewGlue(IChromiumWebViewPrivate view)
-		{
-			this.WebView = view;
-			this.Client = new CefClientGlue(this);
-			this.LifeSpanGlue = new CefLifeSpanHandlerGlue(this);
-			this.RenderGlue = new CefRenderHandlerGlue(this);
-			this.DisplayGlue = new CefDisplayHandlerGlue(this);
-			this.RequestGlue = new CefRequestHandlerGlue(this);
-			this.DialogGlue = new CefDialogHandlerGlue(this);
-			this.DownloadGlue = new CefDownloadHandlerGlue(this);
-			this.FindGlue = new CefFindHandlerGlue(this);
-
-			this.ContextMenuGlue = new CefContextMenuHandlerGlue(this);
-			this.LoadGlue = new CefLoadHandlerGlue(this);
-
-			_partialAvoidResourceRequestGlue = AvoidOverloadOnBeforeResourceLoad() && AvoidGetResourceHandler()
-				&& AvoidOnResourceRedirect() && AvoidOnResourceResponse() && AvoidGetResourceResponseFilter()
-				&& AvoidOnResourceLoadComplete() && AvoidOnProtocolExecution();
-
-			_avoidJsDialogGlue = AvoidOnJSDialog() && AvoidOnBeforeUnloadDialog() && AvoidOnResetDialogState()
-				&& AvoidOnDialogClosed();
-
-			_avoidAudioGlue = AvoidGetAudioParameters() && AvoidOnAudioStreamStarted() && AvoidOnAudioStreamPacket()
-				&& AvoidOnAudioStreamStopped() && AvoidOnAudioStreamError();
-		}
-
 
 		private CefResourceRequestHandler ResourceRequestGlue
 		{
@@ -81,13 +77,9 @@ namespace CefNet.Internal
 					return _resourceRequestGlue;
 
 				if (_partialAvoidResourceRequestGlue && AvoidGetCookieAccessFilter())
-				{
 					_resourceRequestGlue = null;
-				}
 				else
-				{
 					_resourceRequestGlue = new CefResourceRequestHandlerGlue(this);
-				}
 
 				_isResourceRequestGlueInitialized = true;
 				return _resourceRequestGlue;
@@ -102,13 +94,9 @@ namespace CefNet.Internal
 					return _cookieAccessFilterGlue;
 
 				if (AvoidOverloadCanSendCookie() && AvoidOverloadCanSaveCookie())
-				{
 					_cookieAccessFilterGlue = null;
-				}
 				else
-				{
 					_cookieAccessFilterGlue = new CefCookieAccessFilterGlue(this);
-				}
 
 				_isCookieAccessFilterGlueInitialized = true;
 				return _cookieAccessFilterGlue;
@@ -123,15 +111,11 @@ namespace CefNet.Internal
 					return _focusGlue;
 
 				if (AvoidOnTakeFocus()
-					&& AvoidOnSetFocus()
-					&& AvoidOnGotFocus())
-				{
+				    && AvoidOnSetFocus()
+				    && AvoidOnGotFocus())
 					_focusGlue = null;
-				}
 				else
-				{
 					_focusGlue = new CefFocusHandlerGlue(this);
-				}
 
 				_isFocusGlueInitialized = true;
 				return _focusGlue;
@@ -146,13 +130,9 @@ namespace CefNet.Internal
 					return _dragGlue;
 
 				if (AvoidOnDragEnter() && AvoidOnDraggableRegionsChanged())
-				{
 					_dragGlue = null;
-				}
 				else
-				{
 					_dragGlue = new CefDragHandlerGlue(this);
-				}
 
 				_isDragGlueInitialized = true;
 				return _dragGlue;
@@ -167,13 +147,9 @@ namespace CefNet.Internal
 					return _keyboardGlue;
 
 				if (AvoidOnPreKeyEvent() && AvoidOnKeyEvent())
-				{
 					_keyboardGlue = null;
-				}
 				else
-				{
 					_keyboardGlue = new CefKeyboardHandlerGlue(this);
-				}
 
 				_isKeyboardGlueInitialized = true;
 				return _keyboardGlue;
@@ -188,13 +164,9 @@ namespace CefNet.Internal
 					return _jsDialogGlue;
 
 				if (_avoidJsDialogGlue)
-				{
 					_jsDialogGlue = null;
-				}
 				else
-				{
 					_jsDialogGlue = new CefJSDialogHandlerGlue(this);
-				}
 
 				_isJSDialogGlueInitialized = true;
 				return _jsDialogGlue;
@@ -209,13 +181,9 @@ namespace CefNet.Internal
 					return _audioGlue;
 
 				if (_avoidAudioGlue)
-				{
 					_audioGlue = null;
-				}
 				else
-				{
 					_audioGlue = new CefAudioHandlerGlue(this);
-				}
 
 				_isAudioGlueInitialized = true;
 				return _audioGlue;
@@ -227,6 +195,5 @@ namespace CefNet.Internal
 		{
 			WebView.RaisePopupBrowserCreating();
 		}
-
 	}
 }

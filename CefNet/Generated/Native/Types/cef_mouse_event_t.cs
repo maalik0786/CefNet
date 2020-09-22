@@ -11,34 +11,30 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing mouse event information.
+	///  Structure representing mouse event information.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_mouse_event_t
+	public struct cef_mouse_event_t
 	{
 		/// <summary>
-		/// X coordinate relative to the left side of the view.
+		///  X coordinate relative to the left side of the view.
 		/// </summary>
 		public int x;
 
 		/// <summary>
-		/// Y coordinate relative to the top side of the view.
+		///  Y coordinate relative to the top side of the view.
 		/// </summary>
 		public int y;
 
 		/// <summary>
-		/// Bit flags describing any pressed modifier keys. See
-		/// cef_event_flags_t for values.
+		///  Bit flags describing any pressed modifier keys. See
+		///  cef_event_flags_t for values.
 		/// </summary>
 		public uint modifiers;
 	}
 }
-

@@ -5,12 +5,12 @@
 namespace CefNet.Internal
 {
 	/// <summary>
-	/// Provides static methods to convert between Virtual-Keys and the Key enumeration.
+	///  Provides static methods to convert between Virtual-Keys and the Key enumeration.
 	/// </summary>
 	internal static class KeyInterop
 	{
 		/// <summary>
-		/// Convert Key into a Virtual-Key.
+		///  Convert Key into a Virtual-Key.
 		/// </summary>
 		public static int VirtualKeyFromKey(Key key)
 		{

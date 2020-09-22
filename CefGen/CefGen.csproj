@@ -1,29 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CppAst" Version="0.6.0">
-      <ExcludeAssets Condition="$([MSBuild]::IsOSPlatform(OSX))">native</ExcludeAssets>
-    </PackageReference>
-    <PackageReference Condition="$([MSBuild]::IsOSPlatform(OSX))" Include="libclang.runtime.osx-x64" Version="10.0.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.3.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CppAst" Version="0.6.0">
+			<ExcludeAssets Condition="$([MSBuild]::IsOSPlatform(OSX))">native</ExcludeAssets>
+		</PackageReference>
+		<PackageReference Condition="$([MSBuild]::IsOSPlatform(OSX))" Include="libclang.runtime.osx-x64" Version="10.0.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.3.1" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="Settings\BooleanIntParams.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Settings\LicenseTemplate.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Settings\NamesSchema.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="Settings\BooleanIntParams.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Settings\LicenseTemplate.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Settings\NamesSchema.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

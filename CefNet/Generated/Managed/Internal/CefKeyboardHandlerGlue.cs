@@ -11,18 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefKeyboardHandlerGlue: CefKeyboardHandler, ICefKeyboardHandlerPrivate
+	internal sealed class CefKeyboardHandlerGlue : CefKeyboardHandler, ICefKeyboardHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefKeyboardHandlerGlue(WebViewGlue impl)
 		{
@@ -34,20 +27,20 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnPreKeyEvent();
 		}
 
-		protected internal unsafe override bool OnPreKeyEvent(CefBrowser browser, CefKeyEvent @event, CefEventHandle osEvent, ref int isKeyboardShortcut)
-		{
-			return _implementation.OnPreKeyEvent(browser, @event, osEvent, ref isKeyboardShortcut);
-		}
-
 		bool ICefKeyboardHandlerPrivate.AvoidOnKeyEvent()
 		{
 			return _implementation.AvoidOnKeyEvent();
 		}
 
-		protected internal unsafe override bool OnKeyEvent(CefBrowser browser, CefKeyEvent @event, CefEventHandle osEvent)
+		protected internal override bool OnPreKeyEvent(CefBrowser browser, CefKeyEvent @event, CefEventHandle osEvent,
+			ref int isKeyboardShortcut)
+		{
+			return _implementation.OnPreKeyEvent(browser, @event, osEvent, ref isKeyboardShortcut);
+		}
+
+		protected internal override bool OnKeyEvent(CefBrowser browser, CefKeyEvent @event, CefEventHandle osEvent)
 		{
 			return _implementation.OnKeyEvent(browser, @event, osEvent);
 		}
-
 	}
 }

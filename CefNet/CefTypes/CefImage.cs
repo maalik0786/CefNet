@@ -1,14 +1,10 @@
 ﻿using CefNet.CApi;
-using System;
-using System.Collections.Generic;
 
 namespace CefNet
 {
 	public unsafe partial class CefImage
 	{
-
 #if USESAFECACHE
-
 		private static readonly HashSet<WeakReference<CefImage>> WeakRefs = new HashSet<WeakReference<CefImage>>();
 
 		public unsafe static CefImage Wrap(Func<IntPtr, CefImage> create, cef_image_t* instance)
@@ -41,8 +37,8 @@ namespace CefNet
 #endif // USESAFECACHE
 
 		/// <summary>
-		/// Create a new CefImage. It will initially be NULL. Use the Add*() functions
-		/// to add representations at different scale factors.
+		///  Create a new CefImage. It will initially be NULL. Use the Add*() functions
+		///  to add representations at different scale factors.
 		/// </summary>
 		public CefImage()
 			: this(CefNativeApi.cef_image_create())
@@ -56,7 +52,6 @@ namespace CefNet
 		}
 
 #if USESAFECACHE
-
 		protected override void Dispose(bool disposing)
 		{
 			lock (WeakRefs)
@@ -85,6 +80,5 @@ namespace CefNet
 		}
 
 #endif
-
 	}
 }

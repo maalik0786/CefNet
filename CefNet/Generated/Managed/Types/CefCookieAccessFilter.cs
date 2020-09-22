@@ -12,109 +12,125 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Implement this structure to filter cookies that may be sent or received from
-	/// resource requests. The functions of this structure will be called on the IO
-	/// thread unless otherwise indicated.
+	///  Implement this structure to filter cookies that may be sent or received from
+	///  resource requests. The functions of this structure will be called on the IO
+	///  thread unless otherwise indicated.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefCookieAccessFilter : CefBaseRefCounted<cef_cookie_access_filter_t>, ICefCookieAccessFilterPrivate
+	public unsafe class CefCookieAccessFilter : CefBaseRefCounted<cef_cookie_access_filter_t>,
+		ICefCookieAccessFilterPrivate
 	{
 		private static readonly CanSendCookieDelegate fnCanSendCookie = CanSendCookieImpl;
 
 		private static readonly CanSaveCookieDelegate fnCanSaveCookie = CanSaveCookieImpl;
 
-		internal static unsafe CefCookieAccessFilter Create(IntPtr instance)
-		{
-			return new CefCookieAccessFilter((cef_cookie_access_filter_t*)instance);
-		}
-
 		public CefCookieAccessFilter()
 		{
-			cef_cookie_access_filter_t* self = this.NativeInstance;
-			self->can_send_cookie = (void*)Marshal.GetFunctionPointerForDelegate(fnCanSendCookie);
-			self->can_save_cookie = (void*)Marshal.GetFunctionPointerForDelegate(fnCanSaveCookie);
+			var self = NativeInstance;
+			self->can_send_cookie = (void*) Marshal.GetFunctionPointerForDelegate(fnCanSendCookie);
+			self->can_save_cookie = (void*) Marshal.GetFunctionPointerForDelegate(fnCanSaveCookie);
 		}
 
 		public CefCookieAccessFilter(cef_cookie_access_filter_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefCookieAccessFilterPrivate.AvoidCanSendCookie();
 
-		/// <summary>
-		/// Called on the IO thread before a resource request is sent. The |browser|
-		/// and |frame| values represent the source of the request, and may be NULL for
-		/// requests originating from service workers or cef_urlrequest_t. |request|
-		/// cannot be modified in this callback. Return true (1) if the specified
-		/// cookie can be sent with the request or false (0) otherwise.
-		/// </summary>
-		protected internal unsafe virtual bool CanSendCookie(CefBrowser browser, CefFrame frame, CefRequest request, CefCookie cookie)
-		{
-			return default;
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int CanSendCookieDelegate(cef_cookie_access_filter_t* self, cef_browser_t* browser, cef_frame_t* frame, cef_request_t* request, cef_cookie_t* cookie);
-
-		// int (*)(_cef_cookie_access_filter_t* self, _cef_browser_t* browser, _cef_frame_t* frame, _cef_request_t* request, const const _cef_cookie_t* cookie)*
-		private static unsafe int CanSendCookieImpl(cef_cookie_access_filter_t* self, cef_browser_t* browser, cef_frame_t* frame, cef_request_t* request, cef_cookie_t* cookie)
-		{
-			var instance = GetInstance((IntPtr)self) as CefCookieAccessFilter;
-			if (instance == null || ((ICefCookieAccessFilterPrivate)instance).AvoidCanSendCookie())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				ReleaseIfNonNull((cef_base_ref_counted_t*)frame);
-				ReleaseIfNonNull((cef_base_ref_counted_t*)request);
-				return default;
-			}
-			return instance.CanSendCookie(CefBrowser.Wrap(CefBrowser.Create, browser), CefFrame.Wrap(CefFrame.Create, frame), CefRequest.Wrap(CefRequest.Create, request), *(CefCookie*)cookie) ? 1 : 0;
-		}
-
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefCookieAccessFilterPrivate.AvoidCanSaveCookie();
 
+		internal static CefCookieAccessFilter Create(IntPtr instance)
+		{
+			return new CefCookieAccessFilter((cef_cookie_access_filter_t*) instance);
+		}
+
 		/// <summary>
-		/// Called on the IO thread after a resource response is received. The
-		/// |browser| and |frame| values represent the source of the request, and may
-		/// be NULL for requests originating from service workers or cef_urlrequest_t.
-		/// |request| cannot be modified in this callback. Return true (1) if the
-		/// specified cookie returned with the response can be saved or false (0)
-		/// otherwise.
+		///  Called on the IO thread before a resource request is sent. The |browser|
+		///  and |frame| values represent the source of the request, and may be NULL for
+		///  requests originating from service workers or cef_urlrequest_t. |request|
+		///  cannot be modified in this callback. Return true (1) if the specified
+		///  cookie can be sent with the request or false (0) otherwise.
 		/// </summary>
-		protected internal unsafe virtual bool CanSaveCookie(CefBrowser browser, CefFrame frame, CefRequest request, CefResponse response, CefCookie cookie)
+		protected internal virtual bool CanSendCookie(CefBrowser browser, CefFrame frame, CefRequest request,
+			CefCookie cookie)
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int CanSaveCookieDelegate(cef_cookie_access_filter_t* self, cef_browser_t* browser, cef_frame_t* frame, cef_request_t* request, cef_response_t* response, cef_cookie_t* cookie);
-
-		// int (*)(_cef_cookie_access_filter_t* self, _cef_browser_t* browser, _cef_frame_t* frame, _cef_request_t* request, _cef_response_t* response, const const _cef_cookie_t* cookie)*
-		private static unsafe int CanSaveCookieImpl(cef_cookie_access_filter_t* self, cef_browser_t* browser, cef_frame_t* frame, cef_request_t* request, cef_response_t* response, cef_cookie_t* cookie)
+		// int (*)(_cef_cookie_access_filter_t* self, _cef_browser_t* browser, _cef_frame_t* frame, _cef_request_t* request, const const _cef_cookie_t* cookie)*
+		private static int CanSendCookieImpl(cef_cookie_access_filter_t* self, cef_browser_t* browser,
+			cef_frame_t* frame, cef_request_t* request, cef_cookie_t* cookie)
 		{
-			var instance = GetInstance((IntPtr)self) as CefCookieAccessFilter;
-			if (instance == null || ((ICefCookieAccessFilterPrivate)instance).AvoidCanSaveCookie())
+			var instance = GetInstance((IntPtr) self) as CefCookieAccessFilter;
+			if (instance == null || ((ICefCookieAccessFilterPrivate) instance).AvoidCanSendCookie())
 			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				ReleaseIfNonNull((cef_base_ref_counted_t*)frame);
-				ReleaseIfNonNull((cef_base_ref_counted_t*)request);
-				ReleaseIfNonNull((cef_base_ref_counted_t*)response);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) frame);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) request);
 				return default;
 			}
-			return instance.CanSaveCookie(CefBrowser.Wrap(CefBrowser.Create, browser), CefFrame.Wrap(CefFrame.Create, frame), CefRequest.Wrap(CefRequest.Create, request), CefResponse.Wrap(CefResponse.Create, response), *(CefCookie*)cookie) ? 1 : 0;
+
+			return instance.CanSendCookie(CefBrowser.Wrap(CefBrowser.Create, browser),
+				CefFrame.Wrap(CefFrame.Create, frame), CefRequest.Wrap(CefRequest.Create, request),
+				*(CefCookie*) cookie)
+				? 1
+				: 0;
 		}
+
+		/// <summary>
+		///  Called on the IO thread after a resource response is received. The
+		///  |browser| and |frame| values represent the source of the request, and may
+		///  be NULL for requests originating from service workers or cef_urlrequest_t.
+		///  |request| cannot be modified in this callback. Return true (1) if the
+		///  specified cookie returned with the response can be saved or false (0)
+		///  otherwise.
+		/// </summary>
+		protected internal virtual bool CanSaveCookie(CefBrowser browser, CefFrame frame, CefRequest request,
+			CefResponse response, CefCookie cookie)
+		{
+			return default;
+		}
+
+		// int (*)(_cef_cookie_access_filter_t* self, _cef_browser_t* browser, _cef_frame_t* frame, _cef_request_t* request, _cef_response_t* response, const const _cef_cookie_t* cookie)*
+		private static int CanSaveCookieImpl(cef_cookie_access_filter_t* self, cef_browser_t* browser,
+			cef_frame_t* frame, cef_request_t* request, cef_response_t* response, cef_cookie_t* cookie)
+		{
+			var instance = GetInstance((IntPtr) self) as CefCookieAccessFilter;
+			if (instance == null || ((ICefCookieAccessFilterPrivate) instance).AvoidCanSaveCookie())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) frame);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) request);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) response);
+				return default;
+			}
+
+			return instance.CanSaveCookie(CefBrowser.Wrap(CefBrowser.Create, browser),
+				CefFrame.Wrap(CefFrame.Create, frame), CefRequest.Wrap(CefRequest.Create, request),
+				CefResponse.Wrap(CefResponse.Create, response), *(CefCookie*) cookie)
+				? 1
+				: 0;
+		}
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int CanSendCookieDelegate(cef_cookie_access_filter_t* self, cef_browser_t* browser,
+			cef_frame_t* frame, cef_request_t* request, cef_cookie_t* cookie);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int CanSaveCookieDelegate(cef_cookie_access_filter_t* self, cef_browser_t* browser,
+			cef_frame_t* frame, cef_request_t* request, cef_response_t* response, cef_cookie_t* cookie);
 	}
 }

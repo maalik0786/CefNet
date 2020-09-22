@@ -11,56 +11,57 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure used to handle file downloads. The functions of this structure will
-	/// called on the browser process UI thread.
+	///  Structure used to handle file downloads. The functions of this structure will
+	///  called on the browser process UI thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_download_handler_t
+	public unsafe struct cef_download_handler_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_download_handler_t* self, _cef_browser_t* browser, _cef_download_item_t* download_item, const cef_string_t* suggested_name, _cef_before_download_callback_t* callback)*
+		///  void (*)(_cef_download_handler_t* self, _cef_browser_t* browser, _cef_download_item_t* download_item, const
+		///  cef_string_t* suggested_name, _cef_before_download_callback_t* callback)*
 		/// </summary>
 		public void* on_before_download;
 
 		/// <summary>
-		/// Called before a download begins. |suggested_name| is the suggested name for
-		/// the download file. By default the download will be canceled. Execute
-		/// |callback| either asynchronously or in this function to continue the
-		/// download if desired. Do not keep a reference to |download_item| outside of
-		/// this function.
+		///  Called before a download begins. |suggested_name| is the suggested name for
+		///  the download file. By default the download will be canceled. Execute
+		///  |callback| either asynchronously or in this function to continue the
+		///  download if desired. Do not keep a reference to |download_item| outside of
+		///  this function.
 		/// </summary>
 		[NativeName("on_before_download")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void OnBeforeDownload(cef_browser_t* browser, cef_download_item_t* download_item, [Immutable]cef_string_t* suggested_name, cef_before_download_callback_t* callback);
+		public extern void OnBeforeDownload(cef_browser_t* browser, cef_download_item_t* download_item,
+			[Immutable] cef_string_t* suggested_name, cef_before_download_callback_t* callback);
 
 		/// <summary>
-		/// void (*)(_cef_download_handler_t* self, _cef_browser_t* browser, _cef_download_item_t* download_item, _cef_download_item_callback_t* callback)*
+		///  void (*)(_cef_download_handler_t* self, _cef_browser_t* browser, _cef_download_item_t* download_item,
+		///  _cef_download_item_callback_t* callback)*
 		/// </summary>
 		public void* on_download_updated;
 
 		/// <summary>
-		/// Called when a download&apos;s status or progress information has been updated.
-		/// This may be called multiple times before and after on_before_download().
-		/// Execute |callback| either asynchronously or in this function to cancel the
-		/// download if desired. Do not keep a reference to |download_item| outside of
-		/// this function.
+		///  Called when a download&apos;s status or progress information has been updated.
+		///  This may be called multiple times before and after on_before_download().
+		///  Execute |callback| either asynchronously or in this function to cancel the
+		///  download if desired. Do not keep a reference to |download_item| outside of
+		///  this function.
 		/// </summary>
 		[NativeName("on_download_updated")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void OnDownloadUpdated(cef_browser_t* browser, cef_download_item_t* download_item, cef_download_item_callback_t* callback);
+		public extern void OnDownloadUpdated(cef_browser_t* browser, cef_download_item_t* download_item,
+			cef_download_item_callback_t* callback);
 	}
 }
-

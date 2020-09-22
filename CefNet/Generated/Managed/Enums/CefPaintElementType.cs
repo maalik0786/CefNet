@@ -11,21 +11,15 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Paint element types.
+	///  Paint element types.
 	/// </summary>
 	public enum CefPaintElementType
 	{
 		View = 0,
 
-		Popup = 1,
+		Popup = 1
 	}
 }
-

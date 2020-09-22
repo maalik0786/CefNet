@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CefNet
 {
@@ -8,11 +6,11 @@ namespace CefNet
 	{
 		public static CefTime FromDateTime(DateTime t)
 		{
-			t =  t.ToUniversalTime();
+			t = t.ToUniversalTime();
 			return new CefTime
 			{
 				DayOfMonth = t.Day,
-				DayOfWeek = (int)t.DayOfWeek,
+				DayOfWeek = (int) t.DayOfWeek,
 				Hour = t.Hour,
 				Millisecond = t.Millisecond,
 				Minute = t.Minute,

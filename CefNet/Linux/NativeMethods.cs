@@ -4,21 +4,21 @@ using CefNet.Input.Linux;
 
 namespace CefNet.Linux
 {
-	static class NativeMethods
+	internal static class NativeMethods
 	{
 		[DllImport("X11", CallingConvention = CallingConvention.Cdecl)]
-		public extern static XKeySym XStringToKeysym([MarshalAs(UnmanagedType.LPStr)] string s);
+		public static extern XKeySym XStringToKeysym([MarshalAs(UnmanagedType.LPStr)] string s);
 
 		[DllImport("X11", CallingConvention = CallingConvention.Cdecl)]
-		public extern static IntPtr XOpenDisplay(IntPtr display);
+		public static extern IntPtr XOpenDisplay(IntPtr display);
 
 		[DllImport("X11", CallingConvention = CallingConvention.Cdecl)]
-		public extern static int XCloseDisplay(IntPtr display);
+		public static extern int XCloseDisplay(IntPtr display);
 
 		[DllImport("X11", CallingConvention = CallingConvention.Cdecl)]
-		public extern static byte XKeysymToKeycode(IntPtr display, XKeySym keysym);
+		public static extern byte XKeysymToKeycode(IntPtr display, XKeySym keysym);
 
 		[DllImport("X11", CallingConvention = CallingConvention.Cdecl)]
-		public extern static XKeySym XKeycodeToKeysym(IntPtr display, byte keycode, int index);
+		public static extern XKeySym XKeycodeToKeysym(IntPtr display, byte keycode, int index);
 	}
 }

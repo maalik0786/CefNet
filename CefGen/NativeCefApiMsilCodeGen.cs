@@ -4,16 +4,14 @@
 // See the licence file in the project root for full license information.
 // --------------------------------------------------------------------------------------------
 
-using CefGen.CodeDom;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
+using CefGen.CodeDom;
 
 namespace CefGen
 {
-	sealed class NativeCefApiMsilCodeGen : MsilCodeGenBase
+	internal sealed class NativeCefApiMsilCodeGen : MsilCodeGenBase
 	{
 		private readonly bool _onlyStdCall;
 
@@ -24,13 +22,11 @@ namespace CefGen
 
 		protected override bool GenerateMethodCode(CodeMethod methodDecl, string typeRef)
 		{
-			foreach (CodeComment commentDecl in methodDecl.Callee.Comments
+			foreach (var commentDecl in methodDecl.Callee.Comments
 				.Where(IsNotXmlTagComment))
-			{
 				GenerateCommentCode(commentDecl.Text);
-			}
 
-			string retTypeName = GetILTypeName(methodDecl.RetVal.Type);
+			var retTypeName = GetILTypeName(methodDecl.RetVal.Type);
 
 			WriteIndent();
 			Output.Write(".method ");
@@ -40,32 +36,31 @@ namespace CefGen
 			Output.Write(" ");
 			Output.Write(methodDecl.Name);
 			Output.Write("(");
-			Output.Write(string.Join(", ", methodDecl.Parameters.Select(arg => GetILTypeName(arg.Type) + " " + arg.Name.EscapeILName())));
+			Output.Write(string.Join(", ",
+				methodDecl.Parameters.Select(arg => GetILTypeName(arg.Type) + " " + arg.Name.EscapeILName())));
 			Output.Write(")");
 
 			WriteBlockStart(CodeGenBlockType.Method);
 
-			int argc = methodDecl.Parameters.Count;
+			var argc = methodDecl.Parameters.Count;
 
 			WriteIndent();
 			Output.Write(".maxstack ");
 			Output.WriteLine(argc + 2);
 
 			WriteIndent();
-			if (methodDecl.HasThisArg)
-			{
-				Output.WriteLine("ldarg.0");
-			}
-			for (int i = 0; i < argc; i++)
+			if (methodDecl.HasThisArg) Output.WriteLine("ldarg.0");
+			for (var i = 0; i < argc; i++)
 			{
 				WriteIndent();
 				if (i < 3)
 					Output.WriteLine("ldarg." + (i + 1));
 				else if (i < 255)
-					Output.WriteLine("ldarg.s " + (i + 1).ToString());
+					Output.WriteLine("ldarg.s " + (i + 1));
 				else
 					throw new NotImplementedException();
 			}
+
 			WriteIndent();
 			Output.WriteLine("ldarg.0");
 			WriteIndent();
@@ -93,9 +88,11 @@ namespace CefGen
 				WriteIndent();
 				Output.Write("\t");
 			}
+
 			Output.Write(retTypeName);
 			Output.Write("(");
-			Output.Write(string.Join(", ", GetCalliMethodTypes(methodDecl.HasThisArg ? GetName(typeRef) + "*" : null, methodDecl.Parameters)));
+			Output.Write(string.Join(", ",
+				GetCalliMethodTypes(methodDecl.HasThisArg ? GetName(typeRef) + "*" : null, methodDecl.Parameters)));
 			Output.WriteLine(")");
 
 			WriteIndent();
@@ -146,25 +143,21 @@ namespace CefGen
 				case "char16":
 					return "char";
 			}
-			if (type.EndsWith("*"))
-			{
-				return GetILTypeName(type.Remove(type.Length - 1)) + "*";
-			}
+
+			if (type.EndsWith("*")) return GetILTypeName(type.Remove(type.Length - 1)) + "*";
 			return "valuetype " + ResolveType(type);
 		}
 
-		private IEnumerable<string> GetCalliMethodTypes(string thisArgTypeName, IEnumerable<CodeMethodParameter> @params)
+		private IEnumerable<string> GetCalliMethodTypes(string thisArgTypeName,
+			IEnumerable<CodeMethodParameter> @params)
 		{
 			if (thisArgTypeName != null)
 				yield return GetILTypeName(thisArgTypeName);
-			foreach (CodeMethodParameter param in @params)
-			{
+			foreach (var param in @params)
 				if (param.Direction == CodeMethodParameterDirection.Ref)
 					yield return GetILTypeName(param.Type) + "&";
 				else
 					yield return GetILTypeName(param.Type);
-			}
 		}
-
 	}
 }

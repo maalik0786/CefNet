@@ -12,67 +12,69 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Implement this structure to receive notification when CDM registration is
-	/// complete. The functions of this structure will be called on the browser
-	/// process UI thread.
+	///  Implement this structure to receive notification when CDM registration is
+	///  complete. The functions of this structure will be called on the browser
+	///  process UI thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefRegisterCDMCallback : CefBaseRefCounted<cef_register_cdm_callback_t>, ICefRegisterCDMCallbackPrivate
+	public unsafe class CefRegisterCDMCallback : CefBaseRefCounted<cef_register_cdm_callback_t>,
+		ICefRegisterCDMCallbackPrivate
 	{
-		private static readonly OnCDMRegistrationCompleteDelegate fnOnCDMRegistrationComplete = OnCDMRegistrationCompleteImpl;
-
-		internal static unsafe CefRegisterCDMCallback Create(IntPtr instance)
-		{
-			return new CefRegisterCDMCallback((cef_register_cdm_callback_t*)instance);
-		}
+		private static readonly OnCDMRegistrationCompleteDelegate fnOnCDMRegistrationComplete =
+			OnCDMRegistrationCompleteImpl;
 
 		public CefRegisterCDMCallback()
 		{
-			cef_register_cdm_callback_t* self = this.NativeInstance;
-			self->on_cdm_registration_complete = (void*)Marshal.GetFunctionPointerForDelegate(fnOnCDMRegistrationComplete);
+			var self = NativeInstance;
+			self->on_cdm_registration_complete =
+				(void*) Marshal.GetFunctionPointerForDelegate(fnOnCDMRegistrationComplete);
 		}
 
 		public CefRegisterCDMCallback(cef_register_cdm_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefRegisterCDMCallbackPrivate.AvoidOnCDMRegistrationComplete();
 
-		/// <summary>
-		/// Method that will be called when CDM registration is complete. |result| will
-		/// be CEF_CDM_REGISTRATION_ERROR_NONE if registration completed successfully.
-		/// Otherwise, |result| and |error_message| will contain additional information
-		/// about why registration failed.
-		/// </summary>
-		protected internal unsafe virtual void OnCDMRegistrationComplete(CefCDMRegistrationError result, string errorMessage)
+		internal static CefRegisterCDMCallback Create(IntPtr instance)
 		{
+			return new CefRegisterCDMCallback((cef_register_cdm_callback_t*) instance);
+		}
+
+		/// <summary>
+		///  Method that will be called when CDM registration is complete. |result| will
+		///  be CEF_CDM_REGISTRATION_ERROR_NONE if registration completed successfully.
+		///  Otherwise, |result| and |error_message| will contain additional information
+		///  about why registration failed.
+		/// </summary>
+		protected internal virtual void OnCDMRegistrationComplete(CefCDMRegistrationError result, string errorMessage)
+		{
+		}
+
+		// void (*)(_cef_register_cdm_callback_t* self, cef_cdm_registration_error_t result, const cef_string_t* error_message)*
+		private static void OnCDMRegistrationCompleteImpl(cef_register_cdm_callback_t* self,
+			CefCDMRegistrationError result, cef_string_t* error_message)
+		{
+			var instance = GetInstance((IntPtr) self) as CefRegisterCDMCallback;
+			if (instance == null ||
+			    ((ICefRegisterCDMCallbackPrivate) instance).AvoidOnCDMRegistrationComplete()) return;
+			instance.OnCDMRegistrationComplete(result, CefString.Read(error_message));
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnCDMRegistrationCompleteDelegate(cef_register_cdm_callback_t* self, CefCDMRegistrationError result, cef_string_t* error_message);
-
-		// void (*)(_cef_register_cdm_callback_t* self, cef_cdm_registration_error_t result, const cef_string_t* error_message)*
-		private static unsafe void OnCDMRegistrationCompleteImpl(cef_register_cdm_callback_t* self, CefCDMRegistrationError result, cef_string_t* error_message)
-		{
-			var instance = GetInstance((IntPtr)self) as CefRegisterCDMCallback;
-			if (instance == null || ((ICefRegisterCDMCallbackPrivate)instance).AvoidOnCDMRegistrationComplete())
-			{
-				return;
-			}
-			instance.OnCDMRegistrationComplete(result, CefString.Read(error_message));
-		}
+		private delegate void OnCDMRegistrationCompleteDelegate(cef_register_cdm_callback_t* self,
+			CefCDMRegistrationError result, cef_string_t* error_message);
 	}
 }

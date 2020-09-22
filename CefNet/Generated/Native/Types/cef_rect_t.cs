@@ -11,18 +11,15 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing a rectangle.
+	///  Structure representing a rectangle.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_rect_t
+	public struct cef_rect_t
 	{
 		public int x;
 
@@ -33,4 +30,3 @@ namespace CefNet.CApi
 		public int height;
 	}
 }
-

@@ -12,68 +12,71 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure to implement for visiting web plugin information. The functions of
-	/// this structure will be called on the browser process UI thread.
+	///  Structure to implement for visiting web plugin information. The functions of
+	///  this structure will be called on the browser process UI thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefWebPluginInfoVisitor : CefBaseRefCounted<cef_web_plugin_info_visitor_t>, ICefWebPluginInfoVisitorPrivate
+	public unsafe class CefWebPluginInfoVisitor : CefBaseRefCounted<cef_web_plugin_info_visitor_t>,
+		ICefWebPluginInfoVisitorPrivate
 	{
 		private static readonly VisitDelegate fnVisit = VisitImpl;
 
-		internal static unsafe CefWebPluginInfoVisitor Create(IntPtr instance)
-		{
-			return new CefWebPluginInfoVisitor((cef_web_plugin_info_visitor_t*)instance);
-		}
-
 		public CefWebPluginInfoVisitor()
 		{
-			cef_web_plugin_info_visitor_t* self = this.NativeInstance;
-			self->visit = (void*)Marshal.GetFunctionPointerForDelegate(fnVisit);
+			var self = NativeInstance;
+			self->visit = (void*) Marshal.GetFunctionPointerForDelegate(fnVisit);
 		}
 
 		public CefWebPluginInfoVisitor(cef_web_plugin_info_visitor_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefWebPluginInfoVisitorPrivate.AvoidVisit();
 
+		internal static CefWebPluginInfoVisitor Create(IntPtr instance)
+		{
+			return new CefWebPluginInfoVisitor((cef_web_plugin_info_visitor_t*) instance);
+		}
+
 		/// <summary>
-		/// Method that will be called once for each plugin. |count| is the 0-based
-		/// index for the current plugin. |total| is the total number of plugins.
-		/// Return false (0) to stop visiting plugins. This function may never be
-		/// called if no plugins are found.
+		///  Method that will be called once for each plugin. |count| is the 0-based
+		///  index for the current plugin. |total| is the total number of plugins.
+		///  Return false (0) to stop visiting plugins. This function may never be
+		///  called if no plugins are found.
 		/// </summary>
-		protected internal unsafe virtual bool Visit(CefWebPluginInfo info, int count, int total)
+		protected internal virtual bool Visit(CefWebPluginInfo info, int count, int total)
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int VisitDelegate(cef_web_plugin_info_visitor_t* self, cef_web_plugin_info_t* info, int count, int total);
-
 		// int (*)(_cef_web_plugin_info_visitor_t* self, _cef_web_plugin_info_t* info, int count, int total)*
-		private static unsafe int VisitImpl(cef_web_plugin_info_visitor_t* self, cef_web_plugin_info_t* info, int count, int total)
+		private static int VisitImpl(cef_web_plugin_info_visitor_t* self, cef_web_plugin_info_t* info, int count,
+			int total)
 		{
-			var instance = GetInstance((IntPtr)self) as CefWebPluginInfoVisitor;
-			if (instance == null || ((ICefWebPluginInfoVisitorPrivate)instance).AvoidVisit())
+			var instance = GetInstance((IntPtr) self) as CefWebPluginInfoVisitor;
+			if (instance == null || ((ICefWebPluginInfoVisitorPrivate) instance).AvoidVisit())
 			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)info);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) info);
 				return default;
 			}
+
 			return instance.Visit(CefWebPluginInfo.Wrap(CefWebPluginInfo.Create, info), count, total) ? 1 : 0;
 		}
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int VisitDelegate(cef_web_plugin_info_visitor_t* self, cef_web_plugin_info_t* info, int count,
+			int total);
 	}
 }

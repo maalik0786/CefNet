@@ -14,8 +14,6 @@ namespace CefNetTest
 {
 	public class Program
 	{
-
-
 		const uint WS_OVERLAPPED = 0x00000000;
 		const uint WS_CAPTION = 0x00C00000;
 		const uint WS_SYSMENU = 0x00080000;
@@ -23,7 +21,8 @@ namespace CefNetTest
 		const uint WS_MINIMIZEBOX = 0x00020000;
 		const uint WS_MAXIMIZEBOX = 0x00010000;
 
-		const uint WS_OVERLAPPEDWINDOW = (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
+		const uint WS_OVERLAPPEDWINDOW =
+ (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
 		const uint WS_CLIPCHILDREN = 0x02000000;
 		const uint WS_CLIPSIBLINGS = 0x04000000;
 		const uint WS_VISIBLE = 0x10000000;
@@ -203,13 +202,16 @@ namespace CefNetTest
 
 
 	
-		private static readonly OnBeforeCommandLineProcessingDelegate fnOnBeforeCommandLineProcessing = OnBeforeCommandLineProcessingImpl;
+		private static readonly OnBeforeCommandLineProcessingDelegate fnOnBeforeCommandLineProcessing =
+ OnBeforeCommandLineProcessingImpl;
 
 		private static readonly OnRegisterCustomSchemesDelegate fnOnRegisterCustomSchemes = OnRegisterCustomSchemesImpl;
 
-		private static readonly GetResourceBundleHandlerDelegate fnGetResourceBundleHandler = GetResourceBundleHandlerImpl;
+		private static readonly GetResourceBundleHandlerDelegate fnGetResourceBundleHandler =
+ GetResourceBundleHandlerImpl;
 
-		private static readonly GetBrowserProcessHandlerDelegate fnGetBrowserProcessHandler = GetBrowserProcessHandlerImpl;
+		private static readonly GetBrowserProcessHandlerDelegate fnGetBrowserProcessHandler =
+ GetBrowserProcessHandlerImpl;
 
 		private static readonly GetRenderProcessHandlerDelegate fnGetRenderProcessHandler = GetRenderProcessHandlerImpl;
 
@@ -221,10 +223,13 @@ namespace CefNetTest
 		public static cef_app_t* NewCefApp()
 		{
 			cef_app_t* self = (cef_app_t*)Marshal.AllocHGlobal(sizeof(cef_app_t));
-			self->on_before_command_line_processing = (void*)Marshal.GetFunctionPointerForDelegate(fnOnBeforeCommandLineProcessing);
+			self->on_before_command_line_processing =
+ (void*)Marshal.GetFunctionPointerForDelegate(fnOnBeforeCommandLineProcessing);
 			self->on_register_custom_schemes = (void*)Marshal.GetFunctionPointerForDelegate(fnOnRegisterCustomSchemes);
-			self->get_resource_bundle_handler = (void*)Marshal.GetFunctionPointerForDelegate(fnGetResourceBundleHandler);
-			self->get_browser_process_handler = (void*)Marshal.GetFunctionPointerForDelegate(fnGetBrowserProcessHandler);
+			self->get_resource_bundle_handler =
+ (void*)Marshal.GetFunctionPointerForDelegate(fnGetResourceBundleHandler);
+			self->get_browser_process_handler =
+ (void*)Marshal.GetFunctionPointerForDelegate(fnGetBrowserProcessHandler);
 			self->get_render_process_handler = (void*)Marshal.GetFunctionPointerForDelegate(fnGetRenderProcessHandler);
 
 			cef_base_ref_counted_t* rc = (cef_base_ref_counted_t*)self;

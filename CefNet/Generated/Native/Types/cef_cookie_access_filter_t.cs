@@ -11,58 +11,59 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Implement this structure to filter cookies that may be sent or received from
-	/// resource requests. The functions of this structure will be called on the IO
-	/// thread unless otherwise indicated.
+	///  Implement this structure to filter cookies that may be sent or received from
+	///  resource requests. The functions of this structure will be called on the IO
+	///  thread unless otherwise indicated.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_cookie_access_filter_t
+	public unsafe struct cef_cookie_access_filter_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_cookie_access_filter_t* self, _cef_browser_t* browser, _cef_frame_t* frame, _cef_request_t* request, const const _cef_cookie_t* cookie)*
+		///  int (*)(_cef_cookie_access_filter_t* self, _cef_browser_t* browser, _cef_frame_t* frame, _cef_request_t* request,
+		///  const const _cef_cookie_t* cookie)*
 		/// </summary>
 		public void* can_send_cookie;
 
 		/// <summary>
-		/// Called on the IO thread before a resource request is sent. The |browser|
-		/// and |frame| values represent the source of the request, and may be NULL for
-		/// requests originating from service workers or cef_urlrequest_t. |request|
-		/// cannot be modified in this callback. Return true (1) if the specified
-		/// cookie can be sent with the request or false (0) otherwise.
+		///  Called on the IO thread before a resource request is sent. The |browser|
+		///  and |frame| values represent the source of the request, and may be NULL for
+		///  requests originating from service workers or cef_urlrequest_t. |request|
+		///  cannot be modified in this callback. Return true (1) if the specified
+		///  cookie can be sent with the request or false (0) otherwise.
 		/// </summary>
 		[NativeName("can_send_cookie")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int CanSendCookie(cef_browser_t* browser, cef_frame_t* frame, cef_request_t* request, [Immutable]cef_cookie_t* cookie);
+		public extern int CanSendCookie(cef_browser_t* browser, cef_frame_t* frame, cef_request_t* request,
+			[Immutable] cef_cookie_t* cookie);
 
 		/// <summary>
-		/// int (*)(_cef_cookie_access_filter_t* self, _cef_browser_t* browser, _cef_frame_t* frame, _cef_request_t* request, _cef_response_t* response, const const _cef_cookie_t* cookie)*
+		///  int (*)(_cef_cookie_access_filter_t* self, _cef_browser_t* browser, _cef_frame_t* frame, _cef_request_t* request,
+		///  _cef_response_t* response, const const _cef_cookie_t* cookie)*
 		/// </summary>
 		public void* can_save_cookie;
 
 		/// <summary>
-		/// Called on the IO thread after a resource response is received. The
-		/// |browser| and |frame| values represent the source of the request, and may
-		/// be NULL for requests originating from service workers or cef_urlrequest_t.
-		/// |request| cannot be modified in this callback. Return true (1) if the
-		/// specified cookie returned with the response can be saved or false (0)
-		/// otherwise.
+		///  Called on the IO thread after a resource response is received. The
+		///  |browser| and |frame| values represent the source of the request, and may
+		///  be NULL for requests originating from service workers or cef_urlrequest_t.
+		///  |request| cannot be modified in this callback. Return true (1) if the
+		///  specified cookie returned with the response can be saved or false (0)
+		///  otherwise.
 		/// </summary>
 		[NativeName("can_save_cookie")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int CanSaveCookie(cef_browser_t* browser, cef_frame_t* frame, cef_request_t* request, cef_response_t* response, [Immutable]cef_cookie_t* cookie);
+		public extern int CanSaveCookie(cef_browser_t* browser, cef_frame_t* frame, cef_request_t* request,
+			cef_response_t* response, [Immutable] cef_cookie_t* cookie);
 	}
 }
-

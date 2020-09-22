@@ -5,34 +5,23 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CefGen
 {
-
 	public class TypeSymbolInfo
 	{
-		private TypeSymbolInfo() { }
-
 		private int PointerCount;
+		private TypeSymbolInfo() { }
 
 		public ITypeSymbol Type { get; private set; }
 
-		public bool IsPointedType
-		{
-			get { return PointerCount > 0; }
-		}
+		public bool IsPointedType => PointerCount > 0;
 
-		public bool IsDoublePointedType
-		{
-			get { return PointerCount > 1; }
-		}
+		public bool IsDoublePointedType => PointerCount > 1;
 
 		public string AsClrTypeName()
 		{
-			string name = Type.Name;
+			var name = Type.Name;
 			if (name.EndsWith("_t"))
 				name = name.Remove(name.Length - 2).ToUpperCamel();
 			return DotnetTypeNameToCSharpTypeName(name);
@@ -79,6 +68,7 @@ namespace CefGen
 				case "char":
 					return "char16";
 			}
+
 			return typeName;
 		}
 
@@ -91,9 +81,9 @@ namespace CefGen
 				info.PointerCount++;
 				symbol = pointerType.PointedAtType;
 			}
+
 			info.Type = symbol;
 			return info;
 		}
 	}
-
 }

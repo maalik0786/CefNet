@@ -1,6 +1,4 @@
-﻿using CefNet.Input;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,27 +8,25 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using CefNet.Input;
 
 namespace CefNet.Wpf
 {
 	public static class CefNetWpfExtensions
 	{
-		private delegate object PropertyGetterInvokeDelegate(object obj, object[] parameters);
-
-		private static PropertyGetterInvokeDelegate GetIsExtendedKey;
+		private static readonly PropertyGetterInvokeDelegate GetIsExtendedKey;
 
 		static CefNetWpfExtensions()
 		{
 			try
 			{
-				PropertyInfo propertyInfo = typeof(KeyEventArgs).GetProperty("IsExtendedKey", BindingFlags.GetProperty | BindingFlags.NonPublic | BindingFlags.Instance, null, typeof(bool), Type.EmptyTypes, null);
+				var propertyInfo = typeof(KeyEventArgs).GetProperty("IsExtendedKey",
+					BindingFlags.GetProperty | BindingFlags.NonPublic | BindingFlags.Instance, null, typeof(bool),
+					Type.EmptyTypes, null);
 				if (propertyInfo != null)
 				{
-					MethodInfo method = propertyInfo.GetGetMethod(true);
-					if (method != null)
-					{
-						GetIsExtendedKey = method.Invoke;
-					}
+					var method = propertyInfo.GetGetMethod(true);
+					if (method != null) GetIsExtendedKey = method.Invoke;
 				}
 			}
 			catch { }
@@ -47,25 +43,26 @@ namespace CefNet.Wpf
 
 		public static void Union(this ref Int32Rect self, CefRect rect)
 		{
-			int x = Math.Min(self.X, rect.X);
-			int right = Math.Max(self.X + self.Width, rect.X + rect.Width);
-			int y = Math.Min(self.Y, rect.Y);
-			int bottom = Math.Max(self.Y + self.Height, rect.Y + rect.Height);
+			var x = Math.Min(self.X, rect.X);
+			var right = Math.Max(self.X + self.Width, rect.X + rect.Width);
+			var y = Math.Min(self.Y, rect.Y);
+			var bottom = Math.Max(self.Y + self.Height, rect.Y + rect.Height);
 			self = new Int32Rect(x, y, right - x, bottom - y);
 		}
 
 		public static VirtualKeys ToVirtualKey(this Key key)
 		{
 			if (key >= Key.LeftShift && key <= Key.RightAlt)
-				return (VirtualKeys)((key - Key.LeftShift) >> 1) | VirtualKeys.ShiftKey; // VK_SHIFT, VK_CONTROL, VK_MENU
+				return (VirtualKeys) ((key - Key.LeftShift) >> 1) |
+				       VirtualKeys.ShiftKey; // VK_SHIFT, VK_CONTROL, VK_MENU
 			if (key == Key.System)
 				return VirtualKeys.Menu; // VK_MENU
-			return (VirtualKeys)KeyInterop.VirtualKeyFromKey(key);
+			return (VirtualKeys) KeyInterop.VirtualKeyFromKey(key);
 		}
 
 		public static bool IsExtendedKey(this KeyEventArgs e)
 		{
-			return (GetIsExtendedKey != null) ? (bool)GetIsExtendedKey(e, null) : false;
+			return GetIsExtendedKey != null ? (bool) GetIsExtendedKey(e, null) : false;
 		}
 
 		public static Color ToColor(this CefColor color)
@@ -74,13 +71,13 @@ namespace CefNet.Wpf
 		}
 
 		/// <summary>
-		/// Converts a drag drop effects to the CEF dragging operation mask.
+		///  Converts a drag drop effects to the CEF dragging operation mask.
 		/// </summary>
 		/// <param name="self">The drag drop effects.</param>
 		/// <returns></returns>
 		public static CefDragOperationsMask ToCefDragOperationsMask(this DragDropEffects self)
 		{
-			CefDragOperationsMask effects = CefDragOperationsMask.None;
+			var effects = CefDragOperationsMask.None;
 			if (self.HasFlag(DragDropEffects.All))
 				effects |= CefDragOperationsMask.Every;
 			if (self.HasFlag(DragDropEffects.Copy))
@@ -93,13 +90,13 @@ namespace CefNet.Wpf
 		}
 
 		/// <summary>
-		/// Converts the CEF dragging operation mask to drag drop effects.
+		///  Converts the CEF dragging operation mask to drag drop effects.
 		/// </summary>
 		/// <param name="self">The CEF dragging operation mask.</param>
 		/// <returns></returns>
 		public static DragDropEffects ToDragDropEffects(this CefDragOperationsMask self)
 		{
-			DragDropEffects effects = DragDropEffects.None;
+			var effects = DragDropEffects.None;
 			if (self.HasFlag(CefDragOperationsMask.Every))
 				effects |= DragDropEffects.All;
 			if (self.HasFlag(CefDragOperationsMask.Copy))
@@ -112,14 +109,14 @@ namespace CefNet.Wpf
 		}
 
 		/// <summary>
-		/// Gets the current state of the SHIFT, CTRL, and ALT keys, as well as the state of the mouse buttons.
+		///  Gets the current state of the SHIFT, CTRL, and ALT keys, as well as the state of the mouse buttons.
 		/// </summary>
-		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+		/// <param name="e">The <see cref="DragEventArgs" /> instance containing the event data.</param>
 		/// <returns></returns>
 		public static CefEventFlags GetModifiers(this DragEventArgs e)
 		{
-			CefEventFlags flags = CefEventFlags.None;
-			DragDropKeyStates state = e.KeyStates;
+			var flags = CefEventFlags.None;
+			var state = e.KeyStates;
 			if (state.HasFlag(DragDropKeyStates.LeftMouseButton))
 				flags |= CefEventFlags.LeftMouseButton;
 			if (state.HasFlag(DragDropKeyStates.RightMouseButton))
@@ -136,15 +133,15 @@ namespace CefNet.Wpf
 		}
 
 		/// <summary>
-		/// Gets the drag data.
+		///  Gets the drag data.
 		/// </summary>
-		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+		/// <param name="e">The <see cref="DragEventArgs" /> instance containing the event data.</param>
 		public static CefDragData GetCefDragData(this DragEventArgs e)
 		{
 			CefDragData dragData;
 			if (e.Data.GetDataPresent(nameof(CefDragData)))
 			{
-				dragData = (CefDragData)e.Data.GetData(nameof(CefDragData));
+				dragData = (CefDragData) e.Data.GetData(nameof(CefDragData));
 				if (dragData != null)
 				{
 					dragData.ResetFileContents();
@@ -154,18 +151,14 @@ namespace CefNet.Wpf
 
 			dragData = new CefDragData();
 
-			string[] formats = e.Data.GetFormats();
+			var formats = e.Data.GetFormats();
 
 			if (formats.Contains(DataFormats.FileDrop))
-			{
-				foreach (string filePath in (string[])e.Data.GetData(DataFormats.FileDrop))
-				{
+				foreach (var filePath in (string[]) e.Data.GetData(DataFormats.FileDrop))
 					dragData.AddFile(filePath.Replace("\\", "/"), Path.GetFileName(filePath));
-				}
-			}
 
-			bool isUrl = false;
-			string s = GetUrlString(e.Data, formats);
+			var isUrl = false;
+			var s = GetUrlString(e.Data, formats);
 			if (!string.IsNullOrWhiteSpace(s))
 			{
 				isUrl = true;
@@ -174,7 +167,7 @@ namespace CefNet.Wpf
 
 			if (formats.Contains(DataFormats.UnicodeText))
 			{
-				s = (string)e.Data.GetData(DataFormats.UnicodeText);
+				s = (string) e.Data.GetData(DataFormats.UnicodeText);
 
 				if (!isUrl && Uri.IsWellFormedUriString(s, UriKind.Absolute))
 					dragData.LinkUrl = s;
@@ -182,7 +175,7 @@ namespace CefNet.Wpf
 			}
 			else if (formats.Contains(DataFormats.Text))
 			{
-				s = (string)e.Data.GetData(DataFormats.Text);
+				s = (string) e.Data.GetData(DataFormats.Text);
 
 				if (!isUrl && Uri.IsWellFormedUriString(s, UriKind.Absolute))
 					dragData.LinkUrl = s;
@@ -190,13 +183,11 @@ namespace CefNet.Wpf
 			}
 
 			if (formats.Contains(DataFormats.Html))
-			{
-				dragData.FragmentHtml = (string)e.Data.GetData(DataFormats.Html);
-			}
+				dragData.FragmentHtml = (string) e.Data.GetData(DataFormats.Html);
 			else if (formats.Contains(CefNetDragData.DataFormatTextHtml))
-			{
-				dragData.FragmentHtml = Encoding.UTF8.GetString(((MemoryStream)e.Data.GetData(CefNetDragData.DataFormatTextHtml)).ToArray());
-			}
+				dragData.FragmentHtml =
+					Encoding.UTF8.GetString(
+						((MemoryStream) e.Data.GetData(CefNetDragData.DataFormatTextHtml)).ToArray());
 			return dragData;
 		}
 
@@ -213,12 +204,11 @@ namespace CefNet.Wpf
 
 		private static string GetUrlFromDragDropData(IDataObject data, string format, Encoding encoding)
 		{
-			using (TextReader reader = new StreamReader((Stream)data.GetData(format), encoding, true, -1, false))
+			using (TextReader reader = new StreamReader((Stream) data.GetData(format), encoding, true, -1, false))
 			{
 				return reader.ReadToEnd().TrimEnd('\0');
 			}
 		}
-
 
 
 #if DEBUG
@@ -226,14 +216,13 @@ namespace CefNet.Wpf
 		{
 			using (var file = new FileStream(filename, FileMode.Create))
 			{
-				PngBitmapEncoder encoder = new PngBitmapEncoder();
+				var encoder = new PngBitmapEncoder();
 				encoder.Frames.Add(BitmapFrame.Create(source));
 				encoder.Save(file);
 				file.Flush();
 			}
-
 		}
 #endif
-
+		private delegate object PropertyGetterInvokeDelegate(object obj, object[] parameters);
 	}
 }

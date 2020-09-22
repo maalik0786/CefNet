@@ -1,58 +1,125 @@
-﻿using CefNet.Input;
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using CefNet.Input;
 using CefNet.Internal;
 using CefNet.WinApi;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Windows.Forms;
 
 namespace CefNet.Windows.Forms
 {
-
-
-	partial class WebView: IWinFormsWebViewPrivate
+	partial class WebView : IWinFormsWebViewPrivate
 	{
-		private CefEventFlags _keydownModifiers;
 		private IntPtr _keyboardLayout;
+		private CefEventFlags _keydownModifiers;
 
 		/// <summary>
-		/// Occurs when the user starts dragging content in the web view.
-		/// </summary>
-		/// <remarks>
-		/// OS APIs that run a system message loop may be used within the StartDragging event handler.
-		/// Call <see cref="WebView.DragSourceEndedAt"/> and <see cref="WebView.DragSourceSystemDragEnded"/>
-		/// either synchronously or asynchronously to inform the web view that the drag operation has ended.
-		/// </remarks>
-		public event EventHandler<StartDraggingEventArgs> StartDragging;
-
-		/// <summary>
-		/// Gets emulated device.
+		///  Gets emulated device.
 		/// </summary>
 		protected VirtualDevice Device { get; private set; }
 
 		/// <summary>
-		/// Enable or disable device simulation.
+		///  Gets a graphics buffer for off-screen rendering.
+		/// </summary>
+		protected OffscreenGraphics OffscreenGraphics { get; private set; }
+
+		/// <summary>
+		///  Gets and sets a value indicating whether the browser using off-screen rendering.
+		/// </summary>
+		public bool WindowlessRenderingEnabled
+		{
+			get => OffscreenGraphics != null;
+			set
+			{
+				SetInitProperty(InitialPropertyKeys.Windowless, value);
+
+				if (value)
+				{
+					if (OffscreenGraphics == null)
+					{
+						var device = Device;
+						OffscreenGraphics = new OffscreenGraphics {Background = BackColor, Device = device};
+						if (device is null)
+							OffscreenGraphics.SetSize(Width, Height);
+						else
+							OffscreenGraphics.SetSize(device.ViewportRect.Width, device.ViewportRect.Height);
+					}
+				}
+				else
+				{
+					OffscreenGraphics = null;
+				}
+			}
+		}
+
+		protected override Size DefaultSize => new Size(100, 100);
+
+
+		bool IChromiumWebViewPrivate.GetCefScreenInfo(ref CefScreenInfo screenInfo)
+		{
+			return GetCefScreenInfo(ref screenInfo);
+		}
+
+		bool IChromiumWebViewPrivate.CefPointToScreen(ref CefPoint point)
+		{
+			return CefPointToScreen(ref point);
+		}
+
+		public float GetDevicePixelRatio()
+		{
+			var device = Device;
+			return device != null ? device.DevicePixelRatio : OffscreenGraphics.PixelsPerDip;
+		}
+
+		CefRect IChromiumWebViewPrivate.GetCefRootBounds()
+		{
+			return GetCefRootBounds();
+		}
+
+		CefRect IChromiumWebViewPrivate.GetCefViewBounds()
+		{
+			return OffscreenGraphics.GetBounds();
+		}
+
+		void IWinFormsWebViewPrivate.RaiseCefCursorChange(CursorChangeEventArgs e)
+		{
+			RaiseCrossThreadEvent(OnCursorChange, e, false);
+		}
+
+		void IWinFormsWebViewPrivate.CefSetToolTip(string text)
+		{
+			RaiseCrossThreadEvent(OnSetToolTip, new TooltipEventArgs(text), false);
+		}
+
+		void IWinFormsWebViewPrivate.RaiseStartDragging(StartDraggingEventArgs e)
+		{
+			RaiseCrossThreadEvent(OnStartDragging, e, true);
+		}
+
+		/// <summary>
+		///  Occurs when the user starts dragging content in the web view.
+		/// </summary>
+		/// <remarks>
+		///  OS APIs that run a system message loop may be used within the StartDragging event handler.
+		///  Call <see cref="WebView.DragSourceEndedAt" /> and <see cref="WebView.DragSourceSystemDragEnded" />
+		///  either synchronously or asynchronously to inform the web view that the drag operation has ended.
+		/// </remarks>
+		public event EventHandler<StartDraggingEventArgs> StartDragging;
+
+		/// <summary>
+		///  Enable or disable device simulation.
 		/// </summary>
 		/// <param name="device">The simulated device or null.</param>
 		public void SimulateDevice(VirtualDevice device)
 		{
-			if (IsHandleCreated)
-			{
-				VerifyAccess();
-			}
+			if (IsHandleCreated) VerifyAccess();
 
 			if (Device == device)
 				return;
 
-			OffscreenGraphics offscreenGraphics = this.OffscreenGraphics;
+			var offscreenGraphics = OffscreenGraphics;
 			if (offscreenGraphics != null)
 				offscreenGraphics.Device = device;
-			
+
 			if (IsHandleCreated)
 			{
 				if (!WindowlessRenderingEnabled)
@@ -68,61 +135,22 @@ namespace CefNet.Windows.Forms
 		protected CefRect GetViewportRect()
 		{
 			CefRect viewportRect;
-			VirtualDevice device = Device;
+			var device = Device;
 			if (device == null)
 			{
-				viewportRect = new CefRect(0, 0, this.Width, this.Height);
+				viewportRect = new CefRect(0, 0, Width, Height);
 				viewportRect.Scale(OffscreenGraphics.PixelsPerDip);
 				return viewportRect;
 			}
-			else
-			{
-				return device.GetBounds(OffscreenGraphics.PixelsPerDip);
-			}
-		}
 
-		/// <summary>
-		/// Gets a graphics buffer for off-screen rendering.
-		/// </summary>
-		protected OffscreenGraphics OffscreenGraphics { get; private set; }
-
-		/// <summary>
-		/// Gets and sets a value indicating whether the browser using off-screen rendering.
-		/// </summary>
-		public bool WindowlessRenderingEnabled
-		{
-			get
-			{
-				return OffscreenGraphics != null;
-			}
-			set
-			{
-				SetInitProperty(InitialPropertyKeys.Windowless, value);
-
-				if (value)
-				{
-					if (OffscreenGraphics == null)
-					{
-						VirtualDevice device = this.Device;
-						OffscreenGraphics = new OffscreenGraphics { Background = this.BackColor, Device = device };
-						if(device is null)
-							OffscreenGraphics.SetSize(this.Width, this.Height);
-						else
-							OffscreenGraphics.SetSize(device.ViewportRect.Width, device.ViewportRect.Height);
-					}
-				}
-				else
-				{
-					OffscreenGraphics = null;
-				}
-			}
+			return device.GetBounds(OffscreenGraphics.PixelsPerDip);
 		}
 
 		protected override void OnBackColorChanged(EventArgs e)
 		{
-			OffscreenGraphics offscreenGraphics = this.OffscreenGraphics;
-			if (offscreenGraphics != null) 
-				offscreenGraphics.Background = this.BackColor;
+			var offscreenGraphics = OffscreenGraphics;
+			if (offscreenGraphics != null)
+				offscreenGraphics.Background = BackColor;
 
 			base.OnBackColorChanged(e);
 		}
@@ -130,9 +158,9 @@ namespace CefNet.Windows.Forms
 		protected override void OnHandleCreated(EventArgs e)
 		{
 			if (OffscreenGraphics != null)
-				OffscreenGraphics.WidgetHandle = this.Handle;
+				OffscreenGraphics.WidgetHandle = Handle;
 			else
-				this.Device = null;
+				Device = null;
 
 			float devicePixelRatio;
 			using (var g = CreateGraphics())
@@ -141,23 +169,16 @@ namespace CefNet.Windows.Forms
 			}
 
 			if (OffscreenGraphics.PixelsPerDip != devicePixelRatio)
-			{
 				SetDevicePixelRatio(devicePixelRatio);
-			}
 			else
-			{
 				OnSizeChanged(EventArgs.Empty);
-			}
 
 			base.OnHandleCreated(e);
 		}
 
 		protected override void OnHandleDestroyed(EventArgs e)
 		{
-			if (GetState(State.Created) && !GetState(State.Closing))
-			{
-				OnDestroyBrowser();
-			}
+			if (GetState(State.Created) && !GetState(State.Closing)) OnDestroyBrowser();
 
 			if (OffscreenGraphics != null)
 				OffscreenGraphics.WidgetHandle = IntPtr.Zero;
@@ -165,95 +186,71 @@ namespace CefNet.Windows.Forms
 			base.OnHandleDestroyed(e);
 		}
 
-
-		bool IChromiumWebViewPrivate.GetCefScreenInfo(ref CefScreenInfo screenInfo)
-		{
-			return GetCefScreenInfo(ref screenInfo);
-		}
-
 		protected virtual bool GetCefScreenInfo(ref CefScreenInfo screenInfo)
 		{
-			VirtualDevice device = Device;
+			var device = Device;
 			if (device == null)
 				return false;
 			screenInfo = device.ScreenInfo;
 			return true;
 		}
 
-		bool IChromiumWebViewPrivate.CefPointToScreen(ref CefPoint point)
-		{
-			return CefPointToScreen(ref point);
-		}
-
 		protected virtual bool CefPointToScreen(ref CefPoint point)
 		{
-			VirtualDevice device = Device;
+			var device = Device;
 			if (device == null)
 			{
 				point.Scale(OffscreenGraphics.PixelsPerDip);
 				NativeMethods.MapWindowPoints(OffscreenGraphics.WidgetHandle, IntPtr.Zero, ref point, 1);
 				return true;
 			}
-			else
-			{
-				return device.PointToScreen(ref point);
-			}
-		}
 
-		public float GetDevicePixelRatio()
-		{
-			VirtualDevice device = Device;
-			return device != null ? device.DevicePixelRatio : OffscreenGraphics.PixelsPerDip;
+			return device.PointToScreen(ref point);
 		}
 
 		protected virtual CefPoint PointToViewport(CefPoint point)
 		{
-			float scale = OffscreenGraphics.PixelsPerDip;
-			VirtualDevice viewport = Device;
+			var scale = OffscreenGraphics.PixelsPerDip;
+			var viewport = Device;
 			if (viewport != null) scale = scale * viewport.Scale;
-			CefRect viewportRect = GetViewportRect();
-			return new CefPoint((int)((point.X - viewportRect.X) / scale), (int)((point.Y - viewportRect.Y) / scale));
+			var viewportRect = GetViewportRect();
+			return new CefPoint((int) ((point.X - viewportRect.X) / scale), (int) ((point.Y - viewportRect.Y) / scale));
 		}
 
 		protected virtual bool PointInViewport(int x, int y)
 		{
-			CefRect viewportRect = GetViewportRect();
+			var viewportRect = GetViewportRect();
 			return viewportRect.X <= x && x <= viewportRect.Right && viewportRect.Y <= y && y <= viewportRect.Bottom;
-		}
-
-		CefRect IChromiumWebViewPrivate.GetCefRootBounds()
-		{
-			return GetCefRootBounds();
 		}
 
 		protected virtual unsafe CefRect GetCefRootBounds()
 		{
-			VirtualDevice device = Device;
+			var device = Device;
 			if (device == null)
 			{
 				const int GA_ROOT = 2;
 
 				RECT windowBounds;
-				IntPtr hwnd = NativeMethods.GetAncestor(OffscreenGraphics.WidgetHandle, GA_ROOT);
-				if ((NativeMethods.DwmIsCompositionEnabled() && NativeMethods.DwmGetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.ExtendedFrameBounds, &windowBounds, sizeof(RECT)) == 0)
-					|| NativeMethods.GetWindowRect(hwnd, out windowBounds))
+				var hwnd = NativeMethods.GetAncestor(OffscreenGraphics.WidgetHandle, GA_ROOT);
+				if (NativeMethods.DwmIsCompositionEnabled() && NativeMethods.DwmGetWindowAttribute(hwnd,
+					    DWMWINDOWATTRIBUTE.ExtendedFrameBounds, &windowBounds, sizeof(RECT)) == 0
+				    || NativeMethods.GetWindowRect(hwnd, out windowBounds))
 				{
-					float ppd = OffscreenGraphics.PixelsPerDip;
+					var ppd = OffscreenGraphics.PixelsPerDip;
 					if (ppd == 1.0f)
 						return windowBounds.ToCefRect();
 					return new CefRect(
-						(int)(windowBounds.Left / ppd),
-						(int)(windowBounds.Top / ppd),
-						(int)((windowBounds.Right - windowBounds.Left) / ppd),
-						(int)((windowBounds.Bottom - windowBounds.Top) / ppd)
+						(int) (windowBounds.Left / ppd),
+						(int) (windowBounds.Top / ppd),
+						(int) ((windowBounds.Right - windowBounds.Left) / ppd),
+						(int) ((windowBounds.Bottom - windowBounds.Top) / ppd)
 					);
 				}
+
 				return OffscreenGraphics.GetBounds();
 			}
-			else
-			{
-				return device.GetRootBounds();
-			}
+
+			return device.GetRootBounds();
 		}
 
 		private void UpdateOffscreenViewLocation()
@@ -261,10 +258,10 @@ namespace CefNet.Windows.Forms
 			if (OffscreenGraphics is null)
 				return;
 
-			VirtualDevice device = this.Device;
+			var device = Device;
 			if (device is null)
 			{
-				Point screenPoint = PointToScreen(default);
+				var screenPoint = PointToScreen(default);
 				OffscreenGraphics.SetLocation(screenPoint.X, screenPoint.Y);
 			}
 			else
@@ -275,42 +272,19 @@ namespace CefNet.Windows.Forms
 			}
 		}
 
-		CefRect IChromiumWebViewPrivate.GetCefViewBounds()
-		{
-			return OffscreenGraphics.GetBounds();
-		}
-
-		void IWinFormsWebViewPrivate.RaiseCefCursorChange(CursorChangeEventArgs e)
-		{
-			RaiseCrossThreadEvent(OnCursorChange, e, false);
-		}
-
 		protected virtual void OnCursorChange(CursorChangeEventArgs e)
 		{
-			this.Cursor = e.Cursor;
-		}
-
-		void IWinFormsWebViewPrivate.CefSetToolTip(string text)
-		{
-			RaiseCrossThreadEvent(OnSetToolTip, new TooltipEventArgs(text), false);
+			Cursor = e.Cursor;
 		}
 
 		protected virtual void OnSetToolTip(TooltipEventArgs e)
 		{
-			ToolTip toolTip = this.ToolTip;
-			if (toolTip != null && toolTip.GetToolTip(this) != e.Text)
-			{
-				toolTip.SetToolTip(this, e.Text);
-			}
-		}
-
-		void IWinFormsWebViewPrivate.RaiseStartDragging(StartDraggingEventArgs e)
-		{
-			RaiseCrossThreadEvent(OnStartDragging, e, true);
+			var toolTip = ToolTip;
+			if (toolTip != null && toolTip.GetToolTip(this) != e.Text) toolTip.SetToolTip(this, e.Text);
 		}
 
 		/// <summary>
-		/// Raises <see cref="WebView.StartDragging"/> event.
+		///  Raises <see cref="WebView.StartDragging" /> event.
 		/// </summary>
 		/// <param name="e">The event data.</param>
 		protected virtual void OnStartDragging(StartDraggingEventArgs e)
@@ -318,7 +292,7 @@ namespace CefNet.Windows.Forms
 			StartDragging?.Invoke(this, e);
 			if (e.Handled)
 				return;
-			
+
 			DoDragDrop(new CefNetDragData(this, e.Data), e.AllowedEffects.ToDragDropEffects());
 			DragSourceSystemDragEnded();
 			e.Handled = true;
@@ -326,7 +300,7 @@ namespace CefNet.Windows.Forms
 
 		public void CefInvalidate()
 		{
-			CefBrowserHost browserHost = BrowserObject?.Host;
+			var browserHost = BrowserObject?.Host;
 			if (browserHost != null)
 			{
 				browserHost.Invalidate(CefPaintElementType.View);
@@ -336,24 +310,24 @@ namespace CefNet.Windows.Forms
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			if (this.DesignMode)
+			if (DesignMode)
 			{
-				e.Graphics.DrawString(this.GetType().Name, Font, Brushes.Black, new PointF(2, 2));
+				e.Graphics.DrawString(GetType().Name, Font, Brushes.Black, new PointF(2, 2));
 				return;
 			}
 
 			SetDevicePixelRatio(e.Graphics.DpiX / 96f);
 			if (WindowlessRenderingEnabled)
 			{
-				Rectangle renderBounds = OffscreenGraphics.GetRenderBounds();
+				var renderBounds = OffscreenGraphics.GetRenderBounds();
 				DrawDeviceArea(e.Graphics, e.ClipRectangle);
 				OffscreenGraphics.Render(e.Graphics, e.ClipRectangle);
 
 				// redraw background if render has wrong size
-				VirtualDevice device = Device;
+				var device = Device;
 				if (device != null)
 				{
-					CefRect deviceBounds = device.GetBounds(OffscreenGraphics.PixelsPerDip);
+					var deviceBounds = device.GetBounds(OffscreenGraphics.PixelsPerDip);
 					if (renderBounds.Width > deviceBounds.Width || renderBounds.Height > deviceBounds.Height)
 					{
 						e.Graphics.ExcludeClip(deviceBounds.ToRectangle());
@@ -361,31 +335,32 @@ namespace CefNet.Windows.Forms
 					}
 				}
 			}
+
 			base.OnPaint(e);
 		}
 
 		protected virtual void DrawDeviceArea(Graphics graphics, Rectangle rectangle)
 		{
-			VirtualDevice device = Device;
+			var device = Device;
 			if (device != null)
 			{
-				CefRect deviceBounds = device.GetBounds(OffscreenGraphics.PixelsPerDip);
-				Color background = this.BackColor;
+				var deviceBounds = device.GetBounds(OffscreenGraphics.PixelsPerDip);
+				var background = BackColor;
 				if (background.A > 0)
-				{
 					using (var brush = new SolidBrush(background))
 					{
 						graphics.FillRectangle(brush, rectangle);
 					}
-				}
-				graphics.DrawRectangle(Pens.Gray, deviceBounds.X - 1, deviceBounds.Y - 1, deviceBounds.Width + 1, deviceBounds.Height + 1);
+
+				graphics.DrawRectangle(Pens.Gray, deviceBounds.X - 1, deviceBounds.Y - 1, deviceBounds.Width + 1,
+					deviceBounds.Height + 1);
 			}
 		}
 
 		/// <summary>
-		/// Raises the <see cref="CefPaint"/> event.
+		///  Raises the <see cref="CefPaint" /> event.
 		/// </summary>
-		/// <param name="e">A <see cref="CefPaintEventArgs"/> that contains event data.</param>
+		/// <param name="e">A <see cref="CefPaintEventArgs" /> that contains event data.</param>
 		protected virtual void OnCefPaint(CefPaintEventArgs e)
 		{
 			CefPaint?.Invoke(this, e);
@@ -393,7 +368,7 @@ namespace CefNet.Windows.Forms
 			if (GetState(State.Closing))
 				return;
 
-			CefRect invalidRect = OffscreenGraphics.Draw(e);
+			var invalidRect = OffscreenGraphics.Draw(e);
 			Device?.MoveToDevice(ref invalidRect, OffscreenGraphics.PixelsPerDip);
 
 			if (GetState(State.Closing))
@@ -403,7 +378,7 @@ namespace CefNet.Windows.Forms
 			{
 				if (invalidRect.Width > 0 && invalidRect.Height > 0)
 				{
-					bool useInvalidate = false;
+					var useInvalidate = false;
 
 					Graphics graphics = null;
 					try
@@ -412,14 +387,14 @@ namespace CefNet.Windows.Forms
 							return;
 						graphics = CreateGraphics();
 
-						Rectangle renderBounds = OffscreenGraphics.GetRenderBounds();
+						var renderBounds = OffscreenGraphics.GetRenderBounds();
 						OffscreenGraphics.Render(graphics, invalidRect.ToRectangle());
 
 						// draw background if render has wrong size
-						VirtualDevice device = Device;
+						var device = Device;
 						if (device != null)
 						{
-							CefRect deviceBounds = device.GetBounds(OffscreenGraphics.PixelsPerDip);
+							var deviceBounds = device.GetBounds(OffscreenGraphics.PixelsPerDip);
 							if (renderBounds.Width > deviceBounds.Width || renderBounds.Height > deviceBounds.Height)
 							{
 								graphics.ExcludeClip(deviceBounds.ToRectangle());
@@ -453,28 +428,29 @@ namespace CefNet.Windows.Forms
 
 		protected virtual void OnPopupShow(PopupShowEventArgs e)
 		{
-			Rectangle invalidRect = OffscreenGraphics.GetPopupBounds();
+			var invalidRect = OffscreenGraphics.GetPopupBounds();
 
-			CefRect bounds = e.Bounds;
-			float ppd = OffscreenGraphics.PixelsPerDip;
-			VirtualDevice device = Device;
+			var bounds = e.Bounds;
+			var ppd = OffscreenGraphics.PixelsPerDip;
+			var device = Device;
 			if (device != null)
 			{
-				invalidRect.Offset((int)(device.X * ppd), (int)(device.Y * ppd));
+				invalidRect.Offset((int) (device.X * ppd), (int) (device.Y * ppd));
 				device.ScaleToViewport(ref bounds, ppd);
 			}
 			else
 			{
 				bounds.Scale(ppd);
 			}
+
 			OffscreenGraphics.SetPopup(e.Visible, bounds);
 			Invalidate(invalidRect, false);
 		}
 
 		/// <summary>
-		/// Raises the <see cref="Control.SizeChanged"/> event.
+		///  Raises the <see cref="Control.SizeChanged" /> event.
 		/// </summary>
-		/// <param name="e">An <see cref="EventArgs"/> that contains event data.</param>
+		/// <param name="e">An <see cref="EventArgs" /> that contains event data.</param>
 		protected override void OnSizeChanged(EventArgs e)
 		{
 			base.OnSizeChanged(e);
@@ -483,21 +459,16 @@ namespace CefNet.Windows.Forms
 			{
 				UpdateOffscreenViewLocation();
 
-				VirtualDevice device = this.Device;
+				var device = Device;
 				if (device is null)
 				{
-					if (OffscreenGraphics.SetSize(this.Width, this.Height))
-					{
-						BrowserObject?.Host.WasResized();
-					}
+					if (OffscreenGraphics.SetSize(Width, Height)) BrowserObject?.Host.WasResized();
 				}
 				else
 				{
-					CefRect viewportRect = device.ViewportRect;
+					var viewportRect = device.ViewportRect;
 					if (OffscreenGraphics.SetSize(viewportRect.Width, viewportRect.Height))
-					{
 						BrowserObject?.Host.WasResized();
-					}
 				}
 			}
 		}
@@ -509,20 +480,16 @@ namespace CefNet.Windows.Forms
 				if (width == 0 || height == 0)
 					return;
 			}
-			else if(specified == BoundsSpecified.Width && width == 0)
+			else if (specified == BoundsSpecified.Width && width == 0)
 			{
 				return;
 			}
-			else if(specified == BoundsSpecified.Height && height == 0)
+			else if (specified == BoundsSpecified.Height && height == 0)
 			{
 				return;
 			}
-			base.SetBoundsCore(x, y, width, height, specified);
-		}
 
-		protected override Size DefaultSize
-		{
-			get { return new Size(100, 100); }
+			base.SetBoundsCore(x, y, width, height, specified);
 		}
 
 		protected override void OnMouseMove(MouseEventArgs e)
@@ -531,7 +498,7 @@ namespace CefNet.Windows.Forms
 			{
 				if (WindowlessRenderingEnabled)
 				{
-					CefEventFlags modifiers = CefEventFlags.None;
+					var modifiers = CefEventFlags.None;
 					if (e.Button == MouseButtons.Left)
 						modifiers |= CefEventFlags.LeftMouseButton;
 					if (e.Button == MouseButtons.Right)
@@ -539,19 +506,13 @@ namespace CefNet.Windows.Forms
 					SendMouseMoveEvent(e.X, e.Y, modifiers);
 				}
 			}
-			else
-			{
 
-			}
 			base.OnMouseMove(e);
 		}
 
 		protected override void OnMouseLeave(EventArgs e)
 		{
-			if (WindowlessRenderingEnabled)
-			{
-				SendMouseLeaveEvent();
-			}
+			if (WindowlessRenderingEnabled) SendMouseLeaveEvent();
 			base.OnMouseLeave(e);
 		}
 
@@ -564,18 +525,15 @@ namespace CefNet.Windows.Forms
 				case MouseButtons.Middle:
 					return CefMouseButtonType.Middle;
 			}
+
 			return CefMouseButtonType.Left;
 		}
 
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			if (PointInViewport(e.X, e.Y))
-			{
 				if (WindowlessRenderingEnabled)
-				{
 					SendMouseDownEvent(e.X, e.Y, GetButton(e), e.Clicks, GetModifierKeys());
-				}
-			}
 			base.OnMouseDown(e);
 		}
 
@@ -583,12 +541,8 @@ namespace CefNet.Windows.Forms
 		{
 			base.OnMouseUp(e);
 			if (PointInViewport(e.X, e.Y))
-			{
 				if (WindowlessRenderingEnabled)
-				{
 					SendMouseUpEvent(e.X, e.Y, GetButton(e), e.Clicks, GetModifierKeys());
-				}
-			}
 		}
 
 		protected override void OnMouseWheel(MouseEventArgs e)
@@ -598,55 +552,46 @@ namespace CefNet.Windows.Forms
 			if (!ModifierKeys.HasFlag(Keys.Shift))
 			{
 				if (PointInViewport(e.X, e.Y))
-				{
 					if (WindowlessRenderingEnabled)
 					{
 						SendMouseWheelEvent(e.X, e.Y, 0, e.Delta);
-						((HandledMouseEventArgs)e).Handled = true;
+						((HandledMouseEventArgs) e).Handled = true;
 					}
-				}
+
 				return;
 			}
+
 			OnMouseHWheel(e);
 		}
 
 		protected virtual void OnMouseHWheel(MouseEventArgs e)
 		{
 			if (PointInViewport(e.X, e.Y))
-			{
 				if (WindowlessRenderingEnabled)
-				{
 					SendMouseWheelEvent(e.X, e.Y, e.Delta, 0);
-				}
-			}
-			((HandledMouseEventArgs)e).Handled = true;
+			((HandledMouseEventArgs) e).Handled = true;
 		}
 
 		private void WmMouseHWheel(ref Message m)
 		{
-			Point p = PointToClient(new Point(NativeMethods.LoWord(m.LParam), NativeMethods.HiWord(m.LParam)));
-			int delta = -NativeMethods.HiWord(m.WParam);
-			if (Math.Abs(delta) < 10)
-			{
-				delta = Math.Sign(delta) * 10;
-			}
-			HandledMouseEventArgs handledMouseEventArgs = new HandledMouseEventArgs(MouseButtons.None, 0, p.X, p.Y, delta);
+			var p = PointToClient(new Point(NativeMethods.LoWord(m.LParam), NativeMethods.HiWord(m.LParam)));
+			var delta = -NativeMethods.HiWord(m.WParam);
+			if (Math.Abs(delta) < 10) delta = Math.Sign(delta) * 10;
+			var handledMouseEventArgs = new HandledMouseEventArgs(MouseButtons.None, 0, p.X, p.Y, delta);
 			OnMouseHWheel(handledMouseEventArgs);
-			m.Result = new IntPtr((!handledMouseEventArgs.Handled) ? 1 : 0);
-			if (!handledMouseEventArgs.Handled)
-			{
-				DefWndProc(ref m);
-			}
+			m.Result = new IntPtr(!handledMouseEventArgs.Handled ? 1 : 0);
+			if (!handledMouseEventArgs.Handled) DefWndProc(ref m);
 		}
 
 		protected override void OnDragEnter(DragEventArgs e)
 		{
 			base.OnDragEnter(e);
 
-			Point mousePos = PointToClient(new Point(e.X, e.Y));
+			var mousePos = PointToClient(new Point(e.X, e.Y));
 			if (WindowlessRenderingEnabled && PointInViewport(mousePos.X, mousePos.Y))
 			{
-				SendDragEnterEvent(mousePos.X, mousePos.Y, e.GetModifiers(), e.GetCefDragData(), e.AllowedEffect.ToCefDragOperationsMask());
+				SendDragEnterEvent(mousePos.X, mousePos.Y, e.GetModifiers(), e.GetCefDragData(),
+					e.AllowedEffect.ToCefDragOperationsMask());
 				e.Effect = DragDropEffects.Copy & e.AllowedEffect;
 			}
 		}
@@ -655,11 +600,9 @@ namespace CefNet.Windows.Forms
 		{
 			base.OnDragOver(e);
 
-			Point mousePos = PointToClient(new Point(e.X, e.Y));
+			var mousePos = PointToClient(new Point(e.X, e.Y));
 			if (WindowlessRenderingEnabled && PointInViewport(mousePos.X, mousePos.Y))
-			{
 				SendDragOverEvent(mousePos.X, mousePos.Y, e.GetModifiers(), e.AllowedEffect.ToCefDragOperationsMask());
-			}
 		}
 
 		protected override void OnDragLeave(EventArgs e)
@@ -679,17 +622,15 @@ namespace CefNet.Windows.Forms
 			if (!WindowlessRenderingEnabled)
 				return;
 
-			Point mousePos = PointToClient(new Point(e.X, e.Y));
+			var mousePos = PointToClient(new Point(e.X, e.Y));
 			if (WindowlessRenderingEnabled && PointInViewport(mousePos.X, mousePos.Y))
 			{
 				SendDragDropEvent(mousePos.X, mousePos.Y, e.GetModifiers());
 				if (e.Data.GetDataPresent(nameof(CefNetDragData)))
 				{
-					CefNetDragData data = (CefNetDragData)e.Data.GetData(nameof(CefNetDragData));
+					var data = (CefNetDragData) e.Data.GetData(nameof(CefNetDragData));
 					if (data != null && data.Source == this)
-					{
 						DragSourceEndedAt(mousePos.X, mousePos.Y, e.AllowedEffect.ToCefDragOperationsMask());
-					}
 				}
 			}
 		}
@@ -729,14 +670,17 @@ namespace CefNet.Windows.Forms
 							base.WndProc(ref m);
 							return true;
 					}
-					Point mousePos = Control.MousePosition;
-					NativeMethods.PostMessage(m.HWnd, WM_MOUSEHWHEEL, NativeMethods.MakeParam(delta, 0), NativeMethods.MakeParam((short)mousePos.Y, (short)mousePos.X));
+
+					var mousePos = MousePosition;
+					NativeMethods.PostMessage(m.HWnd, WM_MOUSEHWHEEL, NativeMethods.MakeParam(delta, 0),
+						NativeMethods.MakeParam((short) mousePos.Y, (short) mousePos.X));
 					m.Result = IntPtr.Zero;
 					return true;
 				case 0x84: //WM_NCHITTEST
 					m.Result = new IntPtr(1); // HTCLIENT
 					return true;
 			}
+
 			return false;
 		}
 
@@ -746,27 +690,26 @@ namespace CefNet.Windows.Forms
 			const int WM_KEYDOWN = 0x0100;
 
 			if (WindowlessRenderingEnabled)
-			{
 				if (m.Msg == WM_KEYDOWN || m.Msg == WM_SYSKEYDOWN)
 				{
-					Keys key = (Keys)m.WParam.ToInt64();
-					if ((key >= Keys.PageUp && key <= Keys.Down) || key == Keys.Tab)
+					var key = (Keys) m.WParam.ToInt64();
+					if (key >= Keys.PageUp && key <= Keys.Down || key == Keys.Tab)
 					{
 						var e = new CefKeyEvent();
-						e.WindowsKeyCode = unchecked((int)m.WParam);
-						e.NativeKeyCode = CefNet.Input.KeycodeConverter.GetWindowsScanCodeFromLParam(m.LParam);
-						e.IsSystemKey = (m.Msg == WM_SYSKEYDOWN);
+						e.WindowsKeyCode = (int) m.WParam;
+						e.NativeKeyCode = KeycodeConverter.GetWindowsScanCodeFromLParam(m.LParam);
+						e.IsSystemKey = m.Msg == WM_SYSKEYDOWN;
 						e.Type = CefKeyEventType.RawKeyDown;
-						e.Modifiers = (uint)GetCefKeyboardModifiers((Keys)m.WParam.ToInt64(), m.LParam);
-						this.BrowserObject?.Host.SendKeyEvent(e);
+						e.Modifiers = (uint) GetCefKeyboardModifiers((Keys) m.WParam.ToInt64(), m.LParam);
+						BrowserObject?.Host.SendKeyEvent(e);
 						return true;
 					}
 				}
-			}
+
 			return base.ProcessCmdKey(ref m, keyData);
 		}
 
-		protected unsafe override bool ProcessKeyEventArgs(ref Message m)
+		protected override unsafe bool ProcessKeyEventArgs(ref Message m)
 		{
 			const int WM_KEYDOWN = 0x0100;
 			const int WM_KEYUP = 0x0101;
@@ -777,21 +720,21 @@ namespace CefNet.Windows.Forms
 			if (WindowlessRenderingEnabled)
 			{
 				var k = new CefKeyEvent();
-				k.WindowsKeyCode = unchecked((int)m.WParam);
-				k.NativeKeyCode = CefNet.Input.KeycodeConverter.GetWindowsScanCodeFromLParam(m.LParam);
+				k.WindowsKeyCode = (int) m.WParam;
+				k.NativeKeyCode = KeycodeConverter.GetWindowsScanCodeFromLParam(m.LParam);
 				k.IsSystemKey = m.Msg >= WM_SYSKEYDOWN && m.Msg <= WM_SYSCHAR;
-				
+
 				CefEventFlags modifiers;
 				if (m.Msg == WM_KEYDOWN || m.Msg == WM_SYSKEYDOWN)
 				{
-					modifiers = GetCefKeyboardModifiers((Keys)m.WParam.ToInt64(), m.LParam);
+					modifiers = GetCefKeyboardModifiers((Keys) m.WParam.ToInt64(), m.LParam);
 					_keydownModifiers = modifiers;
 					k.Type = CefKeyEventType.RawKeyDown;
 					SetKeyboardLayoutForCefUIThreadIfNeeded();
 				}
 				else if (m.Msg == WM_KEYUP || m.Msg == WM_SYSKEYUP)
 				{
-					modifiers = GetCefKeyboardModifiers((Keys)m.WParam.ToInt64(), m.LParam);
+					modifiers = GetCefKeyboardModifiers((Keys) m.WParam.ToInt64(), m.LParam);
 					if (_keydownModifiers.HasFlag(CefEventFlags.IsRight))
 						modifiers = CefEventFlags.IsRight & ~CefEventFlags.IsLeft;
 					_keydownModifiers = CefEventFlags.None;
@@ -801,19 +744,23 @@ namespace CefNet.Windows.Forms
 				else
 				{
 					k.Type = CefKeyEventType.Char;
-					modifiers = GetCefKeyboardModifiers((Keys)NativeMethods.MapVirtualKey(((uint)m.LParam.ToPointer() >> 16) & 0xFFU, MapVirtualKeyType.MAPVK_VSC_TO_VK_EX), m.LParam);
+					modifiers = GetCefKeyboardModifiers(
+						(Keys) NativeMethods.MapVirtualKey(((uint) m.LParam.ToPointer() >> 16) & 0xFFU,
+							MapVirtualKeyType.MAPVK_VSC_TO_VK_EX), m.LParam);
 				}
-				k.Modifiers = (uint)modifiers;
 
-				this.BrowserObject?.Host.SendKeyEvent(k);
+				k.Modifiers = (uint) modifiers;
+
+				BrowserObject?.Host.SendKeyEvent(k);
 			}
+
 			return base.ProcessKeyEventArgs(ref m);
 		}
 
 		protected static CefEventFlags GetModifierKeys()
 		{
-			CefEventFlags modifiers = CefEventFlags.None;
-			Keys modKeys = Control.ModifierKeys;
+			var modifiers = CefEventFlags.None;
+			var modKeys = ModifierKeys;
 			if (modKeys.HasFlag(Keys.Shift))
 				modifiers |= CefEventFlags.ShiftDown;
 			if (modKeys.HasFlag(Keys.Control))
@@ -827,7 +774,7 @@ namespace CefNet.Windows.Forms
 		{
 			const int KF_EXTENDED = 0x100;
 
-			CefEventFlags modifiers = GetModifierKeys();
+			var modifiers = GetModifierKeys();
 
 			if (IsKeyLocked(Keys.NumLock))
 				modifiers |= CefEventFlags.NumLockOn;
@@ -837,7 +784,7 @@ namespace CefNet.Windows.Forms
 			switch (key)
 			{
 				case Keys.Return:
-					if ((((uint)lparam.ToPointer() >> 16) & KF_EXTENDED) != 0)
+					if ((((uint) lparam.ToPointer() >> 16) & KF_EXTENDED) != 0)
 						modifiers |= CefEventFlags.IsKeyPad;
 					break;
 				case Keys.Insert:
@@ -850,7 +797,7 @@ namespace CefNet.Windows.Forms
 				case Keys.Down:
 				case Keys.Left:
 				case Keys.Right:
-					if ((((uint)lparam.ToPointer() >> 16) & KF_EXTENDED) == 0)
+					if ((((uint) lparam.ToPointer() >> 16) & KF_EXTENDED) == 0)
 						modifiers |= CefEventFlags.IsKeyPad;
 					break;
 				case Keys.NumLock:
@@ -903,34 +850,31 @@ namespace CefNet.Windows.Forms
 						modifiers |= CefEventFlags.IsLeft;
 					break;
 				default:
-					if ((((uint)lparam.ToPointer() >> 16) & KF_EXTENDED) != 0)
+					if ((((uint) lparam.ToPointer() >> 16) & KF_EXTENDED) != 0)
 						modifiers |= CefEventFlags.IsKeyPad;
 					break;
 			}
+
 			return modifiers;
 		}
 
 		/// <summary>
-		/// Sets the current input locale identifier for the UI thread in the browser.
+		///  Sets the current input locale identifier for the UI thread in the browser.
 		/// </summary>
 		protected void SetKeyboardLayoutForCefUIThreadIfNeeded()
 		{
-			IntPtr hkl = NativeMethods.GetKeyboardLayout(0);
+			var hkl = NativeMethods.GetKeyboardLayout(0);
 			if (_keyboardLayout == hkl)
 				return;
 
 			if (CefApi.CurrentlyOn(CefThreadId.UI))
-			{
 				_keyboardLayout = hkl;
-			}
 			else
-			{
-				CefNetApi.Post(CefThreadId.UI, () => {
+				CefNetApi.Post(CefThreadId.UI, () =>
+				{
 					NativeMethods.ActivateKeyboardLayout(hkl, 0);
 					_keyboardLayout = hkl;
 				});
-			}
 		}
-
 	}
 }

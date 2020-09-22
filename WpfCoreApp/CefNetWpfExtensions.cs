@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.IO;
-using CefNet.WinApi;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -20,6 +15,7 @@ namespace CefNet
 					return tabControl;
 				control = control.Parent as FrameworkElement;
 			}
+
 			return null;
 		}
 
@@ -29,28 +25,30 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Finds a Child of a given item in the visual tree. 
+		///  Finds a Child of a given item in the visual tree.
 		/// </summary>
 		/// <param name="parent">A direct parent of the queried item.</param>
 		/// <typeparam name="T">The type of the queried item.</typeparam>
 		/// <param name="childName">x:Name or Name of child. </param>
-		/// <returns>The first parent item that matches the submitted type parameter. 
-		/// If not matching item can be found, 
-		/// a null parent is being returned.</returns>
+		/// <returns>
+		///  The first parent item that matches the submitted type parameter.
+		///  If not matching item can be found,
+		///  a null parent is being returned.
+		/// </returns>
 		public static T FindChild<T>(this DependencyObject parent, string childName)
-		   where T : DependencyObject
+			where T : DependencyObject
 		{
 			// Confirm parent and childName are valid. 
 			if (parent == null) return null;
 
 			T foundChild = null;
 
-			int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
-			for (int i = 0; i < childrenCount; i++)
+			var childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+			for (var i = 0; i < childrenCount; i++)
 			{
 				var child = VisualTreeHelper.GetChild(parent, i);
 				// If the child is not of the request child type child
-				T childType = child as T;
+				var childType = child as T;
 				if (childType == null)
 				{
 					// recursively drill down the tree
@@ -66,20 +64,19 @@ namespace CefNet
 					if (frameworkElement != null && frameworkElement.Name == childName)
 					{
 						// if the child's name is of the request name
-						foundChild = (T)child;
+						foundChild = (T) child;
 						break;
 					}
 				}
 				else
 				{
 					// child element found.
-					foundChild = (T)child;
+					foundChild = (T) child;
 					break;
 				}
 			}
 
 			return foundChild;
 		}
-
 	}
 }

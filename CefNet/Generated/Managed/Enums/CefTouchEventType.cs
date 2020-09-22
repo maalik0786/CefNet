@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Touch points states types.
+	///  Touch points states types.
 	/// </summary>
 	public enum CefTouchEventType
 	{
@@ -29,7 +24,6 @@ namespace CefNet
 
 		Moved = 2,
 
-		Cancelled = 3,
+		Cancelled = 3
 	}
 }
-

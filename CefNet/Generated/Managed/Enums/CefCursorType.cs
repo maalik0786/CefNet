@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Cursor type values.
+	///  Cursor type values.
 	/// </summary>
 	public enum CefCursorType
 	{
@@ -121,7 +116,6 @@ namespace CefNet
 
 		DndCopy = 48,
 
-		DndLink = 49,
+		DndLink = 49
 	}
 }
-

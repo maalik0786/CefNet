@@ -11,20 +11,15 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported error code values.
+	///  Supported error code values.
 	/// </summary>
 	public enum CefErrorCode
 	{
 		/// <summary>
-		/// No error.
+		///  No error.
 		/// </summary>
 		None = 0,
 
@@ -484,7 +479,6 @@ namespace CefNet
 
 		DnsSortError = -806,
 
-		DnsSecureResolverHostnameResolutionFailed = -808,
+		DnsSecureResolverHostnameResolutionFailed = -808
 	}
 }
-

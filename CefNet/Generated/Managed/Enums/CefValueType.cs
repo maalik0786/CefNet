@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported value types.
+	///  Supported value types.
 	/// </summary>
 	public enum CefValueType
 	{
@@ -39,7 +34,6 @@ namespace CefNet
 
 		Dictionary = 7,
 
-		List = 8,
+		List = 8
 	}
 }
-

@@ -1,9 +1,4 @@
-﻿
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 
 namespace CefNet
 {
@@ -22,18 +17,18 @@ namespace CefNet
 			CefDictionaryValue extraInfo,
 			bool noJavascriptAccess)
 		{
-			this.Frame = frame;
-			this.TargetUrl = targetUrl;
-			this.TargetFrameName = targetFrameName;
-			this.TargetDisposition = targetDisposition;
-			this.UserGesture = userGesture;
-			this.PopupFeatures = popupFeatures;
-			this.Settings = settings;
+			Frame = frame;
+			TargetUrl = targetUrl;
+			TargetFrameName = targetFrameName;
+			TargetDisposition = targetDisposition;
+			UserGesture = userGesture;
+			PopupFeatures = popupFeatures;
+			Settings = settings;
 
-			this.WindowInfo = windowInfo;
-			this.Client = client;
-			this.ExtraInfo = extraInfo;
-			this.NoJavaScriptAccess = noJavascriptAccess;
+			WindowInfo = windowInfo;
+			Client = client;
+			ExtraInfo = extraInfo;
+			NoJavaScriptAccess = noJavascriptAccess;
 		}
 
 		public CefFrame Frame { get; }
@@ -57,6 +52,5 @@ namespace CefNet
 		public CefDictionaryValue ExtraInfo { get; set; }
 
 		public bool NoJavaScriptAccess { get; set; }
-
 	}
 }

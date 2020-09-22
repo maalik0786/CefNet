@@ -11,16 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Icon types for a MediaSink object. Should be kept in sync with Chromium&apos;s
-	/// media_router::SinkIconType type.
+	///  Icon types for a MediaSink object. Should be kept in sync with Chromium&apos;s
+	///  media_router::SinkIconType type.
 	/// </summary>
 	public enum CefMediaSinkIconType
 	{
@@ -41,9 +36,8 @@ namespace CefNet
 		Generic = 7,
 
 		/// <summary>
-		/// The total number of values.
+		///  The total number of values.
 		/// </summary>
-		TotalCount = 8,
+		TotalCount = 8
 	}
 }
-

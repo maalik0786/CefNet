@@ -8,14 +8,9 @@ using System.IO;
 
 namespace CefGen
 {
-	abstract class CodeGenBase
+	internal abstract class CodeGenBase
 	{
 		private int _indent;
-
-		public CodeGenBase()
-		{
-
-		}
 
 		protected TextWriter Output { get; set; }
 
@@ -48,13 +43,9 @@ namespace CefGen
 
 		public void WriteIndent(int plus)
 		{
-			int tabs = _indent >> 2;
+			var tabs = _indent >> 2;
 			tabs += plus;
-			while (tabs-- > 0)
-			{
-				Output.Write('\t');
-			}
+			while (tabs-- > 0) Output.Write('\t');
 		}
-
 	}
 }

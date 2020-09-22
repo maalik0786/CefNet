@@ -12,36 +12,32 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback structure for asynchronous continuation of print job requests.
+	///  Callback structure for asynchronous continuation of print job requests.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefPrintJobCallback : CefBaseRefCounted<cef_print_job_callback_t>
+	public unsafe class CefPrintJobCallback : CefBaseRefCounted<cef_print_job_callback_t>
 	{
-		internal static unsafe CefPrintJobCallback Create(IntPtr instance)
+		public CefPrintJobCallback(cef_print_job_callback_t* instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
-			return new CefPrintJobCallback((cef_print_job_callback_t*)instance);
 		}
 
-		public CefPrintJobCallback(cef_print_job_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+		internal static CefPrintJobCallback Create(IntPtr instance)
 		{
+			return new CefPrintJobCallback((cef_print_job_callback_t*) instance);
 		}
 
 		/// <summary>
-		/// Indicate completion of the print job.
+		///  Indicate completion of the print job.
 		/// </summary>
-		public unsafe virtual void Continue()
+		public virtual void Continue()
 		{
 			NativeInstance->Continue();
 			GC.KeepAlive(this);

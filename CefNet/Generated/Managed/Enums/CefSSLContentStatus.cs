@@ -11,16 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported SSL content status flags. See content/public/common/ssl_status.h
-	/// for more information.
+	///  Supported SSL content status flags. See content/public/common/ssl_status.h
+	///  for more information.
 	/// </summary>
 	public enum CefSSLContentStatus
 	{
@@ -28,7 +23,6 @@ namespace CefNet
 
 		DisplayedInsecureContent = 1 << 0,
 
-		RanInsecureContent = 1 << 1,
+		RanInsecureContent = 1 << 1
 	}
 }
-

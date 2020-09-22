@@ -12,498 +12,487 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Supports creation and modification of menus. See cef_menu_id_t for the
-	/// command ids that have default implementations. All user-defined command ids
-	/// should be between MENU_ID_USER_FIRST and MENU_ID_USER_LAST. The functions of
-	/// this structure can only be accessed on the browser process the UI thread.
+	///  Supports creation and modification of menus. See cef_menu_id_t for the
+	///  command ids that have default implementations. All user-defined command ids
+	///  should be between MENU_ID_USER_FIRST and MENU_ID_USER_LAST. The functions of
+	///  this structure can only be accessed on the browser process the UI thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
 	public unsafe partial class CefMenuModel : CefBaseRefCounted<cef_menu_model_t>
 	{
-		internal static unsafe CefMenuModel Create(IntPtr instance)
-		{
-			return new CefMenuModel((cef_menu_model_t*)instance);
-		}
-
 		public CefMenuModel(cef_menu_model_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this menu is a submenu.
+		///  Gets a value indicating whether this menu is a submenu.
 		/// </summary>
-		public unsafe virtual bool IsSubMenu
+		public virtual bool IsSubMenu => SafeCall(NativeInstance->IsSubMenu() != 0);
+
+		/// <summary>
+		///  Gets the number of items in this menu.
+		/// </summary>
+		public virtual int Count => SafeCall(NativeInstance->GetCount());
+
+		internal static CefMenuModel Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(NativeInstance->IsSubMenu() != 0);
-			}
+			return new CefMenuModel((cef_menu_model_t*) instance);
 		}
 
 		/// <summary>
-		/// Gets the number of items in this menu.
+		///  Clears the menu. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual int Count
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetCount());
-			}
-		}
-
-		/// <summary>
-		/// Clears the menu. Returns true (1) on success.
-		/// </summary>
-		public unsafe virtual bool Clear()
+		public virtual bool Clear()
 		{
 			return SafeCall(NativeInstance->Clear() != 0);
 		}
 
 		/// <summary>
-		/// Add a separator to the menu. Returns true (1) on success.
+		///  Add a separator to the menu. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool AddSeparator()
+		public virtual bool AddSeparator()
 		{
 			return SafeCall(NativeInstance->AddSeparator() != 0);
 		}
 
 		/// <summary>
-		/// Add an item to the menu. Returns true (1) on success.
+		///  Add an item to the menu. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool AddItem(int commandId, string label)
+		public virtual bool AddItem(int commandId, string label)
 		{
 			fixed (char* s1 = label)
 			{
-				var cstr1 = new cef_string_t { Str = s1, Length = label != null ? label.Length : 0 };
+				var cstr1 = new cef_string_t {Str = s1, Length = label != null ? label.Length : 0};
 				return SafeCall(NativeInstance->AddItem(commandId, &cstr1) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Add a check item to the menu. Returns true (1) on success.
+		///  Add a check item to the menu. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool AddCheckItem(int commandId, string label)
+		public virtual bool AddCheckItem(int commandId, string label)
 		{
 			fixed (char* s1 = label)
 			{
-				var cstr1 = new cef_string_t { Str = s1, Length = label != null ? label.Length : 0 };
+				var cstr1 = new cef_string_t {Str = s1, Length = label != null ? label.Length : 0};
 				return SafeCall(NativeInstance->AddCheckItem(commandId, &cstr1) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Add a radio item to the menu. Only a single item with the specified
-		/// |group_id| can be checked at a time. Returns true (1) on success.
+		///  Add a radio item to the menu. Only a single item with the specified
+		///  |group_id| can be checked at a time. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool AddRadioItem(int commandId, string label, int groupId)
+		public virtual bool AddRadioItem(int commandId, string label, int groupId)
 		{
 			fixed (char* s1 = label)
 			{
-				var cstr1 = new cef_string_t { Str = s1, Length = label != null ? label.Length : 0 };
+				var cstr1 = new cef_string_t {Str = s1, Length = label != null ? label.Length : 0};
 				return SafeCall(NativeInstance->AddRadioItem(commandId, &cstr1, groupId) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Add a sub-menu to the menu. The new sub-menu is returned.
+		///  Add a sub-menu to the menu. The new sub-menu is returned.
 		/// </summary>
-		public unsafe virtual CefMenuModel AddSubMenu(int commandId, string label)
+		public virtual CefMenuModel AddSubMenu(int commandId, string label)
 		{
 			fixed (char* s1 = label)
 			{
-				var cstr1 = new cef_string_t { Str = s1, Length = label != null ? label.Length : 0 };
-				return SafeCall(CefMenuModel.Wrap(CefMenuModel.Create, NativeInstance->AddSubMenu(commandId, &cstr1)));
+				var cstr1 = new cef_string_t {Str = s1, Length = label != null ? label.Length : 0};
+				return SafeCall(Wrap(Create, NativeInstance->AddSubMenu(commandId, &cstr1)));
 			}
 		}
 
 		/// <summary>
-		/// Insert a separator in the menu at the specified |index|. Returns true (1)
-		/// on success.
+		///  Insert a separator in the menu at the specified |index|. Returns true (1)
+		///  on success.
 		/// </summary>
-		public unsafe virtual bool InsertSeparatorAt(int index)
+		public virtual bool InsertSeparatorAt(int index)
 		{
 			return SafeCall(NativeInstance->InsertSeparatorAt(index) != 0);
 		}
 
 		/// <summary>
-		/// Insert an item in the menu at the specified |index|. Returns true (1) on
-		/// success.
+		///  Insert an item in the menu at the specified |index|. Returns true (1) on
+		///  success.
 		/// </summary>
-		public unsafe virtual bool InsertItemAt(int index, int commandId, string label)
+		public virtual bool InsertItemAt(int index, int commandId, string label)
 		{
 			fixed (char* s2 = label)
 			{
-				var cstr2 = new cef_string_t { Str = s2, Length = label != null ? label.Length : 0 };
+				var cstr2 = new cef_string_t {Str = s2, Length = label != null ? label.Length : 0};
 				return SafeCall(NativeInstance->InsertItemAt(index, commandId, &cstr2) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Insert a check item in the menu at the specified |index|. Returns true (1)
-		/// on success.
+		///  Insert a check item in the menu at the specified |index|. Returns true (1)
+		///  on success.
 		/// </summary>
-		public unsafe virtual bool InsertCheckItemAt(int index, int commandId, string label)
+		public virtual bool InsertCheckItemAt(int index, int commandId, string label)
 		{
 			fixed (char* s2 = label)
 			{
-				var cstr2 = new cef_string_t { Str = s2, Length = label != null ? label.Length : 0 };
+				var cstr2 = new cef_string_t {Str = s2, Length = label != null ? label.Length : 0};
 				return SafeCall(NativeInstance->InsertCheckItemAt(index, commandId, &cstr2) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Insert a radio item in the menu at the specified |index|. Only a single
-		/// item with the specified |group_id| can be checked at a time. Returns true
-		/// (1) on success.
+		///  Insert a radio item in the menu at the specified |index|. Only a single
+		///  item with the specified |group_id| can be checked at a time. Returns true
+		///  (1) on success.
 		/// </summary>
-		public unsafe virtual bool InsertRadioItemAt(int index, int commandId, string label, int groupId)
+		public virtual bool InsertRadioItemAt(int index, int commandId, string label, int groupId)
 		{
 			fixed (char* s2 = label)
 			{
-				var cstr2 = new cef_string_t { Str = s2, Length = label != null ? label.Length : 0 };
+				var cstr2 = new cef_string_t {Str = s2, Length = label != null ? label.Length : 0};
 				return SafeCall(NativeInstance->InsertRadioItemAt(index, commandId, &cstr2, groupId) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Insert a sub-menu in the menu at the specified |index|. The new sub-menu is
-		/// returned.
+		///  Insert a sub-menu in the menu at the specified |index|. The new sub-menu is
+		///  returned.
 		/// </summary>
-		public unsafe virtual CefMenuModel InsertSubMenuAt(int index, int commandId, string label)
+		public virtual CefMenuModel InsertSubMenuAt(int index, int commandId, string label)
 		{
 			fixed (char* s2 = label)
 			{
-				var cstr2 = new cef_string_t { Str = s2, Length = label != null ? label.Length : 0 };
-				return SafeCall(CefMenuModel.Wrap(CefMenuModel.Create, NativeInstance->InsertSubMenuAt(index, commandId, &cstr2)));
+				var cstr2 = new cef_string_t {Str = s2, Length = label != null ? label.Length : 0};
+				return SafeCall(Wrap(Create, NativeInstance->InsertSubMenuAt(index, commandId, &cstr2)));
 			}
 		}
 
 		/// <summary>
-		/// Removes the item with the specified |command_id|. Returns true (1) on
-		/// success.
+		///  Removes the item with the specified |command_id|. Returns true (1) on
+		///  success.
 		/// </summary>
-		public unsafe virtual bool Remove(int commandId)
+		public virtual bool Remove(int commandId)
 		{
 			return SafeCall(NativeInstance->Remove(commandId) != 0);
 		}
 
 		/// <summary>
-		/// Removes the item at the specified |index|. Returns true (1) on success.
+		///  Removes the item at the specified |index|. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool RemoveAt(int index)
+		public virtual bool RemoveAt(int index)
 		{
 			return SafeCall(NativeInstance->RemoveAt(index) != 0);
 		}
 
 		/// <summary>
-		/// Returns the index associated with the specified |command_id| or -1 if not
-		/// found due to the command id not existing in the menu.
+		///  Returns the index associated with the specified |command_id| or -1 if not
+		///  found due to the command id not existing in the menu.
 		/// </summary>
-		public unsafe virtual int GetIndexOf(int commandId)
+		public virtual int GetIndexOf(int commandId)
 		{
 			return SafeCall(NativeInstance->GetIndexOf(commandId));
 		}
 
 		/// <summary>
-		/// Returns the command id at the specified |index| or -1 if not found due to
-		/// invalid range or the index being a separator.
+		///  Returns the command id at the specified |index| or -1 if not found due to
+		///  invalid range or the index being a separator.
 		/// </summary>
-		public unsafe virtual int GetCommandIdAt(int index)
+		public virtual int GetCommandIdAt(int index)
 		{
 			return SafeCall(NativeInstance->GetCommandIdAt(index));
 		}
 
 		/// <summary>
-		/// Sets the command id at the specified |index|. Returns true (1) on success.
+		///  Sets the command id at the specified |index|. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool SetCommandIdAt(int index, int commandId)
+		public virtual bool SetCommandIdAt(int index, int commandId)
 		{
 			return SafeCall(NativeInstance->SetCommandIdAt(index, commandId) != 0);
 		}
 
 		/// <summary>
-		/// Returns the label for the specified |command_id| or NULL if not found.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the label for the specified |command_id| or NULL if not found.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string GetLabel(int commandId)
+		public virtual string GetLabel(int commandId)
 		{
 			return SafeCall(CefString.ReadAndFree(NativeInstance->GetLabel(commandId)));
 		}
 
 		/// <summary>
-		/// Returns the label at the specified |index| or NULL if not found due to
-		/// invalid range or the index being a separator.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the label at the specified |index| or NULL if not found due to
+		///  invalid range or the index being a separator.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string GetLabelAt(int index)
+		public virtual string GetLabelAt(int index)
 		{
 			return SafeCall(CefString.ReadAndFree(NativeInstance->GetLabelAt(index)));
 		}
 
 		/// <summary>
-		/// Sets the label for the specified |command_id|. Returns true (1) on success.
+		///  Sets the label for the specified |command_id|. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool SetLabel(int commandId, string label)
+		public virtual bool SetLabel(int commandId, string label)
 		{
 			fixed (char* s1 = label)
 			{
-				var cstr1 = new cef_string_t { Str = s1, Length = label != null ? label.Length : 0 };
+				var cstr1 = new cef_string_t {Str = s1, Length = label != null ? label.Length : 0};
 				return SafeCall(NativeInstance->SetLabel(commandId, &cstr1) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Set the label at the specified |index|. Returns true (1) on success.
+		///  Set the label at the specified |index|. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool SetLabelAt(int index, string label)
+		public virtual bool SetLabelAt(int index, string label)
 		{
 			fixed (char* s1 = label)
 			{
-				var cstr1 = new cef_string_t { Str = s1, Length = label != null ? label.Length : 0 };
+				var cstr1 = new cef_string_t {Str = s1, Length = label != null ? label.Length : 0};
 				return SafeCall(NativeInstance->SetLabelAt(index, &cstr1) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Returns the item type for the specified |command_id|.
+		///  Returns the item type for the specified |command_id|.
 		/// </summary>
-		public unsafe virtual CefMenuItemType GetType(int commandId)
+		public virtual CefMenuItemType GetType(int commandId)
 		{
 			return SafeCall(NativeInstance->GetType(commandId));
 		}
 
 		/// <summary>
-		/// Returns the item type at the specified |index|.
+		///  Returns the item type at the specified |index|.
 		/// </summary>
-		public unsafe virtual CefMenuItemType GetTypeAt(int index)
+		public virtual CefMenuItemType GetTypeAt(int index)
 		{
 			return SafeCall(NativeInstance->GetTypeAt(index));
 		}
 
 		/// <summary>
-		/// Returns the group id for the specified |command_id| or -1 if invalid.
+		///  Returns the group id for the specified |command_id| or -1 if invalid.
 		/// </summary>
-		public unsafe virtual int GetGroupId(int commandId)
+		public virtual int GetGroupId(int commandId)
 		{
 			return SafeCall(NativeInstance->GetGroupId(commandId));
 		}
 
 		/// <summary>
-		/// Returns the group id at the specified |index| or -1 if invalid.
+		///  Returns the group id at the specified |index| or -1 if invalid.
 		/// </summary>
-		public unsafe virtual int GetGroupIdAt(int index)
+		public virtual int GetGroupIdAt(int index)
 		{
 			return SafeCall(NativeInstance->GetGroupIdAt(index));
 		}
 
 		/// <summary>
-		/// Sets the group id for the specified |command_id|. Returns true (1) on
-		/// success.
+		///  Sets the group id for the specified |command_id|. Returns true (1) on
+		///  success.
 		/// </summary>
-		public unsafe virtual bool SetGroupId(int commandId, int groupId)
+		public virtual bool SetGroupId(int commandId, int groupId)
 		{
 			return SafeCall(NativeInstance->SetGroupId(commandId, groupId) != 0);
 		}
 
 		/// <summary>
-		/// Sets the group id at the specified |index|. Returns true (1) on success.
+		///  Sets the group id at the specified |index|. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool SetGroupIdAt(int index, int groupId)
+		public virtual bool SetGroupIdAt(int index, int groupId)
 		{
 			return SafeCall(NativeInstance->SetGroupIdAt(index, groupId) != 0);
 		}
 
 		/// <summary>
-		/// Returns the submenu for the specified |command_id| or NULL if invalid.
+		///  Returns the submenu for the specified |command_id| or NULL if invalid.
 		/// </summary>
-		public unsafe virtual CefMenuModel GetSubMenu(int commandId)
+		public virtual CefMenuModel GetSubMenu(int commandId)
 		{
-			return SafeCall(CefMenuModel.Wrap(CefMenuModel.Create, NativeInstance->GetSubMenu(commandId)));
+			return SafeCall(Wrap(Create, NativeInstance->GetSubMenu(commandId)));
 		}
 
 		/// <summary>
-		/// Returns the submenu at the specified |index| or NULL if invalid.
+		///  Returns the submenu at the specified |index| or NULL if invalid.
 		/// </summary>
-		public unsafe virtual CefMenuModel GetSubMenuAt(int index)
+		public virtual CefMenuModel GetSubMenuAt(int index)
 		{
-			return SafeCall(CefMenuModel.Wrap(CefMenuModel.Create, NativeInstance->GetSubMenuAt(index)));
+			return SafeCall(Wrap(Create, NativeInstance->GetSubMenuAt(index)));
 		}
 
 		/// <summary>
-		/// Returns true (1) if the specified |command_id| is visible.
+		///  Returns true (1) if the specified |command_id| is visible.
 		/// </summary>
-		public unsafe virtual bool IsVisible(int commandId)
+		public virtual bool IsVisible(int commandId)
 		{
 			return SafeCall(NativeInstance->IsVisible(commandId) != 0);
 		}
 
 		/// <summary>
-		/// Returns true (1) if the specified |index| is visible.
+		///  Returns true (1) if the specified |index| is visible.
 		/// </summary>
-		public unsafe virtual bool IsVisibleAt(int index)
+		public virtual bool IsVisibleAt(int index)
 		{
 			return SafeCall(NativeInstance->IsVisibleAt(index) != 0);
 		}
 
 		/// <summary>
-		/// Change the visibility of the specified |command_id|. Returns true (1) on
-		/// success.
+		///  Change the visibility of the specified |command_id|. Returns true (1) on
+		///  success.
 		/// </summary>
-		public unsafe virtual bool SetVisible(int commandId, bool visible)
+		public virtual bool SetVisible(int commandId, bool visible)
 		{
 			return SafeCall(NativeInstance->SetVisible(commandId, visible ? 1 : 0) != 0);
 		}
 
 		/// <summary>
-		/// Change the visibility at the specified |index|. Returns true (1) on
-		/// success.
+		///  Change the visibility at the specified |index|. Returns true (1) on
+		///  success.
 		/// </summary>
-		public unsafe virtual bool SetVisibleAt(int index, bool visible)
+		public virtual bool SetVisibleAt(int index, bool visible)
 		{
 			return SafeCall(NativeInstance->SetVisibleAt(index, visible ? 1 : 0) != 0);
 		}
 
 		/// <summary>
-		/// Returns true (1) if the specified |command_id| is enabled.
+		///  Returns true (1) if the specified |command_id| is enabled.
 		/// </summary>
-		public unsafe virtual bool IsEnabled(int commandId)
+		public virtual bool IsEnabled(int commandId)
 		{
 			return SafeCall(NativeInstance->IsEnabled(commandId) != 0);
 		}
 
 		/// <summary>
-		/// Returns true (1) if the specified |index| is enabled.
+		///  Returns true (1) if the specified |index| is enabled.
 		/// </summary>
-		public unsafe virtual bool IsEnabledAt(int index)
+		public virtual bool IsEnabledAt(int index)
 		{
 			return SafeCall(NativeInstance->IsEnabledAt(index) != 0);
 		}
 
 		/// <summary>
-		/// Change the enabled status of the specified |command_id|. Returns true (1)
-		/// on success.
+		///  Change the enabled status of the specified |command_id|. Returns true (1)
+		///  on success.
 		/// </summary>
-		public unsafe virtual bool SetEnabled(int commandId, int enabled)
+		public virtual bool SetEnabled(int commandId, int enabled)
 		{
 			return SafeCall(NativeInstance->SetEnabled(commandId, enabled) != 0);
 		}
 
 		/// <summary>
-		/// Change the enabled status at the specified |index|. Returns true (1) on
-		/// success.
+		///  Change the enabled status at the specified |index|. Returns true (1) on
+		///  success.
 		/// </summary>
-		public unsafe virtual bool SetEnabledAt(int index, bool enabled)
+		public virtual bool SetEnabledAt(int index, bool enabled)
 		{
 			return SafeCall(NativeInstance->SetEnabledAt(index, enabled ? 1 : 0) != 0);
 		}
 
 		/// <summary>
-		/// Returns true (1) if the specified |command_id| is checked. Only applies to
-		/// check and radio items.
+		///  Returns true (1) if the specified |command_id| is checked. Only applies to
+		///  check and radio items.
 		/// </summary>
-		public unsafe virtual bool IsChecked(int commandId)
+		public virtual bool IsChecked(int commandId)
 		{
 			return SafeCall(NativeInstance->IsChecked(commandId) != 0);
 		}
 
 		/// <summary>
-		/// Returns true (1) if the specified |index| is checked. Only applies to check
-		/// and radio items.
+		///  Returns true (1) if the specified |index| is checked. Only applies to check
+		///  and radio items.
 		/// </summary>
-		public unsafe virtual bool IsCheckedAt(int index)
+		public virtual bool IsCheckedAt(int index)
 		{
 			return SafeCall(NativeInstance->IsCheckedAt(index) != 0);
 		}
 
 		/// <summary>
-		/// Check the specified |command_id|. Only applies to check and radio items.
-		/// Returns true (1) on success.
+		///  Check the specified |command_id|. Only applies to check and radio items.
+		///  Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool SetChecked(int commandId, int @checked)
+		public virtual bool SetChecked(int commandId, int @checked)
 		{
 			return SafeCall(NativeInstance->SetChecked(commandId, @checked) != 0);
 		}
 
 		/// <summary>
-		/// Check the specified |index|. Only applies to check and radio items. Returns
-		/// true (1) on success.
+		///  Check the specified |index|. Only applies to check and radio items. Returns
+		///  true (1) on success.
 		/// </summary>
-		public unsafe virtual bool SetCheckedAt(int index, bool @checked)
+		public virtual bool SetCheckedAt(int index, bool @checked)
 		{
 			return SafeCall(NativeInstance->SetCheckedAt(index, @checked ? 1 : 0) != 0);
 		}
 
 		/// <summary>
-		/// Returns true (1) if the specified |command_id| has a keyboard accelerator
-		/// assigned.
+		///  Returns true (1) if the specified |command_id| has a keyboard accelerator
+		///  assigned.
 		/// </summary>
-		public unsafe virtual bool HasAccelerator(int commandId)
+		public virtual bool HasAccelerator(int commandId)
 		{
 			return SafeCall(NativeInstance->HasAccelerator(commandId) != 0);
 		}
 
 		/// <summary>
-		/// Returns true (1) if the specified |index| has a keyboard accelerator
-		/// assigned.
+		///  Returns true (1) if the specified |index| has a keyboard accelerator
+		///  assigned.
 		/// </summary>
-		public unsafe virtual bool HasAcceleratorAt(int index)
+		public virtual bool HasAcceleratorAt(int index)
 		{
 			return SafeCall(NativeInstance->HasAcceleratorAt(index) != 0);
 		}
 
 		/// <summary>
-		/// Set the keyboard accelerator for the specified |command_id|. |key_code| can
-		/// be any virtual key or character value. Returns true (1) on success.
+		///  Set the keyboard accelerator for the specified |command_id|. |key_code| can
+		///  be any virtual key or character value. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool SetAccelerator(int commandId, int keyCode, bool shiftPressed, bool ctrlPressed, bool altPressed)
+		public virtual bool SetAccelerator(int commandId, int keyCode, bool shiftPressed, bool ctrlPressed,
+			bool altPressed)
 		{
-			return SafeCall(NativeInstance->SetAccelerator(commandId, keyCode, shiftPressed ? 1 : 0, ctrlPressed ? 1 : 0, altPressed ? 1 : 0) != 0);
+			return SafeCall(NativeInstance->SetAccelerator(commandId, keyCode, shiftPressed ? 1 : 0,
+				ctrlPressed ? 1 : 0, altPressed ? 1 : 0) != 0);
 		}
 
 		/// <summary>
-		/// Set the keyboard accelerator at the specified |index|. |key_code| can be
-		/// any virtual key or character value. Returns true (1) on success.
+		///  Set the keyboard accelerator at the specified |index|. |key_code| can be
+		///  any virtual key or character value. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool SetAcceleratorAt(int index, int keyCode, bool shiftPressed, bool ctrlPressed, bool altPressed)
+		public virtual bool SetAcceleratorAt(int index, int keyCode, bool shiftPressed, bool ctrlPressed,
+			bool altPressed)
 		{
-			return SafeCall(NativeInstance->SetAcceleratorAt(index, keyCode, shiftPressed ? 1 : 0, ctrlPressed ? 1 : 0, altPressed ? 1 : 0) != 0);
+			return SafeCall(NativeInstance->SetAcceleratorAt(index, keyCode, shiftPressed ? 1 : 0, ctrlPressed ? 1 : 0,
+				altPressed ? 1 : 0) != 0);
 		}
 
 		/// <summary>
-		/// Remove the keyboard accelerator for the specified |command_id|. Returns
-		/// true (1) on success.
+		///  Remove the keyboard accelerator for the specified |command_id|. Returns
+		///  true (1) on success.
 		/// </summary>
-		public unsafe virtual bool RemoveAccelerator(int commandId)
+		public virtual bool RemoveAccelerator(int commandId)
 		{
 			return SafeCall(NativeInstance->RemoveAccelerator(commandId) != 0);
 		}
 
 		/// <summary>
-		/// Remove the keyboard accelerator at the specified |index|. Returns true (1)
-		/// on success.
+		///  Remove the keyboard accelerator at the specified |index|. Returns true (1)
+		///  on success.
 		/// </summary>
-		public unsafe virtual bool RemoveAcceleratorAt(int index)
+		public virtual bool RemoveAcceleratorAt(int index)
 		{
 			return SafeCall(NativeInstance->RemoveAcceleratorAt(index) != 0);
 		}
 
 		/// <summary>
-		/// Retrieves the keyboard accelerator for the specified |command_id|. Returns
-		/// true (1) on success.
+		///  Retrieves the keyboard accelerator for the specified |command_id|. Returns
+		///  true (1) on success.
 		/// </summary>
-		public unsafe virtual bool GetAccelerator(int commandId, ref int keyCode, ref int shiftPressed, ref int ctrlPressed, ref int altPressed)
+		public virtual bool GetAccelerator(int commandId, ref int keyCode, ref int shiftPressed, ref int ctrlPressed,
+			ref int altPressed)
 		{
 			fixed (int* p1 = &keyCode)
 			fixed (int* p2 = &shiftPressed)
@@ -515,10 +504,11 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Retrieves the keyboard accelerator for the specified |index|. Returns true
-		/// (1) on success.
+		///  Retrieves the keyboard accelerator for the specified |index|. Returns true
+		///  (1) on success.
 		/// </summary>
-		public unsafe virtual bool GetAcceleratorAt(int index, ref int keyCode, ref int shiftPressed, ref int ctrlPressed, ref int altPressed)
+		public virtual bool GetAcceleratorAt(int index, ref int keyCode, ref int shiftPressed, ref int ctrlPressed,
+			ref int altPressed)
 		{
 			fixed (int* p1 = &keyCode)
 			fixed (int* p2 = &shiftPressed)
@@ -530,100 +520,100 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Set the explicit color for |command_id| and |color_type| to |color|.
-		/// Specify a |color| value of 0 to remove the explicit color. If no explicit
-		/// color or default color is set for |color_type| then the system color will
-		/// be used. Returns true (1) on success.
+		///  Set the explicit color for |command_id| and |color_type| to |color|.
+		///  Specify a |color| value of 0 to remove the explicit color. If no explicit
+		///  color or default color is set for |color_type| then the system color will
+		///  be used. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool SetColor(int commandId, CefMenuColorType colorType, CefColor color)
+		public virtual bool SetColor(int commandId, CefMenuColorType colorType, CefColor color)
 		{
 			return SafeCall(NativeInstance->SetColor(commandId, colorType, color) != 0);
 		}
 
 		/// <summary>
-		/// Set the explicit color for |command_id| and |index| to |color|. Specify a
-		/// |color| value of 0 to remove the explicit color. Specify an |index| value
-		/// of -1 to set the default color for items that do not have an explicit color
-		/// set. If no explicit color or default color is set for |color_type| then the
-		/// system color will be used. Returns true (1) on success.
+		///  Set the explicit color for |command_id| and |index| to |color|. Specify a
+		///  |color| value of 0 to remove the explicit color. Specify an |index| value
+		///  of -1 to set the default color for items that do not have an explicit color
+		///  set. If no explicit color or default color is set for |color_type| then the
+		///  system color will be used. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool SetColorAt(int index, CefMenuColorType colorType, CefColor color)
+		public virtual bool SetColorAt(int index, CefMenuColorType colorType, CefColor color)
 		{
 			return SafeCall(NativeInstance->SetColorAt(index, colorType, color) != 0);
 		}
 
 		/// <summary>
-		/// Returns in |color| the color that was explicitly set for |command_id| and
-		/// |color_type|. If a color was not set then 0 will be returned in |color|.
-		/// Returns true (1) on success.
+		///  Returns in |color| the color that was explicitly set for |command_id| and
+		///  |color_type|. If a color was not set then 0 will be returned in |color|.
+		///  Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool GetColor(int commandId, CefMenuColorType colorType, ref CefColor color)
+		public virtual bool GetColor(int commandId, CefMenuColorType colorType, ref CefColor color)
 		{
 			fixed (CefColor* p2 = &color)
 			{
-				return SafeCall(NativeInstance->GetColor(commandId, colorType, (cef_color_t*)p2) != 0);
+				return SafeCall(NativeInstance->GetColor(commandId, colorType, (cef_color_t*) p2) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Returns in |color| the color that was explicitly set for |command_id| and
-		/// |color_type|. Specify an |index| value of -1 to return the default color in
-		/// |color|. If a color was not set then 0 will be returned in |color|. Returns
-		/// true (1) on success.
+		///  Returns in |color| the color that was explicitly set for |command_id| and
+		///  |color_type|. Specify an |index| value of -1 to return the default color in
+		///  |color|. If a color was not set then 0 will be returned in |color|. Returns
+		///  true (1) on success.
 		/// </summary>
-		public unsafe virtual bool GetColorAt(int index, CefMenuColorType colorType, ref CefColor color)
+		public virtual bool GetColorAt(int index, CefMenuColorType colorType, ref CefColor color)
 		{
 			fixed (CefColor* p2 = &color)
 			{
-				return SafeCall(NativeInstance->GetColorAt(index, colorType, (cef_color_t*)p2) != 0);
+				return SafeCall(NativeInstance->GetColorAt(index, colorType, (cef_color_t*) p2) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Sets the font list for the specified |command_id|. If |font_list| is NULL
-		/// the system font will be used. Returns true (1) on success. The format is
-		/// &quot;
-		/// &lt;FONT
-		/// _FAMILY_LIST&gt;,[STYLES]
-		/// &lt;SIZE
-		/// &gt;&quot;, where: - FONT_FAMILY_LIST is a comma-
-		/// separated list of font family names, - STYLES is an optional space-
-		/// separated list of style names (case-sensitive
-		/// &quot;Bold&quot; and &quot;Italic&quot; are supported), and
-		/// - SIZE is an integer font size in pixels with the suffix &quot;px&quot;.
-		/// Here are examples of valid font description strings: - &quot;Arial, Helvetica,
-		/// Bold Italic 14px&quot; - &quot;Arial, 14px&quot;
+		///  Sets the font list for the specified |command_id|. If |font_list| is NULL
+		///  the system font will be used. Returns true (1) on success. The format is
+		///  &quot;
+		///  &lt;FONT
+		///  _FAMILY_LIST&gt;,[STYLES]
+		///  &lt;SIZE
+		///  &gt;&quot;, where: - FONT_FAMILY_LIST is a comma-
+		///  separated list of font family names, - STYLES is an optional space-
+		///  separated list of style names (case-sensitive
+		///  &quot;Bold&quot; and &quot;Italic&quot; are supported), and
+		///  - SIZE is an integer font size in pixels with the suffix &quot;px&quot;.
+		///  Here are examples of valid font description strings: - &quot;Arial, Helvetica,
+		///  Bold Italic 14px&quot; - &quot;Arial, 14px&quot;
 		/// </summary>
-		public unsafe virtual bool SetFontList(int commandId, string fontList)
+		public virtual bool SetFontList(int commandId, string fontList)
 		{
 			fixed (char* s1 = fontList)
 			{
-				var cstr1 = new cef_string_t { Str = s1, Length = fontList != null ? fontList.Length : 0 };
+				var cstr1 = new cef_string_t {Str = s1, Length = fontList != null ? fontList.Length : 0};
 				return SafeCall(NativeInstance->SetFontList(commandId, &cstr1) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Sets the font list for the specified |index|. Specify an |index| value of
-		/// -1 to set the default font. If |font_list| is NULL the system font will be
-		/// used. Returns true (1) on success. The format is
-		/// &quot;
-		/// &lt;FONT
-		/// _FAMILY_LIST&gt;,[STYLES]
-		/// &lt;SIZE
-		/// &gt;&quot;, where: - FONT_FAMILY_LIST is a comma-
-		/// separated list of font family names, - STYLES is an optional space-
-		/// separated list of style names (case-sensitive
-		/// &quot;Bold&quot; and &quot;Italic&quot; are supported), and
-		/// - SIZE is an integer font size in pixels with the suffix &quot;px&quot;.
-		/// Here are examples of valid font description strings: - &quot;Arial, Helvetica,
-		/// Bold Italic 14px&quot; - &quot;Arial, 14px&quot;
+		///  Sets the font list for the specified |index|. Specify an |index| value of
+		///  -1 to set the default font. If |font_list| is NULL the system font will be
+		///  used. Returns true (1) on success. The format is
+		///  &quot;
+		///  &lt;FONT
+		///  _FAMILY_LIST&gt;,[STYLES]
+		///  &lt;SIZE
+		///  &gt;&quot;, where: - FONT_FAMILY_LIST is a comma-
+		///  separated list of font family names, - STYLES is an optional space-
+		///  separated list of style names (case-sensitive
+		///  &quot;Bold&quot; and &quot;Italic&quot; are supported), and
+		///  - SIZE is an integer font size in pixels with the suffix &quot;px&quot;.
+		///  Here are examples of valid font description strings: - &quot;Arial, Helvetica,
+		///  Bold Italic 14px&quot; - &quot;Arial, 14px&quot;
 		/// </summary>
-		public unsafe virtual bool SetFontListAt(int index, string fontList)
+		public virtual bool SetFontListAt(int index, string fontList)
 		{
 			fixed (char* s1 = fontList)
 			{
-				var cstr1 = new cef_string_t { Str = s1, Length = fontList != null ? fontList.Length : 0 };
+				var cstr1 = new cef_string_t {Str = s1, Length = fontList != null ? fontList.Length : 0};
 				return SafeCall(NativeInstance->SetFontListAt(index, &cstr1) != 0);
 			}
 		}

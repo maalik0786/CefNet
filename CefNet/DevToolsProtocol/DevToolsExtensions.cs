@@ -10,14 +10,15 @@ using CefNet.Internal;
 namespace CefNet
 {
 	/// <summary>
-	/// Provides methods for interaction over the DevTools protocol.
+	///  Provides methods for interaction over the DevTools protocol.
 	/// </summary>
 	public static class DevToolsExtensions
 	{
-		private static readonly Dictionary<long, DevToolsProtocolClient> _Clients = new Dictionary<long, DevToolsProtocolClient>();
+		private static readonly Dictionary<long, DevToolsProtocolClient> _Clients =
+			new Dictionary<long, DevToolsProtocolClient>();
 
 		/// <summary>
-		/// Returns a number that uniquely identifies the DevTools Protocol message. 
+		///  Returns a number that uniquely identifies the DevTools Protocol message.
 		/// </summary>
 		/// <param name="browserHost">The browser instance.</param>
 		/// <returns>A number that uniquely identifies the protocol message.</returns>
@@ -44,6 +45,7 @@ namespace CefNet
 					_Clients.Add(browserId, client);
 				}
 			}
+
 			return client;
 		}
 
@@ -54,31 +56,33 @@ namespace CefNet
 			{
 				_Clients.Remove(browserId, out protocolClient);
 			}
+
 			if (protocolClient is null)
 				return;
 			protocolClient.Close();
 		}
 
-		private static async Task<byte[]> ExecuteDevToolsMethodInternalAsync(IChromiumWebView webview, string method, CefDictionaryValue parameters, CancellationToken cancellationToken)
+		private static async Task<byte[]> ExecuteDevToolsMethodInternalAsync(IChromiumWebView webview, string method,
+			CefDictionaryValue parameters, CancellationToken cancellationToken)
 		{
-			CefBrowser browser = webview.BrowserObject;
+			var browser = webview.BrowserObject;
 			if (browser is null)
 				throw new InvalidOperationException();
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			CefBrowserHost browserHost = browser.Host;
-			DevToolsProtocolClient protocolClient = GetProtocolClient(browserHost);
+			var browserHost = browser.Host;
+			var protocolClient = GetProtocolClient(browserHost);
 
 			await CefNetSynchronizationContextAwaiter.GetForThread(CefThreadId.UI);
 			cancellationToken.ThrowIfCancellationRequested();
 
-			int messageId = browserHost.ExecuteDevToolsMethod(protocolClient.IncrementMessageId(), method, parameters);
+			var messageId = browserHost.ExecuteDevToolsMethod(protocolClient.IncrementMessageId(), method, parameters);
 			protocolClient.UpdateLastMessageId(messageId);
 			DevToolsMethodResult r;
 			if (cancellationToken.CanBeCanceled)
 			{
-				Task<DevToolsMethodResult> waitTask = protocolClient.WaitForMessageAsync(messageId);
+				var waitTask = protocolClient.WaitForMessageAsync(messageId);
 				await Task.WhenAny(waitTask, Task.Delay(Timeout.Infinite, cancellationToken)).ConfigureAwait(false);
 				cancellationToken.ThrowIfCancellationRequested();
 				r = waitTask.Result;
@@ -87,75 +91,85 @@ namespace CefNet
 			{
 				r = await protocolClient.WaitForMessageAsync(messageId).ConfigureAwait(false);
 			}
+
 			if (r.Success)
 				return r.Result;
 
 			CefValue errorValue = CefApi.CefParseJSONBuffer(r.Result, CefJsonParserOptions.AllowTrailingCommas);
 			if (errorValue is null)
-				throw new DevToolsProtocolException($"An unknown error occurred while trying to execute the '{method}' method.");
+				throw new DevToolsProtocolException(
+					$"An unknown error occurred while trying to execute the '{method}' method.");
 			throw new DevToolsProtocolException(errorValue.GetDictionary().GetString("message"));
 		}
 
 		/// <summary>
-		/// Executes a method call over the DevTools protocol.
+		///  Executes a method call over the DevTools protocol.
 		/// </summary>
 		/// <param name="webview">The WebView control.</param>
 		/// <param name="method">The method name.</param>
 		/// <param name="parameters">
-		/// The dictionaly with method parameters. May be null.
-		/// See the <see href="https://chromedevtools.github.io/devtools-protocol/">
-		/// DevTools Protocol documentation</see> for details of supported methods
-		/// and the expected parameters.
+		///  The dictionaly with method parameters. May be null.
+		///  See the
+		///  <see href="https://chromedevtools.github.io/devtools-protocol/">
+		///      DevTools Protocol documentation
+		///  </see>
+		///  for details of supported methods
+		///  and the expected parameters.
 		/// </param>
 		/// <returns>
-		/// The JSON string with the response. Structure of the response varies depending
-		/// on the method name and is defined by the &apos;RETURN OBJECT&apos; section of
-		/// the Chrome DevTools Protocol command description.
+		///  The JSON string with the response. Structure of the response varies depending
+		///  on the method name and is defined by the &apos;RETURN OBJECT&apos; section of
+		///  the Chrome DevTools Protocol command description.
 		/// </returns>
 		/// <remarks>
-		/// Usage of the ExecuteDevToolsMethodAsync function does not require an active
-		/// DevTools front-end or remote-debugging session. Other active DevTools sessions
-		/// will continue to function independently. However, any modification of global
-		/// browser state by one session may not be reflected in the UI of other sessions.
-		/// <para/>
-		/// Communication with the DevTools front-end (when displayed) can be logged
-		/// for development purposes by passing the `--devtools-protocol-log-
-		/// file=&lt;path&gt;` command-line flag.
+		///  Usage of the ExecuteDevToolsMethodAsync function does not require an active
+		///  DevTools front-end or remote-debugging session. Other active DevTools sessions
+		///  will continue to function independently. However, any modification of global
+		///  browser state by one session may not be reflected in the UI of other sessions.
+		///  <para />
+		///  Communication with the DevTools front-end (when displayed) can be logged
+		///  for development purposes by passing the `--devtools-protocol-log-
+		///  file=&lt;path&gt;` command-line flag.
 		/// </remarks>
-		public static Task<string> ExecuteDevToolsMethodAsync(this IChromiumWebView webview, string method, CefDictionaryValue parameters)
+		public static Task<string> ExecuteDevToolsMethodAsync(this IChromiumWebView webview, string method,
+			CefDictionaryValue parameters)
 		{
 			return ExecuteDevToolsMethodAsync(webview, method, parameters, CancellationToken.None);
 		}
 
 
 		/// <summary>
-		/// Executes a method call over the DevTools protocol.
+		///  Executes a method call over the DevTools protocol.
 		/// </summary>
 		/// <param name="webview">The WebView control.</param>
 		/// <param name="method">The method name.</param>
 		/// <param name="parameters">
-		/// The dictionaly with method parameters. May be null.
-		/// See the <see href="https://chromedevtools.github.io/devtools-protocol/">
-		/// DevTools Protocol documentation</see> for details of supported methods
-		/// and the expected parameters.
+		///  The dictionaly with method parameters. May be null.
+		///  See the
+		///  <see href="https://chromedevtools.github.io/devtools-protocol/">
+		///      DevTools Protocol documentation
+		///  </see>
+		///  for details of supported methods
+		///  and the expected parameters.
 		/// </param>
 		/// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
 		/// <returns>
-		/// The JSON string with the response. Structure of the response varies depending
-		/// on the method name and is defined by the &apos;RETURN OBJECT&apos; section of
-		/// the Chrome DevTools Protocol command description.
+		///  The JSON string with the response. Structure of the response varies depending
+		///  on the method name and is defined by the &apos;RETURN OBJECT&apos; section of
+		///  the Chrome DevTools Protocol command description.
 		/// </returns>
 		/// <remarks>
-		/// Usage of the ExecuteDevToolsMethodAsync function does not require an active
-		/// DevTools front-end or remote-debugging session. Other active DevTools sessions
-		/// will continue to function independently. However, any modification of global
-		/// browser state by one session may not be reflected in the UI of other sessions.
-		/// <para/>
-		/// Communication with the DevTools front-end (when displayed) can be logged
-		/// for development purposes by passing the `--devtools-protocol-log-
-		/// file=&lt;path&gt;` command-line flag.
+		///  Usage of the ExecuteDevToolsMethodAsync function does not require an active
+		///  DevTools front-end or remote-debugging session. Other active DevTools sessions
+		///  will continue to function independently. However, any modification of global
+		///  browser state by one session may not be reflected in the UI of other sessions.
+		///  <para />
+		///  Communication with the DevTools front-end (when displayed) can be logged
+		///  for development purposes by passing the `--devtools-protocol-log-
+		///  file=&lt;path&gt;` command-line flag.
 		/// </remarks>
-		public static async Task<string> ExecuteDevToolsMethodAsync(this IChromiumWebView webview, string method, CefDictionaryValue parameters, CancellationToken cancellationToken)
+		public static async Task<string> ExecuteDevToolsMethodAsync(this IChromiumWebView webview, string method,
+			CefDictionaryValue parameters, CancellationToken cancellationToken)
 		{
 			if (webview is null)
 				throw new ArgumentNullException(nameof(webview));
@@ -167,99 +181,112 @@ namespace CefNet
 			if (method.Length == 0)
 				throw new ArgumentOutOfRangeException(nameof(method));
 
-			byte[] rv = await ExecuteDevToolsMethodInternalAsync(webview, method, parameters, cancellationToken).ConfigureAwait(false);
+			var rv = await ExecuteDevToolsMethodInternalAsync(webview, method, parameters, cancellationToken)
+				.ConfigureAwait(false);
 			return rv is null ? null : Encoding.UTF8.GetString(rv);
 		}
 
 		/// <summary>
-		/// Executes a method call over the DevTools protocol.
+		///  Executes a method call over the DevTools protocol.
 		/// </summary>
 		/// <param name="webview">The WebView control.</param>
 		/// <param name="method">The method name.</param>
 		/// <param name="parameters">
-		/// The JSON string with method parameters. May be null.
-		/// See the <see href="https://chromedevtools.github.io/devtools-protocol/">
-		/// DevTools Protocol documentation</see> for details of supported methods
-		/// and the expected parameters.
+		///  The JSON string with method parameters. May be null.
+		///  See the
+		///  <see href="https://chromedevtools.github.io/devtools-protocol/">
+		///      DevTools Protocol documentation
+		///  </see>
+		///  for details of supported methods
+		///  and the expected parameters.
 		/// </param>
 		/// <returns>
-		/// The JSON string with the response. Structure of the response varies depending
-		/// on the method name and is defined by the &apos;RETURN OBJECT&apos; section of
-		/// the Chrome DevTools Protocol command description.
+		///  The JSON string with the response. Structure of the response varies depending
+		///  on the method name and is defined by the &apos;RETURN OBJECT&apos; section of
+		///  the Chrome DevTools Protocol command description.
 		/// </returns>
 		/// <remarks>
-		/// Usage of the ExecuteDevToolsMethodAsync function does not require an active
-		/// DevTools front-end or remote-debugging session. Other active DevTools sessions
-		/// will continue to function independently. However, any modification of global
-		/// browser state by one session may not be reflected in the UI of other sessions.
-		/// <para/>
-		/// Communication with the DevTools front-end (when displayed) can be logged
-		/// for development purposes by passing the `--devtools-protocol-log-
-		/// file=&lt;path&gt;` command-line flag.
+		///  Usage of the ExecuteDevToolsMethodAsync function does not require an active
+		///  DevTools front-end or remote-debugging session. Other active DevTools sessions
+		///  will continue to function independently. However, any modification of global
+		///  browser state by one session may not be reflected in the UI of other sessions.
+		///  <para />
+		///  Communication with the DevTools front-end (when displayed) can be logged
+		///  for development purposes by passing the `--devtools-protocol-log-
+		///  file=&lt;path&gt;` command-line flag.
 		/// </remarks>
-		public static Task<string> ExecuteDevToolsMethodAsync(this IChromiumWebView webview, string method, string parameters)
+		public static Task<string> ExecuteDevToolsMethodAsync(this IChromiumWebView webview, string method,
+			string parameters)
 		{
 			return ExecuteDevToolsMethodAsync(webview, method, parameters, CancellationToken.None);
 		}
 
 		/// <summary>
-		/// Executes a method call over the DevTools protocol.
+		///  Executes a method call over the DevTools protocol.
 		/// </summary>
 		/// <param name="webview">The WebView control.</param>
 		/// <param name="method">The method name.</param>
 		/// <param name="parameters">
-		/// The JSON string with method parameters. May be null.
-		/// See the <see href="https://chromedevtools.github.io/devtools-protocol/">
-		/// DevTools Protocol documentation</see> for details of supported methods
-		/// and the expected parameters.
+		///  The JSON string with method parameters. May be null.
+		///  See the
+		///  <see href="https://chromedevtools.github.io/devtools-protocol/">
+		///      DevTools Protocol documentation
+		///  </see>
+		///  for details of supported methods
+		///  and the expected parameters.
 		/// </param>
 		/// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
 		/// <returns>
-		/// The JSON string with the response. Structure of the response varies depending
-		/// on the method name and is defined by the &apos;RETURN OBJECT&apos; section of
-		/// the Chrome DevTools Protocol command description.
+		///  The JSON string with the response. Structure of the response varies depending
+		///  on the method name and is defined by the &apos;RETURN OBJECT&apos; section of
+		///  the Chrome DevTools Protocol command description.
 		/// </returns>
 		/// <remarks>
-		/// Usage of the ExecuteDevToolsMethodAsync function does not require an active
-		/// DevTools front-end or remote-debugging session. Other active DevTools sessions
-		/// will continue to function independently. However, any modification of global
-		/// browser state by one session may not be reflected in the UI of other sessions.
-		/// <para/>
-		/// Communication with the DevTools front-end (when displayed) can be logged
-		/// for development purposes by passing the `--devtools-protocol-log-
-		/// file=&lt;path&gt;` command-line flag.
+		///  Usage of the ExecuteDevToolsMethodAsync function does not require an active
+		///  DevTools front-end or remote-debugging session. Other active DevTools sessions
+		///  will continue to function independently. However, any modification of global
+		///  browser state by one session may not be reflected in the UI of other sessions.
+		///  <para />
+		///  Communication with the DevTools front-end (when displayed) can be logged
+		///  for development purposes by passing the `--devtools-protocol-log-
+		///  file=&lt;path&gt;` command-line flag.
 		/// </remarks>
-		public static Task<string> ExecuteDevToolsMethodAsync(this IChromiumWebView webview, string method, string parameters, CancellationToken cancellationToken)
+		public static Task<string> ExecuteDevToolsMethodAsync(this IChromiumWebView webview, string method,
+			string parameters, CancellationToken cancellationToken)
 		{
 			CefValue args = null;
 			if (parameters != null)
 			{
-				args = CefApi.CefParseJSON(parameters, CefJsonParserOptions.AllowTrailingCommas, out CefJsonParserError errorCode, out string errorMessage);
+				args = CefApi.CefParseJSON(parameters, CefJsonParserOptions.AllowTrailingCommas,
+					out CefJsonParserError errorCode, out string errorMessage);
 				if (args is null)
-					throw new ArgumentOutOfRangeException(nameof(parameters), errorMessage is null ? $"An error occurred during JSON parsing: {errorCode}." : errorMessage);
+					throw new ArgumentOutOfRangeException(nameof(parameters),
+						errorMessage is null ? $"An error occurred during JSON parsing: {errorCode}." : errorMessage);
 			}
-			return ExecuteDevToolsMethodAsync(webview, method, args is null ? default(CefDictionaryValue) : args.GetDictionary(), cancellationToken);
+
+			return ExecuteDevToolsMethodAsync(webview, method, args is null ? default : args.GetDictionary(),
+				cancellationToken);
 		}
 
 		/// <summary>
-		/// Executes a method call over the DevTools protocol without any optional parameters.
+		///  Executes a method call over the DevTools protocol without any optional parameters.
 		/// </summary>
 		/// <param name="webview">The WebView control.</param>
 		/// <param name="method">The method name.</param>
 		/// <returns>
-		/// The JSON string with the response. Structure of the response varies depending
-		/// on the method name and is defined by the &apos;RETURN OBJECT&apos; section of
-		/// the Chrome DevTools Protocol command description.
+		///  The JSON string with the response. Structure of the response varies depending
+		///  on the method name and is defined by the &apos;RETURN OBJECT&apos; section of
+		///  the Chrome DevTools Protocol command description.
 		/// </returns>
 		/// <remarks>
-		/// Usage of the ExecuteDevToolsMethodAsync function does not require an active
-		/// DevTools front-end or remote-debugging session. Other active DevTools sessions
-		/// will continue to function independently. However, any modification of global
-		/// browser state by one session may not be reflected in the UI of other sessions.
-		/// <para/>
-		/// Communication with the DevTools front-end (when displayed) can be logged
-		/// for development purposes by passing the `--devtools-protocol-log-
-		/// file=&lt;path&gt;` command-line flag.
+		///  Usage of the ExecuteDevToolsMethodAsync function does not require an active
+		///  DevTools front-end or remote-debugging session. Other active DevTools sessions
+		///  will continue to function independently. However, any modification of global
+		///  browser state by one session may not be reflected in the UI of other sessions.
+		///  <para />
+		///  Communication with the DevTools front-end (when displayed) can be logged
+		///  for development purposes by passing the `--devtools-protocol-log-
+		///  file=&lt;path&gt;` command-line flag.
 		/// </remarks>
 		public static Task<string> ExecuteDevToolsMethodAsync(this IChromiumWebView webview, string method)
 		{
@@ -267,32 +294,34 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Executes a method call over the DevTools protocol without any optional parameters.
+		///  Executes a method call over the DevTools protocol without any optional parameters.
 		/// </summary>
 		/// <param name="webview">The WebView control.</param>
 		/// <param name="method">The method name.</param>
+		/// <param name="cancellationToken"></param>
 		/// <returns>
-		/// The JSON string with the response. Structure of the response varies depending
-		/// on the method name and is defined by the &apos;RETURN OBJECT&apos; section of
-		/// the Chrome DevTools Protocol command description.
+		///  The JSON string with the response. Structure of the response varies depending
+		///  on the method name and is defined by the &apos;RETURN OBJECT&apos; section of
+		///  the Chrome DevTools Protocol command description.
 		/// </returns>
 		/// <remarks>
-		/// Usage of the ExecuteDevToolsMethodAsync function does not require an active
-		/// DevTools front-end or remote-debugging session. Other active DevTools sessions
-		/// will continue to function independently. However, any modification of global
-		/// browser state by one session may not be reflected in the UI of other sessions.
-		/// <para/>
-		/// Communication with the DevTools front-end (when displayed) can be logged
-		/// for development purposes by passing the `--devtools-protocol-log-
-		/// file=&lt;path&gt;` command-line flag.
+		///  Usage of the ExecuteDevToolsMethodAsync function does not require an active
+		///  DevTools front-end or remote-debugging session. Other active DevTools sessions
+		///  will continue to function independently. However, any modification of global
+		///  browser state by one session may not be reflected in the UI of other sessions.
+		///  <para />
+		///  Communication with the DevTools front-end (when displayed) can be logged
+		///  for development purposes by passing the `--devtools-protocol-log-
+		///  file=&lt;path&gt;` command-line flag.
 		/// </remarks>
-		public static Task<string> ExecuteDevToolsMethodAsync(this IChromiumWebView webview, string method, CancellationToken cancellationToken)
+		public static Task<string> ExecuteDevToolsMethodAsync(this IChromiumWebView webview, string method,
+			CancellationToken cancellationToken)
 		{
 			return ExecuteDevToolsMethodAsync(webview, method, default(CefDictionaryValue), cancellationToken);
 		}
 
 		/// <summary>
-		/// Captures page screenshot.
+		///  Captures page screenshot.
 		/// </summary>
 		/// <param name="webview">The WebView control.</param>
 		/// <param name="settings">The capture settings or null.</param>
@@ -300,13 +329,14 @@ namespace CefNet
 		/// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
 		/// <returns>The task object representing the asynchronous operation.</returns>
 		/// <exception cref="ArgumentNullException">
-		/// <paramref name="webview"/> or <paramref name="targetStream"/> is null.
+		///  <paramref name="webview" /> or <paramref name="targetStream" /> is null.
 		/// </exception>
 		/// <exception cref="DevToolsProtocolException">
-		/// An error occurred while trying to execute a DevTools Protocol method.
+		///  An error occurred while trying to execute a DevTools Protocol method.
 		/// </exception>
 		/// <exception cref="InvalidOperationException">Other error occurred.</exception>
-		public static async Task CaptureScreenshotAsync(this IChromiumWebView webview, PageCaptureSettings settings, Stream targetStream, CancellationToken cancellationToken)
+		public static async Task CaptureScreenshotAsync(this IChromiumWebView webview, PageCaptureSettings settings,
+			Stream targetStream, CancellationToken cancellationToken)
 		{
 			if (webview is null)
 				throw new ArgumentNullException(nameof(webview));
@@ -316,9 +346,7 @@ namespace CefNet
 
 			CefDictionaryValue args;
 			if (settings is null)
-			{
 				args = null;
-			}
 			else
 			{
 				args = new CefDictionaryValue();
@@ -328,11 +356,12 @@ namespace CefNet
 					if (settings.Quality.HasValue)
 						args.SetInt("quality", settings.Quality.Value);
 				}
+
 				if (!settings.FromSurface)
 					args.SetBool("fromSurface", false);
 				if (settings.Viewport != null)
 				{
-					PageViewport viewport = settings.Viewport;
+					var viewport = settings.Viewport;
 					var viewportDict = new CefDictionaryValue();
 					viewportDict.SetDouble("x", viewport.X);
 					viewportDict.SetDouble("y", viewport.Y);
@@ -343,11 +372,11 @@ namespace CefNet
 				}
 			}
 
-			byte[] rv = await ExecuteDevToolsMethodInternalAsync(webview, "Page.captureScreenshot", args, cancellationToken).ConfigureAwait(false);
+			var rv = await ExecuteDevToolsMethodInternalAsync(webview, "Page.captureScreenshot", args,
+				cancellationToken).ConfigureAwait(false);
 
 			if (rv != null && rv.Length > 11 && rv[rv.Length - 1] == '}' && rv[rv.Length - 2] == '"'
-				&& "{\"data\":\"".Equals(Encoding.ASCII.GetString(rv, 0, 9), StringComparison.Ordinal))
-			{
+			    && "{\"data\":\"".Equals(Encoding.ASCII.GetString(rv, 0, 9), StringComparison.Ordinal))
 				using (var input = new MemoryStream(rv, 9, rv.Length - 11))
 				using (var base64Transform = new FromBase64Transform(FromBase64TransformMode.IgnoreWhiteSpaces))
 				using (var cryptoStream = new CryptoStream(input, base64Transform, CryptoStreamMode.Read))
@@ -355,44 +384,44 @@ namespace CefNet
 					await cryptoStream.CopyToAsync(targetStream, 4096, cancellationToken).ConfigureAwait(false);
 					await targetStream.FlushAsync(cancellationToken).ConfigureAwait(false);
 				}
-			}
 			else
-			{
 				throw new InvalidOperationException();
-			}
 		}
 
 		/// <summary>
-		/// Clears browser cache.
+		///  Clears browser cache.
 		/// </summary>
 		/// <param name="webview">The WebView control.</param>
 		/// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
 		/// <returns>The task object representing the asynchronous operation.</returns>
-		public static async Task ClearBrowserCacheAsync(this IChromiumWebView webview, CancellationToken cancellationToken)
+		public static async Task ClearBrowserCacheAsync(this IChromiumWebView webview,
+			CancellationToken cancellationToken)
 		{
 			if (webview is null)
 				throw new ArgumentNullException(nameof(webview));
 
-			byte[] rv = await ExecuteDevToolsMethodInternalAsync(webview, "Network.clearBrowserCache", null, cancellationToken);
+			var rv = await ExecuteDevToolsMethodInternalAsync(webview, "Network.clearBrowserCache", null,
+				cancellationToken);
 			if (rv is null || rv.Length != 2 || rv[0] != '{' || rv[1] != '}')
 				throw new InvalidOperationException();
 		}
 
 		/// <summary>
-		/// Clears browser cookies.
+		///  Clears browser cookies.
 		/// </summary>
 		/// <param name="webview">The WebView control.</param>
 		/// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
 		/// <returns>The task object representing the asynchronous operation.</returns>
-		public static async Task ClearBrowserCookiesAsync(this IChromiumWebView webview, CancellationToken cancellationToken)
+		public static async Task ClearBrowserCookiesAsync(this IChromiumWebView webview,
+			CancellationToken cancellationToken)
 		{
 			if (webview is null)
 				throw new ArgumentNullException(nameof(webview));
 
-			byte[] rv = await ExecuteDevToolsMethodInternalAsync(webview, "Network.clearBrowserCookies", null, cancellationToken);
+			var rv = await ExecuteDevToolsMethodInternalAsync(webview, "Network.clearBrowserCookies", null,
+				cancellationToken);
 			if (rv is null || rv.Length != 2 || rv[0] != '{' || rv[1] != '}')
 				throw new InvalidOperationException();
 		}
-
 	}
 }

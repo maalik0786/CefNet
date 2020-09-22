@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CefNet.Internal
+﻿namespace CefNet.Internal
 {
 	public enum InitialPropertyKeys
 	{
@@ -10,7 +6,6 @@ namespace CefNet.Internal
 		RequestContext = 1,
 		BrowserSettings = 2,
 		Url = 3,
-		ExtraInfo = 4,
-		
+		ExtraInfo = 4
 	}
 }

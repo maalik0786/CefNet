@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Post data elements may represent either bytes or files.
+	///  Post data elements may represent either bytes or files.
 	/// </summary>
 	public enum CefPostDataElementType
 	{
@@ -27,7 +22,6 @@ namespace CefNet
 
 		Bytes = 1,
 
-		File = 2,
+		File = 2
 	}
 }
-

@@ -1,24 +1,20 @@
-﻿using CefNet;
-using CefNet.Windows.Forms;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
+using CefNet;
+using CefNet.Windows.Forms;
 
 namespace WinFormsCoreApp
 {
 	public partial class DeviceEmulatorForm : Form
 	{
-		private WebView view;
+		private readonly WebView view;
 
 		public DeviceEmulatorForm()
 		{
 			InitializeComponent();
 
-			view = new CustomWebView()
+			view = new CustomWebView
 			{
 				RequestContext = new CefRequestContext(new CefRequestContextSettings()),
 				WindowlessRenderingEnabled = true,
@@ -32,27 +28,27 @@ namespace WinFormsCoreApp
 			view.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
 			view.Navigated += View_Navigated;
 			view.CreateWindow += View_CreateWindow;
-			this.Controls.Add(view);
+			Controls.Add(view);
 		}
 
 		protected override void OnResizeBegin(EventArgs e)
 		{
-			this.SuspendLayout();
+			SuspendLayout();
 			base.OnResizeBegin(e);
 		}
 
 		protected override void OnResizeEnd(EventArgs e)
 		{
-			this.ResumeLayout(true);
+			ResumeLayout(true);
 			base.OnResizeEnd(e);
 		}
 
-		private void View_CreateWindow(object sender, CefNet.CreateWindowEventArgs e)
+		private void View_CreateWindow(object sender, CreateWindowEventArgs e)
 		{
 			e.Cancel = true;
 		}
 
-		private void View_Navigated(object sender, CefNet.NavigatedEventArgs e)
+		private void View_Navigated(object sender, NavigatedEventArgs e)
 		{
 			txtAddress.Text = e.Url;
 			txtAddress.Select(txtAddress.Text.Length, 0);
@@ -61,12 +57,8 @@ namespace WinFormsCoreApp
 		private void txtAddress_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.Enter)
-			{
-				if (Uri.TryCreate(txtAddress.Text, UriKind.Absolute, out Uri url))
-				{
+				if (Uri.TryCreate(txtAddress.Text, UriKind.Absolute, out var url))
 					view.Navigate(url.AbsoluteUri);
-				}
-			}
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
@@ -74,6 +66,5 @@ namespace WinFormsCoreApp
 			view.Dispose();
 			base.OnClosing(e);
 		}
-
 	}
 }

@@ -12,30 +12,26 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Generic callback structure used for managing the lifespan of a registration.
+	///  Generic callback structure used for managing the lifespan of a registration.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefRegistration : CefBaseRefCounted<cef_registration_t>
+	public unsafe class CefRegistration : CefBaseRefCounted<cef_registration_t>
 	{
-		internal static unsafe CefRegistration Create(IntPtr instance)
+		public CefRegistration(cef_registration_t* instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
-			return new CefRegistration((cef_registration_t*)instance);
 		}
 
-		public CefRegistration(cef_registration_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+		internal static CefRegistration Create(IntPtr instance)
 		{
+			return new CefRegistration((cef_registration_t*) instance);
 		}
 	}
 }

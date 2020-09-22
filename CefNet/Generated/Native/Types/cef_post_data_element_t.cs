@@ -12,122 +12,120 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure used to represent a single element in the request post data. The
-	/// functions of this structure may be called on any thread.
+	///  Structure used to represent a single element in the request post data. The
+	///  functions of this structure may be called on any thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_post_data_element_t
+	public unsafe struct cef_post_data_element_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_post_data_element_t* self)*
+		///  int (*)(_cef_post_data_element_t* self)*
 		/// </summary>
 		public void* is_read_only;
 
 		/// <summary>
-		/// Returns true (1) if this object is read-only.
+		///  Returns true (1) if this object is read-only.
 		/// </summary>
 		[NativeName("is_read_only")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsReadOnly();
+		public extern int IsReadOnly();
 
 		/// <summary>
-		/// void (*)(_cef_post_data_element_t* self)*
+		///  void (*)(_cef_post_data_element_t* self)*
 		/// </summary>
 		public void* set_to_empty;
 
 		/// <summary>
-		/// Remove all contents from the post data element.
+		///  Remove all contents from the post data element.
 		/// </summary>
 		[NativeName("set_to_empty")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void SetToEmpty();
+		public extern void SetToEmpty();
 
 		/// <summary>
-		/// void (*)(_cef_post_data_element_t* self, const cef_string_t* fileName)*
+		///  void (*)(_cef_post_data_element_t* self, const cef_string_t* fileName)*
 		/// </summary>
 		public void* set_to_file;
 
 		/// <summary>
-		/// The post data element will represent a file.
+		///  The post data element will represent a file.
 		/// </summary>
 		[NativeName("set_to_file")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void SetToFile([Immutable]cef_string_t* fileName);
+		public extern void SetToFile([Immutable] cef_string_t* fileName);
 
 		/// <summary>
-		/// void (*)(_cef_post_data_element_t* self, size_t size, const void* bytes)*
+		///  void (*)(_cef_post_data_element_t* self, size_t size, const void* bytes)*
 		/// </summary>
 		public void* set_to_bytes;
 
 		/// <summary>
-		/// The post data element will represent bytes.  The bytes passed in will be
-		/// copied.
+		///  The post data element will represent bytes.  The bytes passed in will be
+		///  copied.
 		/// </summary>
 		[NativeName("set_to_bytes")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void SetToBytes(UIntPtr size, [Immutable]void* bytes);
+		public extern void SetToBytes(UIntPtr size, [Immutable] void* bytes);
 
 		/// <summary>
-		/// cef_postdataelement_type_t (*)(_cef_post_data_element_t* self)*
+		///  cef_postdataelement_type_t (*)(_cef_post_data_element_t* self)*
 		/// </summary>
 		public void* get_type;
 
 		/// <summary>
-		/// Return the type of this post data element.
+		///  Return the type of this post data element.
 		/// </summary>
 		[NativeName("get_type")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern CefPostDataElementType GetCefType();
+		public extern CefPostDataElementType GetCefType();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_post_data_element_t* self)*
+		///  cef_string_userfree_t (*)(_cef_post_data_element_t* self)*
 		/// </summary>
 		public void* get_file;
 
 		/// <summary>
-		/// Return the file name.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Return the file name.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_file")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetFile();
+		public extern cef_string_userfree_t GetFile();
 
 		/// <summary>
-		/// size_t (*)(_cef_post_data_element_t* self)*
+		///  size_t (*)(_cef_post_data_element_t* self)*
 		/// </summary>
 		public void* get_bytes_count;
 
 		/// <summary>
-		/// Return the number of bytes.
+		///  Return the number of bytes.
 		/// </summary>
 		[NativeName("get_bytes_count")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern UIntPtr GetBytesCount();
+		public extern UIntPtr GetBytesCount();
 
 		/// <summary>
-		/// size_t (*)(_cef_post_data_element_t* self, size_t size, void* bytes)*
+		///  size_t (*)(_cef_post_data_element_t* self, size_t size, void* bytes)*
 		/// </summary>
 		public void* get_bytes;
 
 		/// <summary>
-		/// Read up to |size| bytes into |bytes| and return the number of bytes
-		/// actually read.
+		///  Read up to |size| bytes into |bytes| and return the number of bytes
+		///  actually read.
 		/// </summary>
 		[NativeName("get_bytes")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern UIntPtr GetBytes(UIntPtr size, void* bytes);
+		public extern UIntPtr GetBytes(UIntPtr size, void* bytes);
 	}
 }
-

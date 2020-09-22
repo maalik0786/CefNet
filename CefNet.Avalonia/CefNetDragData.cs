@@ -1,9 +1,9 @@
-﻿using Avalonia.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Avalonia.Input;
 
 namespace CefNet.Avalonia
 {
@@ -19,12 +19,12 @@ namespace CefNet.Avalonia
 
 		public const string DataFormatCefNetDragData = nameof(CefNetDragData);
 		public const string DataFormatCefDragData = nameof(CefDragData);
+		private readonly HashSet<string> _formats;
 
-		private WeakReference<WebView> _source;
-		private HashSet<string> _formats;
+		private readonly WeakReference<WebView> _source;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CefNetDragData"/> class.
+		///  Initializes a new instance of the <see cref="CefNetDragData" /> class.
 		/// </summary>
 		/// <param name="source">The source of the drag event.</param>
 		/// <param name="data">The original drag data.</param>
@@ -38,11 +38,13 @@ namespace CefNet.Avalonia
 				formats.Add(DataFormatFileDrop);
 				formats.Add(DataFormatFileNames);
 			}
+
 			if (data.IsLink)
 			{
 				formats.Add(DataFormatUnicodeUrl);
 				formats.Add(DataFormatUnicodeText);
 			}
+
 			if (data.IsFragment)
 			{
 				formats.Add(DataFormatUnicodeText);
@@ -52,22 +54,22 @@ namespace CefNet.Avalonia
 
 			_source = new WeakReference<WebView>(source);
 			_formats = formats;
-			this.Data = data;
+			Data = data;
 		}
 
 		/// <summary>
-		/// The original drag data.
+		///  The original drag data.
 		/// </summary>
 		public CefDragData Data { get; }
 
 		/// <summary>
-		/// The source of the drag event.
+		///  The source of the drag event.
 		/// </summary>
 		public WebView Source
 		{
 			get
 			{
-				if (_source.TryGetTarget(out WebView source))
+				if (_source.TryGetTarget(out var source))
 					return source;
 				return null;
 			}
@@ -87,17 +89,20 @@ namespace CefNet.Avalonia
 				s = Data.LinkUrl;
 				return s is null ? null : new MemoryStream(Encoding.Unicode.GetBytes(s));
 			}
+
 			if (DataFormatUrl.Equals(format, StringComparison.Ordinal))
 			{
 				s = Data.LinkUrl;
 				return s is null ? null : new MemoryStream(Encoding.ASCII.GetBytes(s));
 			}
+
 			if (DataFormatUnicodeText.Equals(format, StringComparison.Ordinal))
 			{
 				if (Data.IsLink)
 					return Data.LinkUrl;
 				return Data.FragmentText;
 			}
+
 			if (DataFormatHtml.Equals(format, StringComparison.Ordinal))
 				return Data.FragmentHtml;
 			if (DataFormats.Text.Equals(format, StringComparison.Ordinal))
@@ -123,7 +128,7 @@ namespace CefNet.Avalonia
 			{
 				Data.GetFileNames(list);
 
-				foreach (string s in list)
+				foreach (var s in list)
 					yield return s;
 			}
 		}

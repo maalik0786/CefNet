@@ -11,58 +11,41 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing a draggable region.
+	///  Structure representing a draggable region.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefDraggableRegion
+	public struct CefDraggableRegion
 	{
 		private cef_draggable_region_t _instance;
 
 		/// <summary>
-		/// Bounds of the region.
+		///  Bounds of the region.
 		/// </summary>
 		public CefRect Bounds
 		{
-			get
-			{
-				return _instance.bounds;
-			}
-			set
-			{
-				_instance.bounds = value;
-			}
+			get => _instance.bounds;
+			set => _instance.bounds = value;
 		}
 
 		/// <summary>
-		/// True (1) this this region is draggable and false (0) otherwise.
+		///  True (1) this this region is draggable and false (0) otherwise.
 		/// </summary>
 		public bool Draggable
 		{
-			get
-			{
-				return _instance.draggable != 0;
-			}
-			set
-			{
-				_instance.draggable = value ? 1 : 0;
-			}
+			get => _instance.draggable != 0;
+			set => _instance.draggable = value ? 1 : 0;
 		}
 
 		public static implicit operator CefDraggableRegion(cef_draggable_region_t instance)
 		{
-			return new CefDraggableRegion { _instance = instance };
+			return new CefDraggableRegion {_instance = instance};
 		}
 
 		public static implicit operator cef_draggable_region_t(CefDraggableRegion instance)

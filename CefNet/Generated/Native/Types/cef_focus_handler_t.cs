@@ -11,65 +11,62 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Implement this structure to handle events related to focus. The functions of
-	/// this structure will be called on the UI thread.
+	///  Implement this structure to handle events related to focus. The functions of
+	///  this structure will be called on the UI thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_focus_handler_t
+	public unsafe struct cef_focus_handler_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_focus_handler_t* self, _cef_browser_t* browser, int next)*
+		///  void (*)(_cef_focus_handler_t* self, _cef_browser_t* browser, int next)*
 		/// </summary>
 		public void* on_take_focus;
 
 		/// <summary>
-		/// Called when the browser component is about to loose focus. For instance, if
-		/// focus was on the last HTML element and the user pressed the TAB key. |next|
-		/// will be true (1) if the browser is giving focus to the next component and
-		/// false (0) if the browser is giving focus to the previous component.
+		///  Called when the browser component is about to loose focus. For instance, if
+		///  focus was on the last HTML element and the user pressed the TAB key. |next|
+		///  will be true (1) if the browser is giving focus to the next component and
+		///  false (0) if the browser is giving focus to the previous component.
 		/// </summary>
 		[NativeName("on_take_focus")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void OnTakeFocus(cef_browser_t* browser, int next);
+		public extern void OnTakeFocus(cef_browser_t* browser, int next);
 
 		/// <summary>
-		/// int (*)(_cef_focus_handler_t* self, _cef_browser_t* browser, cef_focus_source_t source)*
+		///  int (*)(_cef_focus_handler_t* self, _cef_browser_t* browser, cef_focus_source_t source)*
 		/// </summary>
 		public void* on_set_focus;
 
 		/// <summary>
-		/// Called when the browser component is requesting focus. |source| indicates
-		/// where the focus request is originating from. Return false (0) to allow the
-		/// focus to be set or true (1) to cancel setting the focus.
+		///  Called when the browser component is requesting focus. |source| indicates
+		///  where the focus request is originating from. Return false (0) to allow the
+		///  focus to be set or true (1) to cancel setting the focus.
 		/// </summary>
 		[NativeName("on_set_focus")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int OnSetFocus(cef_browser_t* browser, CefFocusSource source);
+		public extern int OnSetFocus(cef_browser_t* browser, CefFocusSource source);
 
 		/// <summary>
-		/// void (*)(_cef_focus_handler_t* self, _cef_browser_t* browser)*
+		///  void (*)(_cef_focus_handler_t* self, _cef_browser_t* browser)*
 		/// </summary>
 		public void* on_got_focus;
 
 		/// <summary>
-		/// Called when the browser component has received focus.
+		///  Called when the browser component has received focus.
 		/// </summary>
 		[NativeName("on_got_focus")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void OnGotFocus(cef_browser_t* browser);
+		public extern void OnGotFocus(cef_browser_t* browser);
 	}
 }
-

@@ -11,32 +11,26 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Represents the state of a setting.
+	///  Represents the state of a setting.
 	/// </summary>
 	public enum CefState
 	{
 		/// <summary>
-		/// Use the default state for the setting.
+		///  Use the default state for the setting.
 		/// </summary>
 		Default = 0,
 
 		/// <summary>
-		/// Enable or allow the setting.
+		///  Enable or allow the setting.
 		/// </summary>
 		Enabled = 1,
 
 		/// <summary>
-		/// Disable or disallow the setting.
+		///  Disable or disallow the setting.
 		/// </summary>
-		Disabled = 2,
+		Disabled = 2
 	}
 }
-

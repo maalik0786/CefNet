@@ -12,23 +12,22 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Implemented by the client to observe MediaRouter events and registered via
-	/// cef_media_router_t::AddObserver. The functions of this structure will be
-	/// called on the browser process UI thread.
+	///  Implemented by the client to observe MediaRouter events and registered via
+	///  cef_media_router_t::AddObserver. The functions of this structure will be
+	///  called on the browser process UI thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefMediaObserver : CefBaseRefCounted<cef_media_observer_t>, ICefMediaObserverPrivate
+	public unsafe class CefMediaObserver : CefBaseRefCounted<cef_media_observer_t>, ICefMediaObserverPrivate
 	{
 		private static readonly OnSinksDelegate fnOnSinks = OnSinksImpl;
 
@@ -38,138 +37,142 @@ namespace CefNet
 
 		private static readonly OnRouteMessageReceivedDelegate fnOnRouteMessageReceived = OnRouteMessageReceivedImpl;
 
-		internal static unsafe CefMediaObserver Create(IntPtr instance)
-		{
-			return new CefMediaObserver((cef_media_observer_t*)instance);
-		}
-
 		public CefMediaObserver()
 		{
-			cef_media_observer_t* self = this.NativeInstance;
-			self->on_sinks = (void*)Marshal.GetFunctionPointerForDelegate(fnOnSinks);
-			self->on_routes = (void*)Marshal.GetFunctionPointerForDelegate(fnOnRoutes);
-			self->on_route_state_changed = (void*)Marshal.GetFunctionPointerForDelegate(fnOnRouteStateChanged);
-			self->on_route_message_received = (void*)Marshal.GetFunctionPointerForDelegate(fnOnRouteMessageReceived);
+			var self = NativeInstance;
+			self->on_sinks = (void*) Marshal.GetFunctionPointerForDelegate(fnOnSinks);
+			self->on_routes = (void*) Marshal.GetFunctionPointerForDelegate(fnOnRoutes);
+			self->on_route_state_changed = (void*) Marshal.GetFunctionPointerForDelegate(fnOnRouteStateChanged);
+			self->on_route_message_received = (void*) Marshal.GetFunctionPointerForDelegate(fnOnRouteMessageReceived);
 		}
 
 		public CefMediaObserver(cef_media_observer_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefMediaObserverPrivate.AvoidOnSinks();
 
+		[MethodImpl(MethodImplOptions.ForwardRef)]
+		extern bool ICefMediaObserverPrivate.AvoidOnRoutes();
+
+		[MethodImpl(MethodImplOptions.ForwardRef)]
+		extern bool ICefMediaObserverPrivate.AvoidOnRouteStateChanged();
+
+		[MethodImpl(MethodImplOptions.ForwardRef)]
+		extern bool ICefMediaObserverPrivate.AvoidOnRouteMessageReceived();
+
+		internal static CefMediaObserver Create(IntPtr instance)
+		{
+			return new CefMediaObserver((cef_media_observer_t*) instance);
+		}
+
 		/// <summary>
-		/// The list of available media sinks has changed or
-		/// cef_media_router_t::NotifyCurrentSinks was called.
+		///  The list of available media sinks has changed or
+		///  cef_media_router_t::NotifyCurrentSinks was called.
 		/// </summary>
-		protected internal unsafe virtual void OnSinks(CefMediaSink[] sinks)
+		protected internal virtual void OnSinks(CefMediaSink[] sinks)
 		{
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnSinksDelegate(cef_media_observer_t* self, UIntPtr sinksCount, cef_media_sink_t** sinks);
-
 		// void (*)(_cef_media_observer_t* self, size_t sinksCount, const _cef_media_sink_t** sinks)*
-		private static unsafe void OnSinksImpl(cef_media_observer_t* self, UIntPtr sinksCount, cef_media_sink_t** sinks)
+		private static void OnSinksImpl(cef_media_observer_t* self, UIntPtr sinksCount, cef_media_sink_t** sinks)
 		{
-			var instance = GetInstance((IntPtr)self) as CefMediaObserver;
-			if (instance == null || ((ICefMediaObserverPrivate)instance).AvoidOnSinks())
-			{
-				return;
-			}
-			CefMediaSink[] obj_sinks = new CefMediaSink[(int)sinksCount];
-			for (int i = 0; i < obj_sinks.Length; i++)
+			var instance = GetInstance((IntPtr) self) as CefMediaObserver;
+			if (instance == null || ((ICefMediaObserverPrivate) instance).AvoidOnSinks()) return;
+			var obj_sinks = new CefMediaSink[(int) sinksCount];
+			for (var i = 0; i < obj_sinks.Length; i++)
 			{
 				var item = *(sinks + i);
 				item->@base.AddRef();
 				obj_sinks[i] = CefMediaSink.Wrap(CefMediaSink.Create, item);
 			}
+
 			instance.OnSinks(obj_sinks);
 		}
 
-		[MethodImpl(MethodImplOptions.ForwardRef)]
-		extern bool ICefMediaObserverPrivate.AvoidOnRoutes();
-
 		/// <summary>
-		/// The list of available media routes has changed or
-		/// cef_media_router_t::NotifyCurrentRoutes was called.
+		///  The list of available media routes has changed or
+		///  cef_media_router_t::NotifyCurrentRoutes was called.
 		/// </summary>
-		protected internal unsafe virtual void OnRoutes(CefMediaRoute[] routes)
+		protected internal virtual void OnRoutes(CefMediaRoute[] routes)
 		{
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnRoutesDelegate(cef_media_observer_t* self, UIntPtr routesCount, cef_media_route_t** routes);
-
 		// void (*)(_cef_media_observer_t* self, size_t routesCount, const _cef_media_route_t** routes)*
-		private static unsafe void OnRoutesImpl(cef_media_observer_t* self, UIntPtr routesCount, cef_media_route_t** routes)
+		private static void OnRoutesImpl(cef_media_observer_t* self, UIntPtr routesCount, cef_media_route_t** routes)
 		{
-			var instance = GetInstance((IntPtr)self) as CefMediaObserver;
-			if (instance == null || ((ICefMediaObserverPrivate)instance).AvoidOnRoutes())
-			{
-				return;
-			}
-			CefMediaRoute[] obj_routes = new CefMediaRoute[(int)routesCount];
-			for (int i = 0; i < obj_routes.Length; i++)
+			var instance = GetInstance((IntPtr) self) as CefMediaObserver;
+			if (instance == null || ((ICefMediaObserverPrivate) instance).AvoidOnRoutes()) return;
+			var obj_routes = new CefMediaRoute[(int) routesCount];
+			for (var i = 0; i < obj_routes.Length; i++)
 			{
 				var item = *(routes + i);
 				item->@base.AddRef();
 				obj_routes[i] = CefMediaRoute.Wrap(CefMediaRoute.Create, item);
 			}
+
 			instance.OnRoutes(obj_routes);
 		}
 
-		[MethodImpl(MethodImplOptions.ForwardRef)]
-		extern bool ICefMediaObserverPrivate.AvoidOnRouteStateChanged();
-
 		/// <summary>
-		/// The connection state of |route| has changed.
+		///  The connection state of |route| has changed.
 		/// </summary>
-		protected internal unsafe virtual void OnRouteStateChanged(CefMediaRoute route, CefMediaRouteConnectionState state)
+		protected internal virtual void OnRouteStateChanged(CefMediaRoute route, CefMediaRouteConnectionState state)
 		{
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnRouteStateChangedDelegate(cef_media_observer_t* self, cef_media_route_t* route, CefMediaRouteConnectionState state);
-
 		// void (*)(_cef_media_observer_t* self, _cef_media_route_t* route, cef_media_route_connection_state_t state)*
-		private static unsafe void OnRouteStateChangedImpl(cef_media_observer_t* self, cef_media_route_t* route, CefMediaRouteConnectionState state)
+		private static void OnRouteStateChangedImpl(cef_media_observer_t* self, cef_media_route_t* route,
+			CefMediaRouteConnectionState state)
 		{
-			var instance = GetInstance((IntPtr)self) as CefMediaObserver;
-			if (instance == null || ((ICefMediaObserverPrivate)instance).AvoidOnRouteStateChanged())
+			var instance = GetInstance((IntPtr) self) as CefMediaObserver;
+			if (instance == null || ((ICefMediaObserverPrivate) instance).AvoidOnRouteStateChanged())
 			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)route);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) route);
 				return;
 			}
+
 			instance.OnRouteStateChanged(CefMediaRoute.Wrap(CefMediaRoute.Create, route), state);
 		}
 
-		[MethodImpl(MethodImplOptions.ForwardRef)]
-		extern bool ICefMediaObserverPrivate.AvoidOnRouteMessageReceived();
-
 		/// <summary>
-		/// A message was recieved over |route|. |message| is only valid for the scope
-		/// of this callback and should be copied if necessary.
+		///  A message was recieved over |route|. |message| is only valid for the scope
+		///  of this callback and should be copied if necessary.
 		/// </summary>
-		protected internal unsafe virtual void OnRouteMessageReceived(CefMediaRoute route, IntPtr message, long messageSize)
+		protected internal virtual void OnRouteMessageReceived(CefMediaRoute route, IntPtr message, long messageSize)
 		{
+		}
+
+		// void (*)(_cef_media_observer_t* self, _cef_media_route_t* route, const void* message, size_t message_size)*
+		private static void OnRouteMessageReceivedImpl(cef_media_observer_t* self, cef_media_route_t* route,
+			void* message, UIntPtr message_size)
+		{
+			var instance = GetInstance((IntPtr) self) as CefMediaObserver;
+			if (instance == null || ((ICefMediaObserverPrivate) instance).AvoidOnRouteMessageReceived())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) route);
+				return;
+			}
+
+			instance.OnRouteMessageReceived(CefMediaRoute.Wrap(CefMediaRoute.Create, route), (IntPtr) message,
+				(long) message_size);
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnRouteMessageReceivedDelegate(cef_media_observer_t* self, cef_media_route_t* route, void* message, UIntPtr message_size);
+		private delegate void OnSinksDelegate(cef_media_observer_t* self, UIntPtr sinksCount, cef_media_sink_t** sinks);
 
-		// void (*)(_cef_media_observer_t* self, _cef_media_route_t* route, const void* message, size_t message_size)*
-		private static unsafe void OnRouteMessageReceivedImpl(cef_media_observer_t* self, cef_media_route_t* route, void* message, UIntPtr message_size)
-		{
-			var instance = GetInstance((IntPtr)self) as CefMediaObserver;
-			if (instance == null || ((ICefMediaObserverPrivate)instance).AvoidOnRouteMessageReceived())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)route);
-				return;
-			}
-			instance.OnRouteMessageReceived(CefMediaRoute.Wrap(CefMediaRoute.Create, route), unchecked((IntPtr)message), (long)message_size);
-		}
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnRoutesDelegate(cef_media_observer_t* self, UIntPtr routesCount,
+			cef_media_route_t** routes);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnRouteStateChangedDelegate(cef_media_observer_t* self, cef_media_route_t* route,
+			CefMediaRouteConnectionState state);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnRouteMessageReceivedDelegate(cef_media_observer_t* self, cef_media_route_t* route,
+			void* message, UIntPtr message_size);
 	}
 }

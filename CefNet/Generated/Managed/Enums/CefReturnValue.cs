@@ -11,32 +11,26 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Return value types.
+	///  Return value types.
 	/// </summary>
 	public enum CefReturnValue
 	{
 		/// <summary>
-		/// Cancel immediately.
+		///  Cancel immediately.
 		/// </summary>
 		Cancel = 0,
 
 		/// <summary>
-		/// Continue immediately.
+		///  Continue immediately.
 		/// </summary>
 		Continue = 1,
 
 		/// <summary>
-		/// Continue asynchronously (usually via a callback).
+		///  Continue asynchronously (usually via a callback).
 		/// </summary>
-		ContinueAsync = 2,
+		ContinueAsync = 2
 	}
 }
-

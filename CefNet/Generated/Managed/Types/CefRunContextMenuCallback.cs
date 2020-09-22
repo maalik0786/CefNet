@@ -12,46 +12,42 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback structure used for continuation of custom context menu display.
+	///  Callback structure used for continuation of custom context menu display.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefRunContextMenuCallback : CefBaseRefCounted<cef_run_context_menu_callback_t>
+	public unsafe class CefRunContextMenuCallback : CefBaseRefCounted<cef_run_context_menu_callback_t>
 	{
-		internal static unsafe CefRunContextMenuCallback Create(IntPtr instance)
+		public CefRunContextMenuCallback(cef_run_context_menu_callback_t* instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
-			return new CefRunContextMenuCallback((cef_run_context_menu_callback_t*)instance);
 		}
 
-		public CefRunContextMenuCallback(cef_run_context_menu_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+		internal static CefRunContextMenuCallback Create(IntPtr instance)
 		{
+			return new CefRunContextMenuCallback((cef_run_context_menu_callback_t*) instance);
 		}
 
 		/// <summary>
-		/// Complete context menu display by selecting the specified |command_id| and
-		/// |event_flags|.
+		///  Complete context menu display by selecting the specified |command_id| and
+		///  |event_flags|.
 		/// </summary>
-		public unsafe virtual void Continue(int commandId, CefEventFlags eventFlags)
+		public virtual void Continue(int commandId, CefEventFlags eventFlags)
 		{
 			NativeInstance->Continue(commandId, eventFlags);
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Cancel context menu display.
+		///  Cancel context menu display.
 		/// </summary>
-		public unsafe virtual void Cancel()
+		public virtual void Cancel()
 		{
 			NativeInstance->Cancel();
 			GC.KeepAlive(this);

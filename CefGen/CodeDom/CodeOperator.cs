@@ -4,9 +4,7 @@
 // See the licence file in the project root for full license information.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CefGen.CodeDom
 {
@@ -15,7 +13,6 @@ namespace CefGen.CodeDom
 		public CodeOperator(string name)
 			: base(name)
 		{
-
 		}
 
 		public List<CodeMethodParameter> Parameters { get; } = new List<CodeMethodParameter>(0);

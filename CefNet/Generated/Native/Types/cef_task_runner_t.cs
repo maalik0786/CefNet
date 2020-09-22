@@ -11,93 +11,90 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure that asynchronously executes tasks on the associated thread. It is
-	/// safe to call the functions of this structure on any thread.
-	/// CEF maintains multiple internal threads that are used for handling different
-	/// types of tasks in different processes. The cef_thread_id_t definitions in
-	/// cef_types.h list the common CEF threads. Task runners are also available for
-	/// other CEF threads as appropriate (for example, V8 WebWorker threads).
+	///  Structure that asynchronously executes tasks on the associated thread. It is
+	///  safe to call the functions of this structure on any thread.
+	///  CEF maintains multiple internal threads that are used for handling different
+	///  types of tasks in different processes. The cef_thread_id_t definitions in
+	///  cef_types.h list the common CEF threads. Task runners are also available for
+	///  other CEF threads as appropriate (for example, V8 WebWorker threads).
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_task_runner_t
+	public unsafe struct cef_task_runner_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_task_runner_t* self, _cef_task_runner_t* that)*
+		///  int (*)(_cef_task_runner_t* self, _cef_task_runner_t* that)*
 		/// </summary>
 		public void* is_same;
 
 		/// <summary>
-		/// Returns true (1) if this object is pointing to the same task runner as
-		/// |that| object.
+		///  Returns true (1) if this object is pointing to the same task runner as
+		///  |that| object.
 		/// </summary>
 		[NativeName("is_same")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsSame(cef_task_runner_t* that);
+		public extern int IsSame(cef_task_runner_t* that);
 
 		/// <summary>
-		/// int (*)(_cef_task_runner_t* self)*
+		///  int (*)(_cef_task_runner_t* self)*
 		/// </summary>
 		public void* belongs_to_current_thread;
 
 		/// <summary>
-		/// Returns true (1) if this task runner belongs to the current thread.
+		///  Returns true (1) if this task runner belongs to the current thread.
 		/// </summary>
 		[NativeName("belongs_to_current_thread")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int BelongsToCurrentThread();
+		public extern int BelongsToCurrentThread();
 
 		/// <summary>
-		/// int (*)(_cef_task_runner_t* self, cef_thread_id_t threadId)*
+		///  int (*)(_cef_task_runner_t* self, cef_thread_id_t threadId)*
 		/// </summary>
 		public void* belongs_to_thread;
 
 		/// <summary>
-		/// Returns true (1) if this task runner is for the specified CEF thread.
+		///  Returns true (1) if this task runner is for the specified CEF thread.
 		/// </summary>
 		[NativeName("belongs_to_thread")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int BelongsToThread(CefThreadId threadId);
+		public extern int BelongsToThread(CefThreadId threadId);
 
 		/// <summary>
-		/// int (*)(_cef_task_runner_t* self, _cef_task_t* task)*
+		///  int (*)(_cef_task_runner_t* self, _cef_task_t* task)*
 		/// </summary>
 		public void* post_task;
 
 		/// <summary>
-		/// Post a task for execution on the thread associated with this task runner.
-		/// Execution will occur asynchronously.
+		///  Post a task for execution on the thread associated with this task runner.
+		///  Execution will occur asynchronously.
 		/// </summary>
 		[NativeName("post_task")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int PostTask(cef_task_t* task);
+		public extern int PostTask(cef_task_t* task);
 
 		/// <summary>
-		/// int (*)(_cef_task_runner_t* self, _cef_task_t* task, int64 delay_ms)*
+		///  int (*)(_cef_task_runner_t* self, _cef_task_t* task, int64 delay_ms)*
 		/// </summary>
 		public void* post_delayed_task;
 
 		/// <summary>
-		/// Post a task for delayed execution on the thread associated with this task
-		/// runner. Execution will occur asynchronously. Delayed tasks are not
-		/// supported on V8 WebWorker threads and will be executed without the
-		/// specified delay.
+		///  Post a task for delayed execution on the thread associated with this task
+		///  runner. Execution will occur asynchronously. Delayed tasks are not
+		///  supported on V8 WebWorker threads and will be executed without the
+		///  specified delay.
 		/// </summary>
 		[NativeName("post_delayed_task")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int PostDelayedTask(cef_task_t* task, long delay_ms);
+		public extern int PostDelayedTask(cef_task_t* task, long delay_ms);
 	}
 }
-

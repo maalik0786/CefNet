@@ -11,32 +11,26 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Describes how to interpret the alpha component of a pixel.
+	///  Describes how to interpret the alpha component of a pixel.
 	/// </summary>
 	public enum CefAlphaType
 	{
 		/// <summary>
-		/// No transparency. The alpha component is ignored.
+		///  No transparency. The alpha component is ignored.
 		/// </summary>
 		Opaque = 0,
 
 		/// <summary>
-		/// Transparency with pre-multiplied alpha component.
+		///  Transparency with pre-multiplied alpha component.
 		/// </summary>
 		Premultiplied = 1,
 
 		/// <summary>
-		/// Transparency with post-multiplied alpha component.
+		///  Transparency with post-multiplied alpha component.
 		/// </summary>
-		Postmultiplied = 2,
+		Postmultiplied = 2
 	}
 }
-

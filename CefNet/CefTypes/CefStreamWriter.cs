@@ -1,27 +1,25 @@
-﻿using CefNet.CApi;
-using System;
-using System.IO;
+﻿using System;
+using CefNet.CApi;
 
 namespace CefNet
 {
 	public unsafe partial class CefStreamWriter
 	{
 		/// <summary>
-		/// Create a new CefStreamWriter object for a file.
+		///  Create a new CefStreamWriter object for a file.
 		/// </summary>
 		public CefStreamWriter(string filename)
 			: this(CreateForFile(filename))
 		{
-
 		}
 
 		/// <summary>
-		/// Create a new CefStreamReader object for a custom handler.
+		///  Create a new CefStreamReader object for a custom handler.
 		/// </summary>
 		public CefStreamWriter(CefWriteHandler handler)
-			: this(CefNativeApi.cef_stream_writer_create_for_handler((handler ?? throw new ArgumentNullException(nameof(handler))).GetNativeInstance()))
+			: this(CefNativeApi.cef_stream_writer_create_for_handler(
+				(handler ?? throw new ArgumentNullException(nameof(handler))).GetNativeInstance()))
 		{
-
 		}
 
 		private static cef_stream_writer_t* CreateForFile(string filename)
@@ -35,12 +33,11 @@ namespace CefNet
 
 			fixed (char* s = filename)
 			{
-				cef_string_t cstr = new cef_string_t();
+				var cstr = new cef_string_t();
 				cstr.Base.str = s;
-				cstr.Base.length = unchecked((UIntPtr)filename.Length);
+				cstr.Base.length = (UIntPtr) filename.Length;
 				return CefNativeApi.cef_stream_writer_create_for_file(&cstr);
 			}
 		}
-
 	}
 }

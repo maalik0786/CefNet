@@ -6,7 +6,6 @@
 		Object,
 		Function,
 		Date,
-		CorsRedirect,
-
+		CorsRedirect
 	}
 }

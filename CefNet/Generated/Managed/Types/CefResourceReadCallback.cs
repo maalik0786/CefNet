@@ -12,42 +12,38 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback for asynchronous continuation of cef_resource_handler_t::read().
+	///  Callback for asynchronous continuation of cef_resource_handler_t::read().
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefResourceReadCallback : CefBaseRefCounted<cef_resource_read_callback_t>
+	public unsafe class CefResourceReadCallback : CefBaseRefCounted<cef_resource_read_callback_t>
 	{
-		internal static unsafe CefResourceReadCallback Create(IntPtr instance)
+		public CefResourceReadCallback(cef_resource_read_callback_t* instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
-			return new CefResourceReadCallback((cef_resource_read_callback_t*)instance);
 		}
 
-		public CefResourceReadCallback(cef_resource_read_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+		internal static CefResourceReadCallback Create(IntPtr instance)
 		{
+			return new CefResourceReadCallback((cef_resource_read_callback_t*) instance);
 		}
 
 		/// <summary>
-		/// Callback for asynchronous continuation of read(). If |bytes_read| == 0 the
-		/// response will be considered complete. If |bytes_read| &gt; 0 then read() will
-		/// be called again until the request is complete (based on either the result
-		/// or the expected content length). If |bytes_read|
-		/// &lt;
-		/// 0 then the request will
-		/// fail and the |bytes_read| value will be treated as the error code.
+		///  Callback for asynchronous continuation of read(). If |bytes_read| == 0 the
+		///  response will be considered complete. If |bytes_read| &gt; 0 then read() will
+		///  be called again until the request is complete (based on either the result
+		///  or the expected content length). If |bytes_read|
+		///  &lt;
+		///  0 then the request will
+		///  fail and the |bytes_read| value will be treated as the error code.
 		/// </summary>
-		public unsafe virtual void Continue(int bytesRead)
+		public virtual void Continue(int bytesRead)
 		{
 			NativeInstance->Continue(bytesRead);
 			GC.KeepAlive(this);

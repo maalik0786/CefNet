@@ -11,198 +11,195 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure used to represent a DOM document. The functions of this structure
-	/// should only be called on the render process main thread thread.
+	///  Structure used to represent a DOM document. The functions of this structure
+	///  should only be called on the render process main thread thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_domdocument_t
+	public unsafe struct cef_domdocument_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// cef_dom_document_type_t (*)(_cef_domdocument_t* self)*
+		///  cef_dom_document_type_t (*)(_cef_domdocument_t* self)*
 		/// </summary>
 		public void* get_type;
 
 		/// <summary>
-		/// Returns the document type.
+		///  Returns the document type.
 		/// </summary>
 		[NativeName("get_type")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern CefDOMDocumentType GetCefType();
+		public extern CefDOMDocumentType GetCefType();
 
 		/// <summary>
-		/// _cef_domnode_t* (*)(_cef_domdocument_t* self)*
+		///  _cef_domnode_t* (*)(_cef_domdocument_t* self)*
 		/// </summary>
 		public void* get_document;
 
 		/// <summary>
-		/// Returns the root document node.
+		///  Returns the root document node.
 		/// </summary>
 		[NativeName("get_document")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_domnode_t* GetDocument();
+		public extern cef_domnode_t* GetDocument();
 
 		/// <summary>
-		/// _cef_domnode_t* (*)(_cef_domdocument_t* self)*
+		///  _cef_domnode_t* (*)(_cef_domdocument_t* self)*
 		/// </summary>
 		public void* get_body;
 
 		/// <summary>
-		/// Returns the BODY node of an HTML document.
+		///  Returns the BODY node of an HTML document.
 		/// </summary>
 		[NativeName("get_body")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_domnode_t* GetBody();
+		public extern cef_domnode_t* GetBody();
 
 		/// <summary>
-		/// _cef_domnode_t* (*)(_cef_domdocument_t* self)*
+		///  _cef_domnode_t* (*)(_cef_domdocument_t* self)*
 		/// </summary>
 		public void* get_head;
 
 		/// <summary>
-		/// Returns the HEAD node of an HTML document.
+		///  Returns the HEAD node of an HTML document.
 		/// </summary>
 		[NativeName("get_head")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_domnode_t* GetHead();
+		public extern cef_domnode_t* GetHead();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_domdocument_t* self)*
+		///  cef_string_userfree_t (*)(_cef_domdocument_t* self)*
 		/// </summary>
 		public void* get_title;
 
 		/// <summary>
-		/// Returns the title of an HTML document.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the title of an HTML document.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_title")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetTitle();
+		public extern cef_string_userfree_t GetTitle();
 
 		/// <summary>
-		/// _cef_domnode_t* (*)(_cef_domdocument_t* self, const cef_string_t* id)*
+		///  _cef_domnode_t* (*)(_cef_domdocument_t* self, const cef_string_t* id)*
 		/// </summary>
 		public void* get_element_by_id;
 
 		/// <summary>
-		/// Returns the document element with the specified ID value.
+		///  Returns the document element with the specified ID value.
 		/// </summary>
 		[NativeName("get_element_by_id")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_domnode_t* GetElementById([Immutable]cef_string_t* id);
+		public extern cef_domnode_t* GetElementById([Immutable] cef_string_t* id);
 
 		/// <summary>
-		/// _cef_domnode_t* (*)(_cef_domdocument_t* self)*
+		///  _cef_domnode_t* (*)(_cef_domdocument_t* self)*
 		/// </summary>
 		public void* get_focused_node;
 
 		/// <summary>
-		/// Returns the node that currently has keyboard focus.
+		///  Returns the node that currently has keyboard focus.
 		/// </summary>
 		[NativeName("get_focused_node")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_domnode_t* GetFocusedNode();
+		public extern cef_domnode_t* GetFocusedNode();
 
 		/// <summary>
-		/// int (*)(_cef_domdocument_t* self)*
+		///  int (*)(_cef_domdocument_t* self)*
 		/// </summary>
 		public void* has_selection;
 
 		/// <summary>
-		/// Returns true (1) if a portion of the document is selected.
+		///  Returns true (1) if a portion of the document is selected.
 		/// </summary>
 		[NativeName("has_selection")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int HasSelection();
+		public extern int HasSelection();
 
 		/// <summary>
-		/// int (*)(_cef_domdocument_t* self)*
+		///  int (*)(_cef_domdocument_t* self)*
 		/// </summary>
 		public void* get_selection_start_offset;
 
 		/// <summary>
-		/// Returns the selection offset within the start node.
+		///  Returns the selection offset within the start node.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		[NativeName("get_selection_start_offset")]
-		public unsafe extern int GetSelectionStartOffset();
+		public extern int GetSelectionStartOffset();
 
 		/// <summary>
-		/// int (*)(_cef_domdocument_t* self)*
+		///  int (*)(_cef_domdocument_t* self)*
 		/// </summary>
 		public void* get_selection_end_offset;
 
 		/// <summary>
-		/// Returns the selection offset within the end node.
+		///  Returns the selection offset within the end node.
 		/// </summary>
 		[NativeName("get_selection_end_offset")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int GetSelectionEndOffset();
+		public extern int GetSelectionEndOffset();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_domdocument_t* self)*
+		///  cef_string_userfree_t (*)(_cef_domdocument_t* self)*
 		/// </summary>
 		public void* get_selection_as_markup;
 
 		/// <summary>
-		/// Returns the contents of this selection as markup.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the contents of this selection as markup.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_selection_as_markup")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetSelectionAsMarkup();
+		public extern cef_string_userfree_t GetSelectionAsMarkup();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_domdocument_t* self)*
+		///  cef_string_userfree_t (*)(_cef_domdocument_t* self)*
 		/// </summary>
 		public void* get_selection_as_text;
 
 		/// <summary>
-		/// Returns the contents of this selection as text.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the contents of this selection as text.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_selection_as_text")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetSelectionAsText();
+		public extern cef_string_userfree_t GetSelectionAsText();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_domdocument_t* self)*
+		///  cef_string_userfree_t (*)(_cef_domdocument_t* self)*
 		/// </summary>
 		public void* get_base_url;
 
 		/// <summary>
-		/// Returns the base URL for the document.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the base URL for the document.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_base_url")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetBaseUrl();
+		public extern cef_string_userfree_t GetBaseUrl();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_domdocument_t* self, const cef_string_t* partialURL)*
+		///  cef_string_userfree_t (*)(_cef_domdocument_t* self, const cef_string_t* partialURL)*
 		/// </summary>
 		public void* get_complete_url;
 
 		/// <summary>
-		/// Returns a complete URL based on the document base URL and the specified
-		/// partial URL.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns a complete URL based on the document base URL and the specified
+		///  partial URL.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_complete_url")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetCompleteUrl([Immutable]cef_string_t* partialURL);
+		public extern cef_string_userfree_t GetCompleteUrl([Immutable] cef_string_t* partialURL);
 	}
 }
-

@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported menu item types.
+	///  Supported menu item types.
 	/// </summary>
 	public enum CefMenuItemType
 	{
@@ -33,7 +28,6 @@ namespace CefNet
 
 		Separator = 4,
 
-		Submenu = 5,
+		Submenu = 5
 	}
 }
-

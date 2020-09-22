@@ -1,18 +1,15 @@
 ﻿using CefNet.CApi;
-using System;
-using System.Runtime.InteropServices;
 
 namespace CefNet
 {
 	public unsafe partial class CefListValue
 	{
 		/// <summary>
-		/// Creates a new object that is not owned by any other object.
+		///  Creates a new object that is not owned by any other object.
 		/// </summary>
 		public CefListValue()
 			: this(CefNativeApi.cef_list_value_create())
 		{
-
 		}
 
 		public bool SetBinary(long index, byte[] buffer)
@@ -23,15 +20,15 @@ namespace CefNet
 			}
 		}
 
-		internal unsafe long GetInt64(long index)
+		internal long GetInt64(long index)
 		{
-			double value = this.GetDouble(index);
-			return *((long*)&value);
+			var value = GetDouble(index);
+			return *(long*) &value;
 		}
 
-		internal unsafe bool SetInt64(long index, long value)
+		internal bool SetInt64(long index, long value)
 		{
-			double f64 = *((double*)&value);
+			var f64 = *(double*) &value;
 			return SetDouble(index, f64);
 		}
 

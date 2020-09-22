@@ -11,22 +11,18 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing a range.
+	///  Structure representing a range.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_range_t
+	public struct cef_range_t
 	{
 		public int from;
 
 		public int to;
 	}
 }
-

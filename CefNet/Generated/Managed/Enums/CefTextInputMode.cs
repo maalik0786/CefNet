@@ -11,17 +11,12 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Input mode of a virtual keyboard. These constants match their equivalents
-	/// in Chromium&apos;s text_input_mode.h and should not be renumbered.
-	/// See https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute
+	///  Input mode of a virtual keyboard. These constants match their equivalents
+	///  in Chromium&apos;s text_input_mode.h and should not be renumbered.
+	///  See https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute
 	/// </summary>
 	public enum CefTextInputMode
 	{
@@ -43,7 +38,6 @@ namespace CefNet
 
 		Search = 8,
 
-		Max = Search,
+		Max = Search
 	}
 }
-

@@ -11,20 +11,17 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing cursor information. |buffer| will be
-	/// |size.width|*|size.height|*4 bytes in size and represents a BGRA image with
-	/// an upper-left origin.
+	///  Structure representing cursor information. |buffer| will be
+	///  |size.width|*|size.height|*4 bytes in size and represents a BGRA image with
+	///  an upper-left origin.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_cursor_info_t
+	public unsafe struct cef_cursor_info_t
 	{
 		public cef_point_t hotspot;
 
@@ -35,4 +32,3 @@ namespace CefNet.CApi
 		public cef_size_t size;
 	}
 }
-

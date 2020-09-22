@@ -12,101 +12,80 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing a binary value. Can be used on any process and thread.
+	///  Structure representing a binary value. Can be used on any process and thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
 	public unsafe partial class CefBinaryValue : CefBaseRefCounted<cef_binary_value_t>
 	{
-		internal static unsafe CefBinaryValue Create(IntPtr instance)
-		{
-			return new CefBinaryValue((cef_binary_value_t*)instance);
-		}
-
 		public CefBinaryValue(cef_binary_value_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this object is valid. This object may become invalid if
-		/// the underlying data is owned by another object (e.g. list or dictionary)
-		/// and that other object is then modified or destroyed. Do not call any other
-		/// functions if this property returns false.
+		///  Gets a value indicating whether this object is valid. This object may become invalid if
+		///  the underlying data is owned by another object (e.g. list or dictionary)
+		///  and that other object is then modified or destroyed. Do not call any other
+		///  functions if this property returns false.
 		/// </summary>
-		public unsafe virtual bool IsValid
+		public virtual bool IsValid => SafeCall(NativeInstance->IsValid() != 0);
+
+		/// <summary>
+		///  Gets a value indicating whether this object is currently owned by another object.
+		/// </summary>
+		public virtual bool IsOwned => SafeCall(NativeInstance->IsOwned() != 0);
+
+		/// <summary>
+		///  Gets the data size.
+		/// </summary>
+		public virtual long Size => SafeCall((long) NativeInstance->GetSize());
+
+		internal static CefBinaryValue Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(NativeInstance->IsValid() != 0);
-			}
+			return new CefBinaryValue((cef_binary_value_t*) instance);
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this object is currently owned by another object.
+		///  Returns true (1) if this object and |that| object have the same underlying
+		///  data.
 		/// </summary>
-		public unsafe virtual bool IsOwned
+		public virtual bool IsSame(CefBinaryValue that)
 		{
-			get
-			{
-				return SafeCall(NativeInstance->IsOwned() != 0);
-			}
+			return SafeCall(NativeInstance->IsSame(that != null ? that.GetNativeInstance() : null) != 0);
 		}
 
 		/// <summary>
-		/// Gets the data size.
+		///  Returns true (1) if this object and |that| object have an equivalent
+		///  underlying value but are not necessarily the same object.
 		/// </summary>
-		public unsafe virtual long Size
+		public virtual bool IsEqual(CefBinaryValue that)
 		{
-			get
-			{
-				return SafeCall((long)NativeInstance->GetSize());
-			}
+			return SafeCall(NativeInstance->IsEqual(that != null ? that.GetNativeInstance() : null) != 0);
 		}
 
 		/// <summary>
-		/// Returns true (1) if this object and |that| object have the same underlying
-		/// data.
+		///  Returns a copy of this object. The data in this object will also be copied.
 		/// </summary>
-		public unsafe virtual bool IsSame(CefBinaryValue that)
+		public virtual CefBinaryValue Copy()
 		{
-			return SafeCall(NativeInstance->IsSame((that != null) ? that.GetNativeInstance() : null) != 0);
+			return SafeCall(Wrap(Create, NativeInstance->Copy()));
 		}
 
 		/// <summary>
-		/// Returns true (1) if this object and |that| object have an equivalent
-		/// underlying value but are not necessarily the same object.
+		///  Read up to |buffer_size| number of bytes into |buffer|. Reading begins at
+		///  the specified byte |data_offset|. Returns the number of bytes read.
 		/// </summary>
-		public unsafe virtual bool IsEqual(CefBinaryValue that)
+		public virtual long GetData(IntPtr buffer, long bufferSize, long dataOffset)
 		{
-			return SafeCall(NativeInstance->IsEqual((that != null) ? that.GetNativeInstance() : null) != 0);
-		}
-
-		/// <summary>
-		/// Returns a copy of this object. The data in this object will also be copied.
-		/// </summary>
-		public unsafe virtual CefBinaryValue Copy()
-		{
-			return SafeCall(CefBinaryValue.Wrap(CefBinaryValue.Create, NativeInstance->Copy()));
-		}
-
-		/// <summary>
-		/// Read up to |buffer_size| number of bytes into |buffer|. Reading begins at
-		/// the specified byte |data_offset|. Returns the number of bytes read.
-		/// </summary>
-		public unsafe virtual long GetData(IntPtr buffer, long bufferSize, long dataOffset)
-		{
-			return SafeCall((long)NativeInstance->GetData((void*)buffer, new UIntPtr((ulong)bufferSize), new UIntPtr((ulong)dataOffset)));
+			return SafeCall((long) NativeInstance->GetData((void*) buffer, new UIntPtr((ulong) bufferSize),
+				new UIntPtr((ulong) dataOffset)));
 		}
 	}
 }

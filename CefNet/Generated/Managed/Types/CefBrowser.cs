@@ -12,240 +12,179 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure used to represent a browser window. When used in the browser
-	/// process the functions of this structure may be called on any thread unless
-	/// otherwise indicated in the comments. When used in the render process the
-	/// functions of this structure may only be called on the main thread.
+	///  Structure used to represent a browser window. When used in the browser
+	///  process the functions of this structure may be called on any thread unless
+	///  otherwise indicated in the comments. When used in the render process the
+	///  functions of this structure may only be called on the main thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
 	public unsafe partial class CefBrowser : CefBaseRefCounted<cef_browser_t>
 	{
-		internal static unsafe CefBrowser Create(IntPtr instance)
-		{
-			return new CefBrowser((cef_browser_t*)instance);
-		}
-
 		public CefBrowser(cef_browser_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets the browser host object. This property can only be called in the
-		/// browser process.
+		///  Gets the browser host object. This property can only be called in the
+		///  browser process.
 		/// </summary>
-		public unsafe virtual CefBrowserHost Host
+		public virtual CefBrowserHost Host =>
+			SafeCall(CefBrowserHost.Wrap(CefBrowserHost.Create, NativeInstance->GetHost()));
+
+		/// <summary>
+		///  Gets a value indicating whether the browser can navigate backwards.
+		/// </summary>
+		public virtual bool CanGoBack => SafeCall(NativeInstance->CanGoBack() != 0);
+
+		/// <summary>
+		///  Gets a value indicating whether the browser can navigate forwards.
+		/// </summary>
+		public virtual bool CanGoForward => SafeCall(NativeInstance->CanGoForward() != 0);
+
+		/// <summary>
+		///  Gets a value indicating whether the browser is currently loading.
+		/// </summary>
+		public virtual bool IsLoading => SafeCall(NativeInstance->IsLoading() != 0);
+
+		/// <summary>
+		///  Gets the globally unique identifier for this browser. This value is also
+		///  used as the tabId for extension APIs.
+		/// </summary>
+		public virtual int Identifier => SafeCall(NativeInstance->GetIdentifier());
+
+		/// <summary>
+		///  Gets a value indicating whether the window is a popup window.
+		/// </summary>
+		public virtual bool IsPopup => SafeCall(NativeInstance->IsPopup() != 0);
+
+		/// <summary>
+		///  Gets a value indicating whether a document has been loaded in the browser.
+		/// </summary>
+		public virtual bool HasDocument => SafeCall(NativeInstance->HasDocument() != 0);
+
+		/// <summary>
+		///  Gets the main (top-level) frame for the browser window.
+		/// </summary>
+		public virtual CefFrame MainFrame => SafeCall(CefFrame.Wrap(CefFrame.Create, NativeInstance->GetMainFrame()));
+
+		/// <summary>
+		///  Gets the focused frame for the browser window.
+		/// </summary>
+		public virtual CefFrame FocusedFrame =>
+			SafeCall(CefFrame.Wrap(CefFrame.Create, NativeInstance->GetFocusedFrame()));
+
+		/// <summary>
+		///  Gets the number of frames that currently exist.
+		/// </summary>
+		public virtual long FrameCount => SafeCall((long) NativeInstance->GetFrameCount());
+
+		internal static CefBrowser Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(CefBrowserHost.Wrap(CefBrowserHost.Create, NativeInstance->GetHost()));
-			}
+			return new CefBrowser((cef_browser_t*) instance);
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether the browser can navigate backwards.
+		///  Navigate backwards.
 		/// </summary>
-		public unsafe virtual bool CanGoBack
-		{
-			get
-			{
-				return SafeCall(NativeInstance->CanGoBack() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the browser can navigate forwards.
-		/// </summary>
-		public unsafe virtual bool CanGoForward
-		{
-			get
-			{
-				return SafeCall(NativeInstance->CanGoForward() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the browser is currently loading.
-		/// </summary>
-		public unsafe virtual bool IsLoading
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsLoading() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets the globally unique identifier for this browser. This value is also
-		/// used as the tabId for extension APIs.
-		/// </summary>
-		public unsafe virtual int Identifier
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetIdentifier());
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the window is a popup window.
-		/// </summary>
-		public unsafe virtual bool IsPopup
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsPopup() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether a document has been loaded in the browser.
-		/// </summary>
-		public unsafe virtual bool HasDocument
-		{
-			get
-			{
-				return SafeCall(NativeInstance->HasDocument() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets the main (top-level) frame for the browser window.
-		/// </summary>
-		public unsafe virtual CefFrame MainFrame
-		{
-			get
-			{
-				return SafeCall(CefFrame.Wrap(CefFrame.Create, NativeInstance->GetMainFrame()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the focused frame for the browser window.
-		/// </summary>
-		public unsafe virtual CefFrame FocusedFrame
-		{
-			get
-			{
-				return SafeCall(CefFrame.Wrap(CefFrame.Create, NativeInstance->GetFocusedFrame()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the number of frames that currently exist.
-		/// </summary>
-		public unsafe virtual long FrameCount
-		{
-			get
-			{
-				return SafeCall((long)NativeInstance->GetFrameCount());
-			}
-		}
-
-		/// <summary>
-		/// Navigate backwards.
-		/// </summary>
-		public unsafe virtual void GoBack()
+		public virtual void GoBack()
 		{
 			NativeInstance->GoBack();
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Navigate forwards.
+		///  Navigate forwards.
 		/// </summary>
-		public unsafe virtual void GoForward()
+		public virtual void GoForward()
 		{
 			NativeInstance->GoForward();
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Reload the current page.
+		///  Reload the current page.
 		/// </summary>
-		public unsafe virtual void Reload()
+		public virtual void Reload()
 		{
 			NativeInstance->Reload();
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Reload the current page ignoring any cached data.
+		///  Reload the current page ignoring any cached data.
 		/// </summary>
-		public unsafe virtual void ReloadIgnoreCache()
+		public virtual void ReloadIgnoreCache()
 		{
 			NativeInstance->ReloadIgnoreCache();
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Stop loading the page.
+		///  Stop loading the page.
 		/// </summary>
-		public unsafe virtual void StopLoad()
+		public virtual void StopLoad()
 		{
 			NativeInstance->StopLoad();
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Returns true (1) if this object is pointing to the same handle as |that|
-		/// object.
+		///  Returns true (1) if this object is pointing to the same handle as |that|
+		///  object.
 		/// </summary>
-		public unsafe virtual bool IsSame(CefBrowser that)
+		public virtual bool IsSame(CefBrowser that)
 		{
-			return SafeCall(NativeInstance->IsSame((that != null) ? that.GetNativeInstance() : null) != 0);
+			return SafeCall(NativeInstance->IsSame(that != null ? that.GetNativeInstance() : null) != 0);
 		}
 
 		/// <summary>
-		/// Returns the frame with the specified identifier, or NULL if not found.
+		///  Returns the frame with the specified identifier, or NULL if not found.
 		/// </summary>
-		public unsafe virtual CefFrame GetFrameByIdent(long identifier)
+		public virtual CefFrame GetFrameByIdent(long identifier)
 		{
 			return SafeCall(CefFrame.Wrap(CefFrame.Create, NativeInstance->GetFrameByIdent(identifier)));
 		}
 
 		/// <summary>
-		/// Returns the frame with the specified name, or NULL if not found.
+		///  Returns the frame with the specified name, or NULL if not found.
 		/// </summary>
-		public unsafe virtual CefFrame GetFrame(string name)
+		public virtual CefFrame GetFrame(string name)
 		{
 			fixed (char* s0 = name)
 			{
-				var cstr0 = new cef_string_t { Str = s0, Length = name != null ? name.Length : 0 };
+				var cstr0 = new cef_string_t {Str = s0, Length = name != null ? name.Length : 0};
 				return SafeCall(CefFrame.Wrap(CefFrame.Create, NativeInstance->GetFrame(&cstr0)));
 			}
 		}
 
 		/// <summary>
-		/// Returns the identifiers of all existing frames.
+		///  Returns the identifiers of all existing frames.
 		/// </summary>
-		public unsafe virtual void GetFrameIdentifiers(ref long identifiersCount, ref long[] identifiers)
+		public virtual void GetFrameIdentifiers(ref long identifiersCount, ref long[] identifiers)
 		{
 			fixed (long* p1 = identifiers)
 			{
-				UIntPtr c1 = new UIntPtr((uint)identifiers.Length);
+				var c1 = new UIntPtr((uint) identifiers.Length);
 				NativeInstance->GetFrameIdentifiers(&c1, p1);
-				identifiersCount = (long)c1;
-				Array.Resize(ref identifiers, (int)c1);
+				identifiersCount = (long) c1;
+				Array.Resize(ref identifiers, (int) c1);
 			}
+
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Returns the names of all existing frames.
+		///  Returns the names of all existing frames.
 		/// </summary>
-		public unsafe virtual void GetFrameNames(CefStringList names)
+		public virtual void GetFrameNames(CefStringList names)
 		{
 			NativeInstance->GetFrameNames(names.GetNativeInstance());
 			GC.KeepAlive(this);

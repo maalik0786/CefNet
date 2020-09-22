@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CefNet.Internal
+﻿namespace CefNet.Internal
 {
 	public partial class WebViewGlue
 	{
-
 		internal bool AvoidOnBeforeContextMenu()
 		{
 			return false;
 		}
 
-		internal protected virtual void OnBeforeContextMenu(CefBrowser browser, CefFrame frame, CefContextMenuParams menuParams, CefMenuModel model)
+		protected internal virtual void OnBeforeContextMenu(CefBrowser browser, CefFrame frame,
+			CefContextMenuParams menuParams, CefMenuModel model)
 		{
-
 		}
 
 		internal bool AvoidRunContextMenu()
@@ -22,7 +17,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual bool RunContextMenu(CefBrowser browser, CefFrame frame, CefContextMenuParams menuParams, CefMenuModel model, CefRunContextMenuCallback callback)
+		protected internal virtual bool RunContextMenu(CefBrowser browser, CefFrame frame,
+			CefContextMenuParams menuParams, CefMenuModel model, CefRunContextMenuCallback callback)
 		{
 			return WebView.RaiseRunContextMenu(frame, menuParams, model, callback);
 		}
@@ -32,7 +28,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual bool OnContextMenuCommand(CefBrowser browser, CefFrame frame, CefContextMenuParams menuParams, int commandId, CefEventFlags eventFlags)
+		protected internal virtual bool OnContextMenuCommand(CefBrowser browser, CefFrame frame,
+			CefContextMenuParams menuParams, int commandId, CefEventFlags eventFlags)
 		{
 			return false;
 		}
@@ -42,9 +39,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		internal protected virtual void OnContextMenuDismissed(CefBrowser browser, CefFrame frame)
+		protected internal virtual void OnContextMenuDismissed(CefBrowser browser, CefFrame frame)
 		{
-
 		}
 	}
 }

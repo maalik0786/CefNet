@@ -11,7 +11,6 @@ namespace CefGen.CodeDom
 		public CodeFinalizer(string name)
 			: base(name)
 		{
-
 		}
 
 		public string Body { get; internal set; }

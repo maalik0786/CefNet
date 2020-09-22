@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using CefNet.CApi;
 
@@ -7,10 +6,9 @@ namespace CefNet
 {
 	public unsafe partial class CefRequestContext
 	{
-
 #if USESAFECACHE
-
-		private static readonly HashSet<WeakReference<CefRequestContext>> WeakRefs = new HashSet<WeakReference<CefRequestContext>>();
+		private static readonly HashSet<WeakReference<CefRequestContext>> WeakRefs =
+ new HashSet<WeakReference<CefRequestContext>>();
 
 		public unsafe static CefRequestContext Wrap(Func<IntPtr, CefRequestContext> create, cef_request_context_t* instance)
 		{
@@ -42,24 +40,23 @@ namespace CefNet
 #endif // USESAFECACHE
 
 		/// <summary>
-		/// Returns the global context object.
+		///  Returns the global context object.
 		/// </summary>
 		public static CefRequestContext GetGlobalContext()
 		{
-			return CefRequestContext.Wrap(CefRequestContext.Create, CefNativeApi.cef_request_context_get_global_context());
+			return Wrap(Create, CefNativeApi.cef_request_context_get_global_context());
 		}
 
 		/// <summary>
-		/// Creates a new context object with the specified |settings|.
+		///  Creates a new context object with the specified |settings|.
 		/// </summary>
 		public CefRequestContext(CefRequestContextSettings settings)
 			: this(settings, null)
 		{
-
 		}
 
 		/// <summary>
-		/// Creates a new context object with the specified |settings| and optional |handler|.
+		///  Creates a new context object with the specified |settings| and optional |handler|.
 		/// </summary>
 		public CefRequestContext(CefRequestContextSettings settings, CefRequestContextHandler handler)
 			: this(CefNativeApi.cef_request_context_create_context(
@@ -75,16 +72,15 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Creates a new context object that shares storage with |other|.
+		///  Creates a new context object that shares storage with |other|.
 		/// </summary>
 		public CefRequestContext(CefRequestContext other)
 			: this(other, null)
 		{
-
 		}
 
 		/// <summary>
-		/// Creates a new context object that shares storage with |other| and uses an optional |handler|.
+		///  Creates a new context object that shares storage with |other| and uses an optional |handler|.
 		/// </summary>
 		public CefRequestContext(CefRequestContext other, CefRequestContextHandler handler)
 			: this(CefNativeApi.cef_create_context_shared(
@@ -100,7 +96,6 @@ namespace CefNet
 		}
 
 #if USESAFECACHE
-
 		protected override void Dispose(bool disposing)
 		{
 			lock (WeakRefs)
@@ -131,11 +126,11 @@ namespace CefNet
 #endif // USESAFECACHE
 
 		/// <summary>
-		/// Sets the <paramref name="value"/> associated with preference <paramref name="name"/>.
+		///  Sets the <paramref name="value" /> associated with preference <paramref name="name" />.
 		/// </summary>
 		/// <param name="name">The name of the preference.</param>
 		/// <param name="value">
-		/// If <paramref name="value"/> is NULL the preference will be restored to its default value.
+		///  If <paramref name="value" /> is NULL the preference will be restored to its default value.
 		/// </param>
 		/// <param name="cancellationToken"></param>
 		/// <exception cref="InvalidOperationException">Setting the preference fails.</exception>
@@ -157,11 +152,11 @@ namespace CefNet
 		}
 
 		/// <summary>
-		/// Sets the <paramref name="value"/> associated with preference <paramref name="name"/>.
+		///  Sets the <paramref name="value" /> associated with preference <paramref name="name" />.
 		/// </summary>
 		/// <param name="name">The name of the preference.</param>
 		/// <param name="value">
-		/// If <paramref name="value"/> is NULL the preference will be restored to its default value.
+		///  If <paramref name="value" /> is NULL the preference will be restored to its default value.
 		/// </param>
 		/// <param name="cancellationToken"></param>
 		/// <exception cref="InvalidOperationException">Setting the preference fails.</exception>
@@ -174,28 +169,32 @@ namespace CefNet
 			SetPreferenceInternal(name, value, null);
 		}
 
-		private unsafe void SetPreferenceInternal(string name, CefValue value, TaskCompletionSource<bool> taskCompletion)
+		private void SetPreferenceInternal(string name, CefValue value, TaskCompletionSource<bool> taskCompletion)
 		{
 			int retval;
 			string errorMsg;
 			fixed (char* s0 = name)
 			{
 				cef_string_t error;
-				cef_string_t cstr0 = new cef_string_t { Str = s0, Length = name.Length };
-				retval = NativeInstance->SetPreference(&cstr0, value is null ? null : value.GetNativeInstance(), &error);
+				var cstr0 = new cef_string_t {Str = s0, Length = name.Length};
+				retval = NativeInstance->SetPreference(&cstr0, value is null ? null : value.GetNativeInstance(),
+					&error);
 				GC.KeepAlive(this);
 				errorMsg = CefString.ReadAndFree(&error);
 			}
+
 			if (retval != 0)
 			{
 				taskCompletion?.TrySetResult(true);
 				return;
 			}
-			Exception exception = errorMsg is null ? new InvalidOperationException() : new InvalidOperationException(errorMsg);
+
+			Exception exception = errorMsg is null
+				? new InvalidOperationException()
+				: new InvalidOperationException(errorMsg);
 			if (taskCompletion is null)
 				throw exception;
 			taskCompletion.TrySetException(exception);
 		}
-
 	}
 }

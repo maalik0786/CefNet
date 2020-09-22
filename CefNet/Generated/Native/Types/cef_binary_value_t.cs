@@ -12,112 +12,110 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing a binary value. Can be used on any process and thread.
+	///  Structure representing a binary value. Can be used on any process and thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_binary_value_t
+	public unsafe struct cef_binary_value_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_binary_value_t* self)*
+		///  int (*)(_cef_binary_value_t* self)*
 		/// </summary>
 		public void* is_valid;
 
 		/// <summary>
-		/// Returns true (1) if this object is valid. This object may become invalid if
-		/// the underlying data is owned by another object (e.g. list or dictionary)
-		/// and that other object is then modified or destroyed. Do not call any other
-		/// functions if this function returns false (0).
+		///  Returns true (1) if this object is valid. This object may become invalid if
+		///  the underlying data is owned by another object (e.g. list or dictionary)
+		///  and that other object is then modified or destroyed. Do not call any other
+		///  functions if this function returns false (0).
 		/// </summary>
 		[NativeName("is_valid")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsValid();
+		public extern int IsValid();
 
 		/// <summary>
-		/// int (*)(_cef_binary_value_t* self)*
+		///  int (*)(_cef_binary_value_t* self)*
 		/// </summary>
 		public void* is_owned;
 
 		/// <summary>
-		/// Returns true (1) if this object is currently owned by another object.
+		///  Returns true (1) if this object is currently owned by another object.
 		/// </summary>
 		[NativeName("is_owned")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsOwned();
+		public extern int IsOwned();
 
 		/// <summary>
-		/// int (*)(_cef_binary_value_t* self, _cef_binary_value_t* that)*
+		///  int (*)(_cef_binary_value_t* self, _cef_binary_value_t* that)*
 		/// </summary>
 		public void* is_same;
 
 		/// <summary>
-		/// Returns true (1) if this object and |that| object have the same underlying
-		/// data.
+		///  Returns true (1) if this object and |that| object have the same underlying
+		///  data.
 		/// </summary>
 		[NativeName("is_same")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsSame(cef_binary_value_t* that);
+		public extern int IsSame(cef_binary_value_t* that);
 
 		/// <summary>
-		/// int (*)(_cef_binary_value_t* self, _cef_binary_value_t* that)*
+		///  int (*)(_cef_binary_value_t* self, _cef_binary_value_t* that)*
 		/// </summary>
 		public void* is_equal;
 
 		/// <summary>
-		/// Returns true (1) if this object and |that| object have an equivalent
-		/// underlying value but are not necessarily the same object.
+		///  Returns true (1) if this object and |that| object have an equivalent
+		///  underlying value but are not necessarily the same object.
 		/// </summary>
 		[NativeName("is_equal")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsEqual(cef_binary_value_t* that);
+		public extern int IsEqual(cef_binary_value_t* that);
 
 		/// <summary>
-		/// _cef_binary_value_t* (*)(_cef_binary_value_t* self)*
+		///  _cef_binary_value_t* (*)(_cef_binary_value_t* self)*
 		/// </summary>
 		public void* copy;
 
 		/// <summary>
-		/// Returns a copy of this object. The data in this object will also be copied.
+		///  Returns a copy of this object. The data in this object will also be copied.
 		/// </summary>
 		[NativeName("copy")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_binary_value_t* Copy();
+		public extern cef_binary_value_t* Copy();
 
 		/// <summary>
-		/// size_t (*)(_cef_binary_value_t* self)*
+		///  size_t (*)(_cef_binary_value_t* self)*
 		/// </summary>
 		public void* get_size;
 
 		/// <summary>
-		/// Returns the data size.
+		///  Returns the data size.
 		/// </summary>
 		[NativeName("get_size")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern UIntPtr GetSize();
+		public extern UIntPtr GetSize();
 
 		/// <summary>
-		/// size_t (*)(_cef_binary_value_t* self, void* buffer, size_t buffer_size, size_t data_offset)*
+		///  size_t (*)(_cef_binary_value_t* self, void* buffer, size_t buffer_size, size_t data_offset)*
 		/// </summary>
 		public void* get_data;
 
 		/// <summary>
-		/// Read up to |buffer_size| number of bytes into |buffer|. Reading begins at
-		/// the specified byte |data_offset|. Returns the number of bytes read.
+		///  Read up to |buffer_size| number of bytes into |buffer|. Reading begins at
+		///  the specified byte |data_offset|. Returns the number of bytes read.
 		/// </summary>
 		[NativeName("get_data")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern UIntPtr GetData(void* buffer, UIntPtr buffer_size, UIntPtr data_offset);
+		public extern UIntPtr GetData(void* buffer, UIntPtr buffer_size, UIntPtr data_offset);
 	}
 }
-

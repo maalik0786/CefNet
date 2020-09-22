@@ -14,6 +14,6 @@ namespace CefGen.CodeDom
 		Default = 0,
 		In = 1 << 0,
 		Out = 1 << 1,
-		Ref = In | Out,
+		Ref = In | Out
 	}
 }

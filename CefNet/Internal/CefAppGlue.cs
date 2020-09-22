@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CefNet.Internal
+﻿namespace CefNet.Internal
 {
 	internal sealed partial class CefAppGlue
 	{
@@ -11,12 +7,12 @@ namespace CefNet.Internal
 		public CefAppGlue(CefNetApplication application)
 		{
 			_application = application;
-			this.RenderProcessGlue = new CefRenderProcessHandlerGlue(this);
-			this.BrowserProcessGlue = new CefBrowserProcessHandlerGlue(this);
+			RenderProcessGlue = new CefRenderProcessHandlerGlue(this);
+			BrowserProcessGlue = new CefBrowserProcessHandlerGlue(this);
 		}
 
-		internal CefRenderProcessHandler RenderProcessGlue { get; private set; }
+		internal CefRenderProcessHandler RenderProcessGlue { get; }
 
-		internal CefBrowserProcessHandler BrowserProcessGlue { get; private set; }
+		internal CefBrowserProcessHandler BrowserProcessGlue { get; }
 	}
 }

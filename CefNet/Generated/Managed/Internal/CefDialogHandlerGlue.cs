@@ -11,18 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefDialogHandlerGlue: CefDialogHandler, ICefDialogHandlerPrivate
+	internal sealed class CefDialogHandlerGlue : CefDialogHandler, ICefDialogHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefDialogHandlerGlue(WebViewGlue impl)
 		{
@@ -34,10 +27,12 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnFileDialog();
 		}
 
-		protected internal unsafe override bool OnFileDialog(CefBrowser browser, CefFileDialogMode mode, string title, string defaultFilePath, CefStringList acceptFilters, int selectedAcceptFilter, CefFileDialogCallback callback)
+		protected internal override bool OnFileDialog(CefBrowser browser, CefFileDialogMode mode, string title,
+			string defaultFilePath, CefStringList acceptFilters, int selectedAcceptFilter,
+			CefFileDialogCallback callback)
 		{
-			return _implementation.OnFileDialog(browser, mode, title, defaultFilePath, acceptFilters, selectedAcceptFilter, callback);
+			return _implementation.OnFileDialog(browser, mode, title, defaultFilePath, acceptFilters,
+				selectedAcceptFilter, callback);
 		}
-
 	}
 }

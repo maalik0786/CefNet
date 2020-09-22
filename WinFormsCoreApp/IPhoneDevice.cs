@@ -1,7 +1,5 @@
-﻿using CefNet;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using CefNet;
 
 namespace WinFormsCoreApp
 {
@@ -28,8 +26,7 @@ namespace WinFormsCoreApp
 		ModelXSMax = 103,
 		Model11 = 110,
 		Model11Pro = 111,
-		Model11ProMax = 112,
-
+		Model11ProMax = 112
 	}
 
 	public sealed class IPhoneDevice : VirtualDevice
@@ -48,18 +45,45 @@ namespace WinFormsCoreApp
 		{
 			if (model < IPhone.ModelX)
 			{
-				this.NormalTopPanel = 70;
-				this.CollapsedTopPanel = 39.5f;
-				this.NormalBottomPanel = 44;
+				NormalTopPanel = 70;
+				CollapsedTopPanel = 39.5f;
+				NormalBottomPanel = 44;
 			}
 			else
 			{
-				this.NormalTopPanel = 94;
-				this.CollapsedTopPanel = 62.8f;
-				this.NormalBottomPanel = 83;
+				NormalTopPanel = 94;
+				CollapsedTopPanel = 62.8f;
+				NormalBottomPanel = 83;
 			}
+
 			ShowControlTools(false);
 		}
+
+		public IPhone Model { get; private set; }
+
+		public override CefRect ViewportRect
+		{
+			get
+			{
+				var r = ScreenInfo.Rect;
+				if (_landscapeMode) r = new CefRect(0, 0, r.Height, r.Width);
+				if (UseDeviceWidth)
+					return new CefRect(0, 0, r.Width, (int) (r.Height - TopPanel - BottomPanel));
+				return new CefRect(0, 0, 980, (int) ((r.Height - TopPanel - BottomPanel) / r.Width * 980.0f));
+			}
+		}
+
+		public bool UseDeviceWidth { get; set; }
+
+		private float CollapsedTopPanel { get; }
+
+		private float NormalTopPanel { get; }
+
+		private float NormalBottomPanel { get; }
+
+		public float TopPanel { get; private set; }
+
+		public float BottomPanel { get; private set; }
 
 		public static IPhoneDevice Create(IPhone model)
 		{
@@ -95,37 +119,9 @@ namespace WinFormsCoreApp
 				case IPhone.Model11ProMax:
 					return new IPhoneDevice(model, 414, 896, 3);
 			}
+
 			throw new NotSupportedException();
 		}
-
-		public IPhone Model { get; private set; }
-
-		public override CefRect ViewportRect
-		{
-			get
-			{
-				CefRect r = ScreenInfo.Rect;
-				if (_landscapeMode)
-				{
-					r = new CefRect(0, 0, r.Height, r.Width);
-				}
-				if (UseDeviceWidth)
-					return new CefRect(0, 0, r.Width, (int)(r.Height - TopPanel - BottomPanel));
-				return new CefRect(0, 0, 980, (int)((r.Height - TopPanel - BottomPanel) / r.Width * 980.0f));
-			}
-		}
-
-		public bool UseDeviceWidth { get; set; }
-
-		private float CollapsedTopPanel { get; }
-
-		private float NormalTopPanel { get; }
-
-		private float NormalBottomPanel { get; }
-
-		public float TopPanel { get; private set; }
-
-		public float BottomPanel { get; private set; }
 
 		public void ShowControlTools(bool show)
 		{

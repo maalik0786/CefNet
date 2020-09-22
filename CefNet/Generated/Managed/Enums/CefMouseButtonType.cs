@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Mouse button types.
+	///  Mouse button types.
 	/// </summary>
 	public enum CefMouseButtonType
 	{
@@ -27,7 +22,6 @@ namespace CefNet
 
 		Middle = 1,
 
-		Right = 2,
+		Right = 2
 	}
 }
-

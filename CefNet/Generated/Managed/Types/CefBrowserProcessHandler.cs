@@ -12,162 +12,161 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure used to implement browser process callbacks. The functions of this
-	/// structure will be called on the browser process main thread unless otherwise
-	/// indicated.
+	///  Structure used to implement browser process callbacks. The functions of this
+	///  structure will be called on the browser process main thread unless otherwise
+	///  indicated.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefBrowserProcessHandler : CefBaseRefCounted<cef_browser_process_handler_t>, ICefBrowserProcessHandlerPrivate
+	public unsafe class CefBrowserProcessHandler : CefBaseRefCounted<cef_browser_process_handler_t>,
+		ICefBrowserProcessHandlerPrivate
 	{
 		private static readonly OnContextInitializedDelegate fnOnContextInitialized = OnContextInitializedImpl;
 
-		private static readonly OnBeforeChildProcessLaunchDelegate fnOnBeforeChildProcessLaunch = OnBeforeChildProcessLaunchImpl;
+		private static readonly OnBeforeChildProcessLaunchDelegate fnOnBeforeChildProcessLaunch =
+			OnBeforeChildProcessLaunchImpl;
 
 		private static readonly GetPrintHandlerDelegate fnGetPrintHandler = GetPrintHandlerImpl;
 
-		private static readonly OnScheduleMessagePumpWorkDelegate fnOnScheduleMessagePumpWork = OnScheduleMessagePumpWorkImpl;
-
-		internal static unsafe CefBrowserProcessHandler Create(IntPtr instance)
-		{
-			return new CefBrowserProcessHandler((cef_browser_process_handler_t*)instance);
-		}
+		private static readonly OnScheduleMessagePumpWorkDelegate fnOnScheduleMessagePumpWork =
+			OnScheduleMessagePumpWorkImpl;
 
 		public CefBrowserProcessHandler()
 		{
-			cef_browser_process_handler_t* self = this.NativeInstance;
-			self->on_context_initialized = (void*)Marshal.GetFunctionPointerForDelegate(fnOnContextInitialized);
-			self->on_before_child_process_launch = (void*)Marshal.GetFunctionPointerForDelegate(fnOnBeforeChildProcessLaunch);
-			self->get_print_handler = (void*)Marshal.GetFunctionPointerForDelegate(fnGetPrintHandler);
-			self->on_schedule_message_pump_work = (void*)Marshal.GetFunctionPointerForDelegate(fnOnScheduleMessagePumpWork);
+			var self = NativeInstance;
+			self->on_context_initialized = (void*) Marshal.GetFunctionPointerForDelegate(fnOnContextInitialized);
+			self->on_before_child_process_launch =
+				(void*) Marshal.GetFunctionPointerForDelegate(fnOnBeforeChildProcessLaunch);
+			self->get_print_handler = (void*) Marshal.GetFunctionPointerForDelegate(fnGetPrintHandler);
+			self->on_schedule_message_pump_work =
+				(void*) Marshal.GetFunctionPointerForDelegate(fnOnScheduleMessagePumpWork);
 		}
 
 		public CefBrowserProcessHandler(cef_browser_process_handler_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
-		}
-
-		/// <summary>
-		/// Called on the browser process UI thread immediately after the CEF context
-		/// has been initialized.
-		/// </summary>
-		protected internal unsafe virtual void OnContextInitialized()
-		{
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnContextInitializedDelegate(cef_browser_process_handler_t* self);
-
-		// void (*)(_cef_browser_process_handler_t* self)*
-		private static unsafe void OnContextInitializedImpl(cef_browser_process_handler_t* self)
-		{
-			var instance = GetInstance((IntPtr)self) as CefBrowserProcessHandler;
-			if (instance == null)
-			{
-				return;
-			}
-			instance.OnContextInitialized();
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefBrowserProcessHandlerPrivate.AvoidOnBeforeChildProcessLaunch();
 
+		[MethodImpl(MethodImplOptions.ForwardRef)]
+		extern bool ICefBrowserProcessHandlerPrivate.AvoidOnScheduleMessagePumpWork();
+
+		internal static CefBrowserProcessHandler Create(IntPtr instance)
+		{
+			return new CefBrowserProcessHandler((cef_browser_process_handler_t*) instance);
+		}
+
 		/// <summary>
-		/// Called before a child process is launched. Will be called on the browser
-		/// process UI thread when launching a render process and on the browser
-		/// process IO thread when launching a GPU or plugin process. Provides an
-		/// opportunity to modify the child process command line. Do not keep a
-		/// reference to |command_line| outside of this function.
+		///  Called on the browser process UI thread immediately after the CEF context
+		///  has been initialized.
 		/// </summary>
-		protected internal unsafe virtual void OnBeforeChildProcessLaunch(CefCommandLine commandLine)
+		protected internal virtual void OnContextInitialized()
 		{
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnBeforeChildProcessLaunchDelegate(cef_browser_process_handler_t* self, cef_command_line_t* command_line);
+		// void (*)(_cef_browser_process_handler_t* self)*
+		private static void OnContextInitializedImpl(cef_browser_process_handler_t* self)
+		{
+			var instance = GetInstance((IntPtr) self) as CefBrowserProcessHandler;
+			if (instance == null) return;
+			instance.OnContextInitialized();
+		}
+
+		/// <summary>
+		///  Called before a child process is launched. Will be called on the browser
+		///  process UI thread when launching a render process and on the browser
+		///  process IO thread when launching a GPU or plugin process. Provides an
+		///  opportunity to modify the child process command line. Do not keep a
+		///  reference to |command_line| outside of this function.
+		/// </summary>
+		protected internal virtual void OnBeforeChildProcessLaunch(CefCommandLine commandLine)
+		{
+		}
 
 		// void (*)(_cef_browser_process_handler_t* self, _cef_command_line_t* command_line)*
-		private static unsafe void OnBeforeChildProcessLaunchImpl(cef_browser_process_handler_t* self, cef_command_line_t* command_line)
+		private static void OnBeforeChildProcessLaunchImpl(cef_browser_process_handler_t* self,
+			cef_command_line_t* command_line)
 		{
-			var instance = GetInstance((IntPtr)self) as CefBrowserProcessHandler;
-			if (instance == null || ((ICefBrowserProcessHandlerPrivate)instance).AvoidOnBeforeChildProcessLaunch())
+			var instance = GetInstance((IntPtr) self) as CefBrowserProcessHandler;
+			if (instance == null || ((ICefBrowserProcessHandlerPrivate) instance).AvoidOnBeforeChildProcessLaunch())
 			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)command_line);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) command_line);
 				return;
 			}
+
 			instance.OnBeforeChildProcessLaunch(CefCommandLine.Wrap(CefCommandLine.Create, command_line));
 		}
 
 		/// <summary>
-		/// Return the handler for printing on Linux. If a print handler is not
-		/// provided then printing will not be supported on the Linux platform.
+		///  Return the handler for printing on Linux. If a print handler is not
+		///  provided then printing will not be supported on the Linux platform.
 		/// </summary>
-		protected internal unsafe virtual CefPrintHandler GetPrintHandler()
+		protected internal virtual CefPrintHandler GetPrintHandler()
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate cef_print_handler_t* GetPrintHandlerDelegate(cef_browser_process_handler_t* self);
-
 		// _cef_print_handler_t* (*)(_cef_browser_process_handler_t* self)*
-		private static unsafe cef_print_handler_t* GetPrintHandlerImpl(cef_browser_process_handler_t* self)
+		private static cef_print_handler_t* GetPrintHandlerImpl(cef_browser_process_handler_t* self)
 		{
-			var instance = GetInstance((IntPtr)self) as CefBrowserProcessHandler;
-			if (instance == null)
-			{
-				return default;
-			}
-			CefPrintHandler rv = instance.GetPrintHandler();
+			var instance = GetInstance((IntPtr) self) as CefBrowserProcessHandler;
+			if (instance == null) return default;
+			var rv = instance.GetPrintHandler();
 			if (rv == null)
 				return null;
-			return (rv != null) ? rv.GetNativeInstance() : null;
+			return rv != null ? rv.GetNativeInstance() : null;
 		}
 
-		[MethodImpl(MethodImplOptions.ForwardRef)]
-		extern bool ICefBrowserProcessHandlerPrivate.AvoidOnScheduleMessagePumpWork();
-
 		/// <summary>
-		/// Called from any thread when work has been scheduled for the browser process
-		/// main (UI) thread. This callback is used in combination with CefSettings.
-		/// external_message_pump and cef_do_message_loop_work() in cases where the CEF
-		/// message loop must be integrated into an existing application message loop
-		/// (see additional comments and warnings on CefDoMessageLoopWork). This
-		/// callback should schedule a cef_do_message_loop_work() call to happen on the
-		/// main (UI) thread. |delay_ms| is the requested delay in milliseconds. If
-		/// |delay_ms| is
-		/// &lt;
-		/// = 0 then the call should happen reasonably soon. If
-		/// |delay_ms| is &gt; 0 then the call should be scheduled to happen after the
-		/// specified delay and any currently pending scheduled call should be
-		/// cancelled.
+		///  Called from any thread when work has been scheduled for the browser process
+		///  main (UI) thread. This callback is used in combination with CefSettings.
+		///  external_message_pump and cef_do_message_loop_work() in cases where the CEF
+		///  message loop must be integrated into an existing application message loop
+		///  (see additional comments and warnings on CefDoMessageLoopWork). This
+		///  callback should schedule a cef_do_message_loop_work() call to happen on the
+		///  main (UI) thread. |delay_ms| is the requested delay in milliseconds. If
+		///  |delay_ms| is
+		///  &lt;
+		///  = 0 then the call should happen reasonably soon. If
+		///  |delay_ms| is &gt; 0 then the call should be scheduled to happen after the
+		///  specified delay and any currently pending scheduled call should be
+		///  cancelled.
 		/// </summary>
-		protected internal unsafe virtual void OnScheduleMessagePumpWork(long delayMs)
+		protected internal virtual void OnScheduleMessagePumpWork(long delayMs)
 		{
+		}
+
+		// void (*)(_cef_browser_process_handler_t* self, int64 delay_ms)*
+		private static void OnScheduleMessagePumpWorkImpl(cef_browser_process_handler_t* self, long delay_ms)
+		{
+			var instance = GetInstance((IntPtr) self) as CefBrowserProcessHandler;
+			if (instance == null ||
+			    ((ICefBrowserProcessHandlerPrivate) instance).AvoidOnScheduleMessagePumpWork()) return;
+			instance.OnScheduleMessagePumpWork(delay_ms);
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnScheduleMessagePumpWorkDelegate(cef_browser_process_handler_t* self, long delay_ms);
+		private delegate void OnContextInitializedDelegate(cef_browser_process_handler_t* self);
 
-		// void (*)(_cef_browser_process_handler_t* self, int64 delay_ms)*
-		private static unsafe void OnScheduleMessagePumpWorkImpl(cef_browser_process_handler_t* self, long delay_ms)
-		{
-			var instance = GetInstance((IntPtr)self) as CefBrowserProcessHandler;
-			if (instance == null || ((ICefBrowserProcessHandlerPrivate)instance).AvoidOnScheduleMessagePumpWork())
-			{
-				return;
-			}
-			instance.OnScheduleMessagePumpWork(delay_ms);
-		}
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnBeforeChildProcessLaunchDelegate(cef_browser_process_handler_t* self,
+			cef_command_line_t* command_line);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate cef_print_handler_t* GetPrintHandlerDelegate(cef_browser_process_handler_t* self);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnScheduleMessagePumpWorkDelegate(cef_browser_process_handler_t* self, long delay_ms);
 	}
 }

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CefNet;
@@ -11,25 +9,25 @@ using WinFormsCoreApp;
 
 namespace ModernFormsApp
 {
-	static class Program
+	internal static class Program
 	{
 		private static readonly int messagePumpDelay = 10;
-		private static System.Threading.Timer messagePump;
+		private static Timer messagePump;
 		private static Form mainForm;
 
 		/// <summary>
 		///  The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
 			//Application.SetHighDpiMode(HighDpiMode.SystemAware);
 			//Application.EnableVisualStyles();
 			//Application.SetCompatibleTextRenderingDefault(false);
 
 
-			string cefPath = Path.Combine(Path.GetDirectoryName(GetProjectPath()), "cef");
-			bool externalMessagePump = args.Contains("--external-message-pump");
+			var cefPath = Path.Combine(Path.GetDirectoryName(GetProjectPath()), "cef");
+			var externalMessagePump = args.Contains("--external-message-pump");
 
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
@@ -52,9 +50,8 @@ namespace ModernFormsApp
 				app.Initialize(Path.Combine(cefPath, "Release"), settings);
 
 				if (externalMessagePump)
-				{
-					messagePump = new System.Threading.Timer(_ => Application.RunOnUIThread(CefApi.DoMessageLoopWork), null, messagePumpDelay, messagePumpDelay);
-				}
+					messagePump = new Timer(_ => Application.RunOnUIThread(CefApi.DoMessageLoopWork), null,
+						messagePumpDelay, messagePumpDelay);
 
 				mainForm = new MainForm();
 				//mainForm.UseSystemDecorations = true;
@@ -75,7 +72,7 @@ namespace ModernFormsApp
 
 		private static async void OnScheduleMessagePumpWork(long delayMs)
 		{
-			await Task.Delay((int)delayMs);
+			await Task.Delay((int) delayMs);
 			Application.RunOnUIThread(CefApi.DoMessageLoopWork);
 		}
 
@@ -88,19 +85,22 @@ namespace ModernFormsApp
 		{
 			if (exception == null)
 				return;
-			new MessageBoxForm(from, string.Format("{0}: {1}\r\n{2}", exception.GetType().Name, exception.Message, exception.StackTrace)).ShowDialog(mainForm);
+			new MessageBoxForm(from,
+					string.Format("{0}: {1}\r\n{2}", exception.GetType().Name, exception.Message, exception.StackTrace))
+				.ShowDialog(mainForm);
 		}
 
 		private static string GetProjectPath()
 		{
-			string projectPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
-			string rootPath = Path.GetPathRoot(projectPath);
+			var projectPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+			var rootPath = Path.GetPathRoot(projectPath);
 			while (Path.GetFileName(projectPath) != "ModernFormsApp")
 			{
 				if (projectPath == rootPath)
 					throw new DirectoryNotFoundException("Could not find the project directory.");
 				projectPath = Path.GetDirectoryName(projectPath);
 			}
+
 			return projectPath;
 		}
 	}

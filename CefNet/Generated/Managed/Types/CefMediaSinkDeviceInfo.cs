@@ -12,21 +12,17 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Device information for a MediaSink object.
+	///  Device information for a MediaSink object.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefMediaSinkDeviceInfo : IDisposable
+	public unsafe struct CefMediaSinkDeviceInfo : IDisposable
 	{
 		private cef_media_sink_device_info_t _instance;
 
@@ -50,14 +46,8 @@ namespace CefNet
 
 		public int Port
 		{
-			get
-			{
-				return _instance.port;
-			}
-			set
-			{
-				_instance.port = value;
-			}
+			get => _instance.port;
+			set => _instance.port = value;
 		}
 
 		public string ModelName
@@ -86,7 +76,7 @@ namespace CefNet
 
 		public static implicit operator CefMediaSinkDeviceInfo(cef_media_sink_device_info_t instance)
 		{
-			return new CefMediaSinkDeviceInfo { _instance = instance };
+			return new CefMediaSinkDeviceInfo {_instance = instance};
 		}
 
 		public static implicit operator cef_media_sink_device_info_t(CefMediaSinkDeviceInfo instance)

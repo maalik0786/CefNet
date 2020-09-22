@@ -1,12 +1,14 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Globalization;
-using System.Diagnostics;
 using System.Collections;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace CefNet.JSInterop
 {
-	[TypeConverter(typeof(V8UndefinedConverter)) , DebuggerDisplay("undefined"), DebuggerStepThrough]
+	[TypeConverter(typeof(V8UndefinedConverter))]
+	[DebuggerDisplay("undefined")]
+	[DebuggerStepThrough]
 	public struct V8Undefined : IConvertible
 	{
 		public static V8Undefined Value = default;
@@ -120,7 +122,8 @@ namespace CefNet.JSInterop
 			return true;
 		}
 
-		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
+			Type destinationType)
 		{
 			return destinationType.IsPrimitive ? Activator.CreateInstance(destinationType) : null;
 		}
@@ -135,5 +138,4 @@ namespace CefNet.JSInterop
 			return true;
 		}
 	}
-
 }

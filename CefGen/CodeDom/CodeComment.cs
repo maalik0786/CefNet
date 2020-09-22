@@ -11,13 +11,12 @@ namespace CefGen.CodeDom
 		public CodeComment(string commentText)
 			: this(commentText, false)
 		{
-
 		}
 
 		public CodeComment(string commentText, bool isXml)
 		{
-			this.Text = commentText;
-			this.IsXml = isXml;
+			Text = commentText;
+			IsXml = isXml;
 		}
 
 		public string Text { get; }

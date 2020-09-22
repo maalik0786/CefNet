@@ -12,65 +12,61 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback structure for cef_browser_host_t::PrintToPDF. The functions of this
-	/// structure will be called on the browser process UI thread.
+	///  Callback structure for cef_browser_host_t::PrintToPDF. The functions of this
+	///  structure will be called on the browser process UI thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefPdfPrintCallback : CefBaseRefCounted<cef_pdf_print_callback_t>, ICefPdfPrintCallbackPrivate
+	public unsafe class CefPdfPrintCallback : CefBaseRefCounted<cef_pdf_print_callback_t>, ICefPdfPrintCallbackPrivate
 	{
 		private static readonly OnPdfPrintFinishedDelegate fnOnPdfPrintFinished = OnPdfPrintFinishedImpl;
 
-		internal static unsafe CefPdfPrintCallback Create(IntPtr instance)
-		{
-			return new CefPdfPrintCallback((cef_pdf_print_callback_t*)instance);
-		}
-
 		public CefPdfPrintCallback()
 		{
-			cef_pdf_print_callback_t* self = this.NativeInstance;
-			self->on_pdf_print_finished = (void*)Marshal.GetFunctionPointerForDelegate(fnOnPdfPrintFinished);
+			var self = NativeInstance;
+			self->on_pdf_print_finished = (void*) Marshal.GetFunctionPointerForDelegate(fnOnPdfPrintFinished);
 		}
 
 		public CefPdfPrintCallback(cef_pdf_print_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefPdfPrintCallbackPrivate.AvoidOnPdfPrintFinished();
 
-		/// <summary>
-		/// Method that will be executed when the PDF printing has completed. |path| is
-		/// the output path. |ok| will be true (1) if the printing completed
-		/// successfully or false (0) otherwise.
-		/// </summary>
-		protected internal unsafe virtual void OnPdfPrintFinished(string path, bool ok)
+		internal static CefPdfPrintCallback Create(IntPtr instance)
 		{
+			return new CefPdfPrintCallback((cef_pdf_print_callback_t*) instance);
+		}
+
+		/// <summary>
+		///  Method that will be executed when the PDF printing has completed. |path| is
+		///  the output path. |ok| will be true (1) if the printing completed
+		///  successfully or false (0) otherwise.
+		/// </summary>
+		protected internal virtual void OnPdfPrintFinished(string path, bool ok)
+		{
+		}
+
+		// void (*)(_cef_pdf_print_callback_t* self, const cef_string_t* path, int ok)*
+		private static void OnPdfPrintFinishedImpl(cef_pdf_print_callback_t* self, cef_string_t* path, int ok)
+		{
+			var instance = GetInstance((IntPtr) self) as CefPdfPrintCallback;
+			if (instance == null || ((ICefPdfPrintCallbackPrivate) instance).AvoidOnPdfPrintFinished()) return;
+			instance.OnPdfPrintFinished(CefString.Read(path), ok != 0);
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnPdfPrintFinishedDelegate(cef_pdf_print_callback_t* self, cef_string_t* path, int ok);
-
-		// void (*)(_cef_pdf_print_callback_t* self, const cef_string_t* path, int ok)*
-		private static unsafe void OnPdfPrintFinishedImpl(cef_pdf_print_callback_t* self, cef_string_t* path, int ok)
-		{
-			var instance = GetInstance((IntPtr)self) as CefPdfPrintCallback;
-			if (instance == null || ((ICefPdfPrintCallbackPrivate)instance).AvoidOnPdfPrintFinished())
-			{
-				return;
-			}
-			instance.OnPdfPrintFinished(CefString.Read(path), ok != 0);
-		}
+		private delegate void OnPdfPrintFinishedDelegate(cef_pdf_print_callback_t* self, cef_string_t* path, int ok);
 	}
 }

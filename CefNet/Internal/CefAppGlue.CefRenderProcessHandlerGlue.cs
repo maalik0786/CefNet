@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace CefNet.Internal
 {
-	partial class CefAppGlue
+	internal partial class CefAppGlue
 	{
 		public void OnWebKitInitialized()
 		{
@@ -58,9 +55,11 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		public void OnUncaughtException(CefBrowser browser, CefFrame frame, CefV8Context context, CefV8Exception exception, CefV8StackTrace stackTrace)
+		public void OnUncaughtException(CefBrowser browser, CefFrame frame, CefV8Context context,
+			CefV8Exception exception, CefV8StackTrace stackTrace)
 		{
-			_application.OnUncaughtException(new CefUncaughtExceptionEventArgs(browser, frame, context, exception, stackTrace));
+			_application.OnUncaughtException(
+				new CefUncaughtExceptionEventArgs(browser, frame, context, exception, stackTrace));
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
@@ -76,7 +75,8 @@ namespace CefNet.Internal
 			return false;
 		}
 
-		public bool OnProcessMessageReceived(CefBrowser browser, CefFrame frame, CefProcessId sourceProcess, CefProcessMessage message)
+		public bool OnProcessMessageReceived(CefBrowser browser, CefFrame frame, CefProcessId sourceProcess,
+			CefProcessMessage message)
 		{
 			var ea = new CefProcessMessageReceivedEventArgs(browser, frame, sourceProcess, message);
 			_application.OnCefProcessMessageReceived(ea);

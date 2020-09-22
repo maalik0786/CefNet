@@ -11,20 +11,16 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// CEF string maps are a set of key/value string pairs.
+	///  CEF string maps are a set of key/value string pairs.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_string_list_t
+	public unsafe struct cef_string_list_t
 	{
 		public void* Base;
 	}
 }
-

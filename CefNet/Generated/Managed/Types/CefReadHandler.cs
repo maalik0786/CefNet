@@ -12,22 +12,21 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure the client can implement to provide a custom stream reader. The
-	/// functions of this structure may be called on any thread.
+	///  Structure the client can implement to provide a custom stream reader. The
+	///  functions of this structure may be called on any thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefReadHandler : CefBaseRefCounted<cef_read_handler_t>, ICefReadHandlerPrivate
+	public unsafe class CefReadHandler : CefBaseRefCounted<cef_read_handler_t>, ICefReadHandlerPrivate
 	{
 		private static readonly ReadDelegate fnRead = ReadImpl;
 
@@ -39,143 +38,128 @@ namespace CefNet
 
 		private static readonly MayBlockDelegate fnMayBlock = MayBlockImpl;
 
-		internal static unsafe CefReadHandler Create(IntPtr instance)
-		{
-			return new CefReadHandler((cef_read_handler_t*)instance);
-		}
-
 		public CefReadHandler()
 		{
-			cef_read_handler_t* self = this.NativeInstance;
-			self->read = (void*)Marshal.GetFunctionPointerForDelegate(fnRead);
-			self->seek = (void*)Marshal.GetFunctionPointerForDelegate(fnSeek);
-			self->tell = (void*)Marshal.GetFunctionPointerForDelegate(fnTell);
-			self->eof = (void*)Marshal.GetFunctionPointerForDelegate(fnEof);
-			self->may_block = (void*)Marshal.GetFunctionPointerForDelegate(fnMayBlock);
+			var self = NativeInstance;
+			self->read = (void*) Marshal.GetFunctionPointerForDelegate(fnRead);
+			self->seek = (void*) Marshal.GetFunctionPointerForDelegate(fnSeek);
+			self->tell = (void*) Marshal.GetFunctionPointerForDelegate(fnTell);
+			self->eof = (void*) Marshal.GetFunctionPointerForDelegate(fnEof);
+			self->may_block = (void*) Marshal.GetFunctionPointerForDelegate(fnMayBlock);
 		}
 
 		public CefReadHandler(cef_read_handler_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefReadHandlerPrivate.AvoidRead();
 
-		/// <summary>
-		/// Read raw binary data.
-		/// </summary>
-		protected internal unsafe virtual long Read(IntPtr ptr, long size, long n)
-		{
-			return default;
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate UIntPtr ReadDelegate(cef_read_handler_t* self, void* ptr, UIntPtr size, UIntPtr n);
-
-		// size_t (*)(_cef_read_handler_t* self, void* ptr, size_t size, size_t n)*
-		private static unsafe UIntPtr ReadImpl(cef_read_handler_t* self, void* ptr, UIntPtr size, UIntPtr n)
-		{
-			var instance = GetInstance((IntPtr)self) as CefReadHandler;
-			if (instance == null || ((ICefReadHandlerPrivate)instance).AvoidRead())
-			{
-				return default;
-			}
-			return new UIntPtr((ulong)instance.Read(unchecked((IntPtr)ptr), (long)size, (long)n));
-		}
-
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefReadHandlerPrivate.AvoidSeek();
 
+		internal static CefReadHandler Create(IntPtr instance)
+		{
+			return new CefReadHandler((cef_read_handler_t*) instance);
+		}
+
 		/// <summary>
-		/// Seek to the specified offset position. |whence| may be any one of SEEK_CUR,
-		/// SEEK_END or SEEK_SET. Return zero on success and non-zero on failure.
+		///  Read raw binary data.
 		/// </summary>
-		protected internal unsafe virtual int Seek(long offset, int whence)
+		protected internal virtual long Read(IntPtr ptr, long size, long n)
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int SeekDelegate(cef_read_handler_t* self, long offset, int whence);
+		// size_t (*)(_cef_read_handler_t* self, void* ptr, size_t size, size_t n)*
+		private static UIntPtr ReadImpl(cef_read_handler_t* self, void* ptr, UIntPtr size, UIntPtr n)
+		{
+			var instance = GetInstance((IntPtr) self) as CefReadHandler;
+			if (instance == null || ((ICefReadHandlerPrivate) instance).AvoidRead()) return default;
+			return new UIntPtr((ulong) instance.Read((IntPtr) ptr, (long) size, (long) n));
+		}
+
+		/// <summary>
+		///  Seek to the specified offset position. |whence| may be any one of SEEK_CUR,
+		///  SEEK_END or SEEK_SET. Return zero on success and non-zero on failure.
+		/// </summary>
+		protected internal virtual int Seek(long offset, int whence)
+		{
+			return default;
+		}
 
 		// int (*)(_cef_read_handler_t* self, int64 offset, int whence)*
-		private static unsafe int SeekImpl(cef_read_handler_t* self, long offset, int whence)
+		private static int SeekImpl(cef_read_handler_t* self, long offset, int whence)
 		{
-			var instance = GetInstance((IntPtr)self) as CefReadHandler;
-			if (instance == null || ((ICefReadHandlerPrivate)instance).AvoidSeek())
-			{
-				return default;
-			}
+			var instance = GetInstance((IntPtr) self) as CefReadHandler;
+			if (instance == null || ((ICefReadHandlerPrivate) instance).AvoidSeek()) return default;
 			return instance.Seek(offset, whence);
 		}
 
 		/// <summary>
-		/// Return the current offset position.
+		///  Return the current offset position.
 		/// </summary>
-		protected internal unsafe virtual long Tell()
+		protected internal virtual long Tell()
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate long TellDelegate(cef_read_handler_t* self);
-
 		// int64 (*)(_cef_read_handler_t* self)*
-		private static unsafe long TellImpl(cef_read_handler_t* self)
+		private static long TellImpl(cef_read_handler_t* self)
 		{
-			var instance = GetInstance((IntPtr)self) as CefReadHandler;
-			if (instance == null)
-			{
-				return default;
-			}
+			var instance = GetInstance((IntPtr) self) as CefReadHandler;
+			if (instance == null) return default;
 			return instance.Tell();
 		}
 
 		/// <summary>
-		/// Return non-zero if at end of file.
+		///  Return non-zero if at end of file.
 		/// </summary>
-		protected internal unsafe virtual int Eof()
+		protected internal virtual int Eof()
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int EofDelegate(cef_read_handler_t* self);
-
 		// int (*)(_cef_read_handler_t* self)*
-		private static unsafe int EofImpl(cef_read_handler_t* self)
+		private static int EofImpl(cef_read_handler_t* self)
 		{
-			var instance = GetInstance((IntPtr)self) as CefReadHandler;
-			if (instance == null)
-			{
-				return default;
-			}
+			var instance = GetInstance((IntPtr) self) as CefReadHandler;
+			if (instance == null) return default;
 			return instance.Eof();
 		}
 
 		/// <summary>
-		/// Return true (1) if this handler performs work like accessing the file
-		/// system which may block. Used as a hint for determining the thread to access
-		/// the handler from.
+		///  Return true (1) if this handler performs work like accessing the file
+		///  system which may block. Used as a hint for determining the thread to access
+		///  the handler from.
 		/// </summary>
-		protected internal unsafe virtual bool MayBlock()
+		protected internal virtual bool MayBlock()
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int MayBlockDelegate(cef_read_handler_t* self);
-
 		// int (*)(_cef_read_handler_t* self)*
-		private static unsafe int MayBlockImpl(cef_read_handler_t* self)
+		private static int MayBlockImpl(cef_read_handler_t* self)
 		{
-			var instance = GetInstance((IntPtr)self) as CefReadHandler;
-			if (instance == null)
-			{
-				return default;
-			}
+			var instance = GetInstance((IntPtr) self) as CefReadHandler;
+			if (instance == null) return default;
 			return instance.MayBlock() ? 1 : 0;
 		}
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate UIntPtr ReadDelegate(cef_read_handler_t* self, void* ptr, UIntPtr size, UIntPtr n);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int SeekDelegate(cef_read_handler_t* self, long offset, int whence);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate long TellDelegate(cef_read_handler_t* self);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int EofDelegate(cef_read_handler_t* self);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int MayBlockDelegate(cef_read_handler_t* self);
 	}
 }

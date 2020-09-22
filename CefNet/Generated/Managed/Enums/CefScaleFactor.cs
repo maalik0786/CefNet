@@ -11,17 +11,12 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported UI scale factors for the platform. SCALE_FACTOR_NONE is used for
-	/// density independent resources such as string, html/js files or an image that
-	/// can be used for any scale factors (such as wallpapers).
+	///  Supported UI scale factors for the platform. SCALE_FACTOR_NONE is used for
+	///  density independent resources such as string, html/js files or an image that
+	///  can be used for any scale factors (such as wallpapers).
 	/// </summary>
 	public enum CefScaleFactor
 	{
@@ -43,7 +38,6 @@ namespace CefNet
 
 		SCALE_FACTOR_250P = 8,
 
-		SCALE_FACTOR_300P = 9,
+		SCALE_FACTOR_300P = 9
 	}
 }
-

@@ -11,235 +11,232 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure used to represent a download item.
+	///  Structure used to represent a download item.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_download_item_t
+	public unsafe struct cef_download_item_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_download_item_t* self)*
+		///  int (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* is_valid;
 
 		/// <summary>
-		/// Returns true (1) if this object is valid. Do not call any other functions
-		/// if this function returns false (0).
+		///  Returns true (1) if this object is valid. Do not call any other functions
+		///  if this function returns false (0).
 		/// </summary>
 		[NativeName("is_valid")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsValid();
+		public extern int IsValid();
 
 		/// <summary>
-		/// int (*)(_cef_download_item_t* self)*
+		///  int (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* is_in_progress;
 
 		/// <summary>
-		/// Returns true (1) if the download is in progress.
+		///  Returns true (1) if the download is in progress.
 		/// </summary>
 		[NativeName("is_in_progress")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsInProgress();
+		public extern int IsInProgress();
 
 		/// <summary>
-		/// int (*)(_cef_download_item_t* self)*
+		///  int (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* is_complete;
 
 		/// <summary>
-		/// Returns true (1) if the download is complete.
+		///  Returns true (1) if the download is complete.
 		/// </summary>
 		[NativeName("is_complete")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsComplete();
+		public extern int IsComplete();
 
 		/// <summary>
-		/// int (*)(_cef_download_item_t* self)*
+		///  int (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* is_canceled;
 
 		/// <summary>
-		/// Returns true (1) if the download has been canceled or interrupted.
+		///  Returns true (1) if the download has been canceled or interrupted.
 		/// </summary>
 		[NativeName("is_canceled")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsCanceled();
+		public extern int IsCanceled();
 
 		/// <summary>
-		/// int64 (*)(_cef_download_item_t* self)*
+		///  int64 (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_current_speed;
 
 		/// <summary>
-		/// Returns a simple speed estimate in bytes/s.
+		///  Returns a simple speed estimate in bytes/s.
 		/// </summary>
 		[NativeName("get_current_speed")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern long GetCurrentSpeed();
+		public extern long GetCurrentSpeed();
 
 		/// <summary>
-		/// int (*)(_cef_download_item_t* self)*
+		///  int (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_percent_complete;
 
 		/// <summary>
-		/// Returns the rough percent complete or -1 if the receive total size is
-		/// unknown.
+		///  Returns the rough percent complete or -1 if the receive total size is
+		///  unknown.
 		/// </summary>
 		[NativeName("get_percent_complete")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int GetPercentComplete();
+		public extern int GetPercentComplete();
 
 		/// <summary>
-		/// int64 (*)(_cef_download_item_t* self)*
+		///  int64 (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_total_bytes;
 
 		/// <summary>
-		/// Returns the total number of bytes.
+		///  Returns the total number of bytes.
 		/// </summary>
 		[NativeName("get_total_bytes")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern long GetTotalBytes();
+		public extern long GetTotalBytes();
 
 		/// <summary>
-		/// int64 (*)(_cef_download_item_t* self)*
+		///  int64 (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_received_bytes;
 
 		/// <summary>
-		/// Returns the number of received bytes.
+		///  Returns the number of received bytes.
 		/// </summary>
 		[NativeName("get_received_bytes")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern long GetReceivedBytes();
+		public extern long GetReceivedBytes();
 
 		/// <summary>
-		/// cef_time_t (*)(_cef_download_item_t* self)*
+		///  cef_time_t (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_start_time;
 
 		/// <summary>
-		/// Returns the time that the download started.
+		///  Returns the time that the download started.
 		/// </summary>
 		[NativeName("get_start_time")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_time_t GetStartTime();
+		public extern cef_time_t GetStartTime();
 
 		/// <summary>
-		/// cef_time_t (*)(_cef_download_item_t* self)*
+		///  cef_time_t (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_end_time;
 
 		/// <summary>
-		/// Returns the time that the download ended.
+		///  Returns the time that the download ended.
 		/// </summary>
 		[NativeName("get_end_time")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_time_t GetEndTime();
+		public extern cef_time_t GetEndTime();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_download_item_t* self)*
+		///  cef_string_userfree_t (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_full_path;
 
 		/// <summary>
-		/// Returns the full path to the downloaded or downloading file.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the full path to the downloaded or downloading file.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_full_path")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetFullPath();
+		public extern cef_string_userfree_t GetFullPath();
 
 		/// <summary>
-		/// uint32 (*)(_cef_download_item_t* self)*
+		///  uint32 (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_id;
 
 		/// <summary>
-		/// Returns the unique identifier for this download.
+		///  Returns the unique identifier for this download.
 		/// </summary>
 		[NativeName("get_id")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern uint GetId();
+		public extern uint GetId();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_download_item_t* self)*
+		///  cef_string_userfree_t (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_url;
 
 		/// <summary>
-		/// Returns the URL.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the URL.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_url")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetUrl();
+		public extern cef_string_userfree_t GetUrl();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_download_item_t* self)*
+		///  cef_string_userfree_t (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_original_url;
 
 		/// <summary>
-		/// Returns the original URL before any redirections.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the original URL before any redirections.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_original_url")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetOriginalUrl();
+		public extern cef_string_userfree_t GetOriginalUrl();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_download_item_t* self)*
+		///  cef_string_userfree_t (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_suggested_file_name;
 
 		/// <summary>
-		/// Returns the suggested file name.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the suggested file name.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_suggested_file_name")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetSuggestedFileName();
+		public extern cef_string_userfree_t GetSuggestedFileName();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_download_item_t* self)*
+		///  cef_string_userfree_t (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_content_disposition;
 
 		/// <summary>
-		/// Returns the content disposition.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the content disposition.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_content_disposition")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetContentDisposition();
+		public extern cef_string_userfree_t GetContentDisposition();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_download_item_t* self)*
+		///  cef_string_userfree_t (*)(_cef_download_item_t* self)*
 		/// </summary>
 		public void* get_mime_type;
 
 		/// <summary>
-		/// Returns the mime type.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the mime type.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_mime_type")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetMimeType();
+		public extern cef_string_userfree_t GetMimeType();
 	}
 }
-

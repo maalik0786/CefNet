@@ -1,11 +1,13 @@
-﻿using CefNet;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
+using CefNet;
 
 namespace WinFormsCoreApp
 {
-	class CefAppImpl : CefNetApplication
+	internal class CefAppImpl : CefNetApplication
 	{
+		public Action<long> ScheduleMessagePumpWorkCallback { get; set; }
+
 		protected override void OnBeforeCommandLineProcessing(string processType, CefCommandLine commandLine)
 		{
 			base.OnBeforeCommandLineProcessing(processType, commandLine);
@@ -19,7 +21,7 @@ namespace WinFormsCoreApp
 			commandLine.AppendSwitchWithValue("remote-debugging-port", "9222");
 			commandLine.AppendSwitch("off-screen-rendering-enabled");
 			commandLine.AppendSwitchWithValue("off-screen-frame-rate", "30");
-			
+
 			//enable-devtools-experiments
 			commandLine.AppendSwitch("enable-devtools-experiments");
 
@@ -50,10 +52,7 @@ const newProto = navigator.__proto__;
 delete newProto.webdriver;
 navigator.__proto__ = newProto;
 }", frame.Url, 0);
-
 		}
-
-		public Action<long> ScheduleMessagePumpWorkCallback { get; set; }
 
 		protected override void OnScheduleMessagePumpWork(long delayMs)
 		{

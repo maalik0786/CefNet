@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// The device type that caused the event.
+	///  The device type that caused the event.
 	/// </summary>
 	public enum CefPointerType
 	{
@@ -31,7 +26,6 @@ namespace CefNet
 
 		Eraser = 3,
 
-		Unknown = 4,
+		Unknown = 4
 	}
 }
-

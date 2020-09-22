@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Text;
 using CefNet.Input;
 
 namespace CefNet.WinApi
 {
-	static class NativeMethods
+	internal static class NativeMethods
 	{
 		[DllImport("Kernel32.dll")]
 		public static extern void SetLastError(uint errCode);
@@ -24,10 +21,7 @@ namespace CefNet.WinApi
 
 		public static IntPtr GetWindowLong(IntPtr hWnd, int nIndex)
 		{
-			if (IntPtr.Size == 4)
-			{
-				return GetWindowLong32(hWnd, nIndex);
-			}
+			if (IntPtr.Size == 4) return GetWindowLong32(hWnd, nIndex);
 			return GetWindowLongPtr64(hWnd, nIndex);
 		}
 
@@ -41,8 +35,7 @@ namespace CefNet.WinApi
 		{
 			if (IntPtr.Size == 8)
 				return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
-			else
-				return new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
+			return new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
 		}
 
 		[DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Auto, SetLastError = true)]
@@ -50,13 +43,14 @@ namespace CefNet.WinApi
 
 		[DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Auto, SetLastError = true)]
 		private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-		
+
 		[DllImport("user32.dll", SetLastError = false)]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+		public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy,
+			uint uFlags);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true, SetLastError = true)]
-		public static extern int MapWindowPoints(IntPtr hWndFrom, IntPtr hWndTo, ref WinApi.RECT rect, int cPoints);
+		public static extern int MapWindowPoints(IntPtr hWndFrom, IntPtr hWndTo, ref RECT rect, int cPoints);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true, SetLastError = true)]
 		public static extern int MapWindowPoints(IntPtr hWndFrom, IntPtr hWndTo, ref CefPoint pt, int cPoints);
@@ -70,17 +64,18 @@ namespace CefNet.WinApi
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true, SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		public extern static bool DestroyIcon(IntPtr handle);
+		public static extern bool DestroyIcon(IntPtr handle);
 
 		[DllImport("gdi32", CharSet = CharSet.Auto, ExactSpelling = true, SetLastError = false)]
-		public extern static int SetDIBitsToDevice(IntPtr hDC, int xDest, int yDest, int dwWidth, int dwHeight, int XSrc, int YSrc, int uStartScan, int cScanLines, IntPtr lpvBits, ref BITMAPINFO lpbmi, uint colorUse);
+		public static extern int SetDIBitsToDevice(IntPtr hDC, int xDest, int yDest, int dwWidth, int dwHeight,
+			int XSrc, int YSrc, int uStartScan, int cScanLines, IntPtr lpvBits, ref BITMAPINFO lpbmi, uint colorUse);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		public extern static bool PostMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+		public static extern bool PostMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		public extern static KeyState GetKeyState(VirtualKeys key);
+		public static extern KeyState GetKeyState(VirtualKeys key);
 
 		[DllImport("user32.dll")]
 		public static extern uint MapVirtualKey(uint code, MapVirtualKeyType type);
@@ -92,7 +87,8 @@ namespace CefNet.WinApi
 		public static extern IntPtr ActivateKeyboardLayout(IntPtr hkl, int flags);
 
 		[DllImport("Dwmapi.dll", CharSet = CharSet.Auto)]
-		public static unsafe extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, void* value, int size);
+		public static extern unsafe int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, void* value,
+			int size);
 
 		[DllImport("Dwmapi.dll", CharSet = CharSet.Auto, PreserveSig = false)]
 		public static extern bool DwmIsCompositionEnabled();
@@ -101,23 +97,23 @@ namespace CefNet.WinApi
 		{
 			unchecked
 			{
-				return new IntPtr(((ushort)high) << 16 | (ushort)low);
+				return new IntPtr(((ushort) high << 16) | (ushort) low);
 			}
 		}
 
 		public static short HiWord(IntPtr param)
 		{
-			return unchecked((short)((unchecked((int)(long)param) >> 16) & 0xFFFF));
+			return unchecked((short) ((unchecked((int) (long) param) >> 16) & 0xFFFF));
 		}
 
 		public static short LoWord(IntPtr param)
 		{
-			return unchecked((short)(unchecked((int)(long)param) & 0xFFFF));
+			return unchecked((short) (unchecked((int) (long) param) & 0xFFFF));
 		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	struct BITMAPINFO
+	internal struct BITMAPINFO
 	{
 		public int Size;
 		public int Width;
@@ -133,24 +129,26 @@ namespace CefNet.WinApi
 		public int Colors;
 	}
 
-	struct ICONINFO
+	internal struct ICONINFO
 	{
 		/// <summary>
-		/// Specifies whether this structure defines an icon or a cursor.
-		/// A value of TRUE specifies an icon; FALSE specifies a cursor
+		///  Specifies whether this structure defines an icon or a cursor.
+		///  A value of TRUE specifies an icon; FALSE specifies a cursor
 		/// </summary>
-		[MarshalAs(UnmanagedType.Bool)]
-		public bool IsIcon;
+		[MarshalAs(UnmanagedType.Bool)] public bool IsIcon;
+
 		/// <summary>
-		/// A cursor's hot spot
+		///  A cursor's hot spot
 		/// </summary>
 		public CefPoint Hotspot;
+
 		/// <summary>
-		/// The icon bitmask bitmap
+		///  The icon bitmask bitmap
 		/// </summary>
 		public IntPtr HbmMask;
+
 		/// <summary>
-		/// A handle to the icon color bitmap.
+		///  A handle to the icon color bitmap.
 		/// </summary>
 		public IntPtr HbmColor;
 	}

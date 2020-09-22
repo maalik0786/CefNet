@@ -11,76 +11,47 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing insets.
+	///  Structure representing insets.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefInsets
+	public struct CefInsets
 	{
 		private cef_insets_t _instance;
 
 		public int Top
 		{
-			get
-			{
-				return _instance.top;
-			}
-			set
-			{
-				_instance.top = value;
-			}
+			get => _instance.top;
+			set => _instance.top = value;
 		}
 
 		public int Left
 		{
-			get
-			{
-				return _instance.left;
-			}
-			set
-			{
-				_instance.left = value;
-			}
+			get => _instance.left;
+			set => _instance.left = value;
 		}
 
 		public int Bottom
 		{
-			get
-			{
-				return _instance.bottom;
-			}
-			set
-			{
-				_instance.bottom = value;
-			}
+			get => _instance.bottom;
+			set => _instance.bottom = value;
 		}
 
 		public int Right
 		{
-			get
-			{
-				return _instance.right;
-			}
-			set
-			{
-				_instance.right = value;
-			}
+			get => _instance.right;
+			set => _instance.right = value;
 		}
 
 		public static implicit operator CefInsets(cef_insets_t instance)
 		{
-			return new CefInsets { _instance = instance };
+			return new CefInsets {_instance = instance};
 		}
 
 		public static implicit operator cef_insets_t(CefInsets instance)

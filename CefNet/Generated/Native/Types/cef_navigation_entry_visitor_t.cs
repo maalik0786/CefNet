@@ -11,40 +11,37 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Callback structure for cef_browser_host_t::GetNavigationEntries. The
-	/// functions of this structure will be called on the browser process UI thread.
+	///  Callback structure for cef_browser_host_t::GetNavigationEntries. The
+	///  functions of this structure will be called on the browser process UI thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_navigation_entry_visitor_t
+	public unsafe struct cef_navigation_entry_visitor_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_navigation_entry_visitor_t* self, _cef_navigation_entry_t* entry, int current, int index, int total)*
+		///  int (*)(_cef_navigation_entry_visitor_t* self, _cef_navigation_entry_t* entry, int current, int index, int total)*
 		/// </summary>
 		public void* visit;
 
 		/// <summary>
-		/// Method that will be executed. Do not keep a reference to |entry| outside of
-		/// this callback. Return true (1) to continue visiting entries or false (0) to
-		/// stop. |current| is true (1) if this entry is the currently loaded
-		/// navigation entry. |index| is the 0-based index of this entry and |total| is
-		/// the total number of entries.
+		///  Method that will be executed. Do not keep a reference to |entry| outside of
+		///  this callback. Return true (1) to continue visiting entries or false (0) to
+		///  stop. |current| is true (1) if this entry is the currently loaded
+		///  navigation entry. |index| is the 0-based index of this entry and |total| is
+		///  the total number of entries.
 		/// </summary>
 		[NativeName("visit")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int Visit(cef_navigation_entry_t* entry, int current, int index, int total);
+		public extern int Visit(cef_navigation_entry_t* entry, int current, int index, int total);
 	}
 }
-

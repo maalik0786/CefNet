@@ -11,133 +11,130 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing a V8 stack frame handle. V8 handles can only be
-	/// accessed from the thread on which they are created. Valid threads for
-	/// creating a V8 handle include the render process main thread (TID_RENDERER)
-	/// and WebWorker threads. A task runner for posting tasks on the associated
-	/// thread can be retrieved via the cef_v8context_t::get_task_runner() function.
+	///  Structure representing a V8 stack frame handle. V8 handles can only be
+	///  accessed from the thread on which they are created. Valid threads for
+	///  creating a V8 handle include the render process main thread (TID_RENDERER)
+	///  and WebWorker threads. A task runner for posting tasks on the associated
+	///  thread can be retrieved via the cef_v8context_t::get_task_runner() function.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_v8stack_frame_t
+	public unsafe struct cef_v8stack_frame_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_v8stack_frame_t* self)*
+		///  int (*)(_cef_v8stack_frame_t* self)*
 		/// </summary>
 		public void* is_valid;
 
 		/// <summary>
-		/// Returns true (1) if the underlying handle is valid and it can be accessed
-		/// on the current thread. Do not call any other functions if this function
-		/// returns false (0).
+		///  Returns true (1) if the underlying handle is valid and it can be accessed
+		///  on the current thread. Do not call any other functions if this function
+		///  returns false (0).
 		/// </summary>
 		[NativeName("is_valid")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsValid();
+		public extern int IsValid();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_v8stack_frame_t* self)*
+		///  cef_string_userfree_t (*)(_cef_v8stack_frame_t* self)*
 		/// </summary>
 		public void* get_script_name;
 
 		/// <summary>
-		/// Returns the name of the resource script that contains the function.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the name of the resource script that contains the function.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_script_name")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetScriptName();
+		public extern cef_string_userfree_t GetScriptName();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_v8stack_frame_t* self)*
+		///  cef_string_userfree_t (*)(_cef_v8stack_frame_t* self)*
 		/// </summary>
 		public void* get_script_name_or_source_url;
 
 		/// <summary>
-		/// Returns the name of the resource script that contains the function or the
-		/// sourceURL value if the script name is undefined and its source ends with a
-		/// &quot;//
-		/// @
-		/// sourceURL=...&quot; string.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the name of the resource script that contains the function or the
+		///  sourceURL value if the script name is undefined and its source ends with a
+		///  &quot;//
+		///  @
+		///  sourceURL=...&quot; string.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		[NativeName("get_script_name_or_source_url")]
-		public unsafe extern cef_string_userfree_t GetScriptNameOrSourceUrl();
+		public extern cef_string_userfree_t GetScriptNameOrSourceUrl();
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_v8stack_frame_t* self)*
+		///  cef_string_userfree_t (*)(_cef_v8stack_frame_t* self)*
 		/// </summary>
 		public void* get_function_name;
 
 		/// <summary>
-		/// Returns the name of the function.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the name of the function.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_function_name")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetFunctionName();
+		public extern cef_string_userfree_t GetFunctionName();
 
 		/// <summary>
-		/// int (*)(_cef_v8stack_frame_t* self)*
+		///  int (*)(_cef_v8stack_frame_t* self)*
 		/// </summary>
 		public void* get_line_number;
 
 		/// <summary>
-		/// Returns the 1-based line number for the function call or 0 if unknown.
+		///  Returns the 1-based line number for the function call or 0 if unknown.
 		/// </summary>
 		[NativeName("get_line_number")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int GetLineNumber();
+		public extern int GetLineNumber();
 
 		/// <summary>
-		/// int (*)(_cef_v8stack_frame_t* self)*
+		///  int (*)(_cef_v8stack_frame_t* self)*
 		/// </summary>
 		public void* get_column;
 
 		/// <summary>
-		/// Returns the 1-based column offset on the line for the function call or 0 if
-		/// unknown.
+		///  Returns the 1-based column offset on the line for the function call or 0 if
+		///  unknown.
 		/// </summary>
 		[NativeName("get_column")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int GetColumn();
+		public extern int GetColumn();
 
 		/// <summary>
-		/// int (*)(_cef_v8stack_frame_t* self)*
+		///  int (*)(_cef_v8stack_frame_t* self)*
 		/// </summary>
 		public void* is_eval;
 
 		/// <summary>
-		/// Returns true (1) if the function was compiled using eval().
+		///  Returns true (1) if the function was compiled using eval().
 		/// </summary>
 		[NativeName("is_eval")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsEval();
+		public extern int IsEval();
 
 		/// <summary>
-		/// int (*)(_cef_v8stack_frame_t* self)*
+		///  int (*)(_cef_v8stack_frame_t* self)*
 		/// </summary>
 		public void* is_constructor;
 
 		/// <summary>
-		/// Returns true (1) if the function was called as a constructor via &quot;new&quot;.
+		///  Returns true (1) if the function was called as a constructor via &quot;new&quot;.
 		/// </summary>
 		[NativeName("is_constructor")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsConstructor();
+		public extern int IsConstructor();
 	}
 }
-

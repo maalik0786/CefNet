@@ -11,58 +11,52 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Log severity levels.
+	///  Log severity levels.
 	/// </summary>
 	public enum CefLogSeverity
 	{
 		/// <summary>
-		/// Default logging (currently INFO logging).
+		///  Default logging (currently INFO logging).
 		/// </summary>
 		Default = 0,
 
 		/// <summary>
-		/// Verbose logging.
+		///  Verbose logging.
 		/// </summary>
 		Verbose = 1,
 
 		/// <summary>
-		/// DEBUG logging.
+		///  DEBUG logging.
 		/// </summary>
 		Debug = Verbose,
 
 		/// <summary>
-		/// INFO logging.
+		///  INFO logging.
 		/// </summary>
 		Info = 2,
 
 		/// <summary>
-		/// WARNING logging.
+		///  WARNING logging.
 		/// </summary>
 		Warning = 3,
 
 		/// <summary>
-		/// ERROR logging.
+		///  ERROR logging.
 		/// </summary>
 		Error = 4,
 
 		/// <summary>
-		/// FATAL logging.
+		///  FATAL logging.
 		/// </summary>
 		Fatal = 5,
 
 		/// <summary>
-		/// Disable logging to file for all messages, and to stderr for messages with
-		/// severity less than FATAL.
+		///  Disable logging to file for all messages, and to stderr for messages with
+		///  severity less than FATAL.
 		/// </summary>
-		Disable = 99,
+		Disable = 99
 	}
 }
-

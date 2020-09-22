@@ -11,18 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefAccessibilityHandlerGlue: CefAccessibilityHandler, ICefAccessibilityHandlerPrivate
+	internal sealed class CefAccessibilityHandlerGlue : CefAccessibilityHandler, ICefAccessibilityHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefAccessibilityHandlerGlue(WebViewGlue impl)
 		{
@@ -34,20 +27,19 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnAccessibilityTreeChange();
 		}
 
-		protected internal unsafe override void OnAccessibilityTreeChange(CefValue value)
-		{
-			_implementation.OnAccessibilityTreeChange(value);
-		}
-
 		bool ICefAccessibilityHandlerPrivate.AvoidOnAccessibilityLocationChange()
 		{
 			return _implementation.AvoidOnAccessibilityLocationChange();
 		}
 
-		protected internal unsafe override void OnAccessibilityLocationChange(CefValue value)
+		protected internal override void OnAccessibilityTreeChange(CefValue value)
+		{
+			_implementation.OnAccessibilityTreeChange(value);
+		}
+
+		protected internal override void OnAccessibilityLocationChange(CefValue value)
 		{
 			_implementation.OnAccessibilityLocationChange(value);
 		}
-
 	}
 }

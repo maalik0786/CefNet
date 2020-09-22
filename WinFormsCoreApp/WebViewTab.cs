@@ -1,10 +1,7 @@
-﻿using CefNet;
-using CefNet.Windows.Forms;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
-using WinFormsCoreApp;
+using CefNet;
 
 namespace WinFormsCoreApp
 {
@@ -13,13 +10,11 @@ namespace WinFormsCoreApp
 		public WebViewTab()
 			: this(new CustomWebView())
 		{
-
 		}
 
 		public WebViewTab(CefBrowserSettings settings, CefRequestContext requestContext)
-			: this(new CustomWebView { RequestContext = requestContext, BrowserSettings = settings })
+			: this(new CustomWebView {RequestContext = requestContext, BrowserSettings = settings})
 		{
-
 		}
 
 		private WebViewTab(CustomWebView webview)
@@ -29,49 +24,44 @@ namespace WinFormsCoreApp
 			webview.DocumentTitleChanged += HandleDocumentTitleChanged;
 			webview.Closing += Webview_Closing;
 			webview.Closed += Webview_Closed;
-			this.WebView = webview;
-			this.Controls.Add(webview);
+			WebView = webview;
+			Controls.Add(webview);
 		}
+
+		public IChromiumWebView WebView { get; protected set; }
 
 		private void Webview_Closed(object sender, EventArgs e)
 		{
 			this.FindTabControl()?.TabPages.Remove(this);
 		}
 
-		private void Webview_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		private void Webview_Closing(object sender, CancelEventArgs e)
 		{
 			if (!IsDisposed) // ignore if disposed
-			{
-				e.Cancel = (MessageBox.Show(this, "Do you want to close this tab?", this.Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes);
-			}
+				e.Cancel = MessageBox.Show(this, "Do you want to close this tab?", Text, MessageBoxButtons.YesNo,
+					MessageBoxIcon.Question) != DialogResult.Yes;
 		}
 
 		private void HandleDocumentTitleChanged(object sender, DocumentTitleChangedEventArgs e)
 		{
-			this.Text = e.Title + "    ";
-			this.ToolTipText = e.Title;
+			Text = e.Title + "    ";
+			ToolTipText = e.Title;
 		}
-
-		public IChromiumWebView WebView { get; protected set; }
 
 		private void Webview_CreateWindow(object sender, CreateWindowEventArgs e)
 		{
-			TabControl tabs = this.FindTabControl();
+			var tabs = this.FindTabControl();
 			if (tabs == null)
 			{
 				e.Cancel = true;
 				return;
 			}
 
-			var webview = new CustomWebView((CustomWebView)this.WebView);
+			var webview = new CustomWebView((CustomWebView) WebView);
 			if (webview.WindowlessRenderingEnabled)
-			{
 				e.WindowInfo.SetAsWindowless(webview.Handle);
-			}
 			else
-			{
 				e.WindowInfo.SetAsDisabledChild(webview.Handle);
-			}
 			e.Client = webview.Client;
 			OnCreateWindow(webview);
 		}

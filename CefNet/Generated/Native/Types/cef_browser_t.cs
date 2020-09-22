@@ -12,268 +12,266 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure used to represent a browser window. When used in the browser
-	/// process the functions of this structure may be called on any thread unless
-	/// otherwise indicated in the comments. When used in the render process the
-	/// functions of this structure may only be called on the main thread.
+	///  Structure used to represent a browser window. When used in the browser
+	///  process the functions of this structure may be called on any thread unless
+	///  otherwise indicated in the comments. When used in the render process the
+	///  functions of this structure may only be called on the main thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_browser_t
+	public unsafe struct cef_browser_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// _cef_browser_host_t* (*)(_cef_browser_t* self)*
+		///  _cef_browser_host_t* (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* get_host;
 
 		/// <summary>
-		/// Returns the browser host object. This function can only be called in the
-		/// browser process.
+		///  Returns the browser host object. This function can only be called in the
+		///  browser process.
 		/// </summary>
 		[NativeName("get_host")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_browser_host_t* GetHost();
+		public extern cef_browser_host_t* GetHost();
 
 		/// <summary>
-		/// int (*)(_cef_browser_t* self)*
+		///  int (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* can_go_back;
 
 		/// <summary>
-		/// Returns true (1) if the browser can navigate backwards.
+		///  Returns true (1) if the browser can navigate backwards.
 		/// </summary>
 		[NativeName("can_go_back")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int CanGoBack();
+		public extern int CanGoBack();
 
 		/// <summary>
-		/// void (*)(_cef_browser_t* self)*
+		///  void (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* go_back;
 
 		/// <summary>
-		/// Navigate backwards.
+		///  Navigate backwards.
 		/// </summary>
 		[NativeName("go_back")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void GoBack();
+		public extern void GoBack();
 
 		/// <summary>
-		/// int (*)(_cef_browser_t* self)*
+		///  int (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* can_go_forward;
 
 		/// <summary>
-		/// Returns true (1) if the browser can navigate forwards.
+		///  Returns true (1) if the browser can navigate forwards.
 		/// </summary>
 		[NativeName("can_go_forward")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int CanGoForward();
+		public extern int CanGoForward();
 
 		/// <summary>
-		/// void (*)(_cef_browser_t* self)*
+		///  void (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* go_forward;
 
 		/// <summary>
-		/// Navigate forwards.
+		///  Navigate forwards.
 		/// </summary>
 		[NativeName("go_forward")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void GoForward();
+		public extern void GoForward();
 
 		/// <summary>
-		/// int (*)(_cef_browser_t* self)*
+		///  int (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* is_loading;
 
 		/// <summary>
-		/// Returns true (1) if the browser is currently loading.
+		///  Returns true (1) if the browser is currently loading.
 		/// </summary>
 		[NativeName("is_loading")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsLoading();
+		public extern int IsLoading();
 
 		/// <summary>
-		/// void (*)(_cef_browser_t* self)*
+		///  void (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* reload;
 
 		/// <summary>
-		/// Reload the current page.
+		///  Reload the current page.
 		/// </summary>
 		[NativeName("reload")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Reload();
+		public extern void Reload();
 
 		/// <summary>
-		/// void (*)(_cef_browser_t* self)*
+		///  void (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* reload_ignore_cache;
 
 		/// <summary>
-		/// Reload the current page ignoring any cached data.
+		///  Reload the current page ignoring any cached data.
 		/// </summary>
 		[NativeName("reload_ignore_cache")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void ReloadIgnoreCache();
+		public extern void ReloadIgnoreCache();
 
 		/// <summary>
-		/// void (*)(_cef_browser_t* self)*
+		///  void (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* stop_load;
 
 		/// <summary>
-		/// Stop loading the page.
+		///  Stop loading the page.
 		/// </summary>
 		[NativeName("stop_load")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void StopLoad();
+		public extern void StopLoad();
 
 		/// <summary>
-		/// int (*)(_cef_browser_t* self)*
+		///  int (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* get_identifier;
 
 		/// <summary>
-		/// Returns the globally unique identifier for this browser. This value is also
-		/// used as the tabId for extension APIs.
+		///  Returns the globally unique identifier for this browser. This value is also
+		///  used as the tabId for extension APIs.
 		/// </summary>
 		[NativeName("get_identifier")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int GetIdentifier();
+		public extern int GetIdentifier();
 
 		/// <summary>
-		/// int (*)(_cef_browser_t* self, _cef_browser_t* that)*
+		///  int (*)(_cef_browser_t* self, _cef_browser_t* that)*
 		/// </summary>
 		public void* is_same;
 
 		/// <summary>
-		/// Returns true (1) if this object is pointing to the same handle as |that|
-		/// object.
+		///  Returns true (1) if this object is pointing to the same handle as |that|
+		///  object.
 		/// </summary>
 		[NativeName("is_same")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsSame(cef_browser_t* that);
+		public extern int IsSame(cef_browser_t* that);
 
 		/// <summary>
-		/// int (*)(_cef_browser_t* self)*
+		///  int (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* is_popup;
 
 		/// <summary>
-		/// Returns true (1) if the window is a popup window.
+		///  Returns true (1) if the window is a popup window.
 		/// </summary>
 		[NativeName("is_popup")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsPopup();
+		public extern int IsPopup();
 
 		/// <summary>
-		/// int (*)(_cef_browser_t* self)*
+		///  int (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* has_document;
 
 		/// <summary>
-		/// Returns true (1) if a document has been loaded in the browser.
+		///  Returns true (1) if a document has been loaded in the browser.
 		/// </summary>
 		[NativeName("has_document")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int HasDocument();
+		public extern int HasDocument();
 
 		/// <summary>
-		/// _cef_frame_t* (*)(_cef_browser_t* self)*
+		///  _cef_frame_t* (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* get_main_frame;
 
 		/// <summary>
-		/// Returns the main (top-level) frame for the browser window.
+		///  Returns the main (top-level) frame for the browser window.
 		/// </summary>
 		[NativeName("get_main_frame")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_frame_t* GetMainFrame();
+		public extern cef_frame_t* GetMainFrame();
 
 		/// <summary>
-		/// _cef_frame_t* (*)(_cef_browser_t* self)*
+		///  _cef_frame_t* (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* get_focused_frame;
 
 		/// <summary>
-		/// Returns the focused frame for the browser window.
+		///  Returns the focused frame for the browser window.
 		/// </summary>
 		[NativeName("get_focused_frame")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_frame_t* GetFocusedFrame();
+		public extern cef_frame_t* GetFocusedFrame();
 
 		/// <summary>
-		/// _cef_frame_t* (*)(_cef_browser_t* self, int64 identifier)*
+		///  _cef_frame_t* (*)(_cef_browser_t* self, int64 identifier)*
 		/// </summary>
 		public void* get_frame_byident;
 
 		/// <summary>
-		/// Returns the frame with the specified identifier, or NULL if not found.
+		///  Returns the frame with the specified identifier, or NULL if not found.
 		/// </summary>
 		[NativeName("get_frame_byident")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_frame_t* GetFrameByIdent(long identifier);
+		public extern cef_frame_t* GetFrameByIdent(long identifier);
 
 		/// <summary>
-		/// _cef_frame_t* (*)(_cef_browser_t* self, const cef_string_t* name)*
+		///  _cef_frame_t* (*)(_cef_browser_t* self, const cef_string_t* name)*
 		/// </summary>
 		public void* get_frame;
 
 		/// <summary>
-		/// Returns the frame with the specified name, or NULL if not found.
+		///  Returns the frame with the specified name, or NULL if not found.
 		/// </summary>
 		[NativeName("get_frame")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_frame_t* GetFrame([Immutable]cef_string_t* name);
+		public extern cef_frame_t* GetFrame([Immutable] cef_string_t* name);
 
 		/// <summary>
-		/// size_t (*)(_cef_browser_t* self)*
+		///  size_t (*)(_cef_browser_t* self)*
 		/// </summary>
 		public void* get_frame_count;
 
 		/// <summary>
-		/// Returns the number of frames that currently exist.
+		///  Returns the number of frames that currently exist.
 		/// </summary>
 		[NativeName("get_frame_count")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern UIntPtr GetFrameCount();
+		public extern UIntPtr GetFrameCount();
 
 		/// <summary>
-		/// void (*)(_cef_browser_t* self, size_t* identifiersCount, int64* identifiers)*
+		///  void (*)(_cef_browser_t* self, size_t* identifiersCount, int64* identifiers)*
 		/// </summary>
 		public void* get_frame_identifiers;
 
 		/// <summary>
-		/// Returns the identifiers of all existing frames.
+		///  Returns the identifiers of all existing frames.
 		/// </summary>
 		[NativeName("get_frame_identifiers")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void GetFrameIdentifiers(UIntPtr* identifiersCount, long* identifiers);
+		public extern void GetFrameIdentifiers(UIntPtr* identifiersCount, long* identifiers);
 
 		/// <summary>
-		/// void (*)(_cef_browser_t* self, cef_string_list_t names)*
+		///  void (*)(_cef_browser_t* self, cef_string_list_t names)*
 		/// </summary>
 		public void* get_frame_names;
 
 		/// <summary>
-		/// Returns the names of all existing frames.
+		///  Returns the names of all existing frames.
 		/// </summary>
 		[NativeName("get_frame_names")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void GetFrameNames(cef_string_list_t names);
+		public extern void GetFrameNames(cef_string_list_t names);
 	}
 }
-

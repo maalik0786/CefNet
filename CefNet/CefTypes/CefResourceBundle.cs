@@ -5,11 +5,11 @@ namespace CefNet
 	public unsafe partial class CefResourceBundle
 	{
 		/// <summary>
-		/// Returns the global resource bundle instance.
+		///  Returns the global resource bundle instance.
 		/// </summary>
 		public static CefResourceBundle GetGlobal()
 		{
-			return CefResourceBundle.Wrap(CefResourceBundle.Create, CefNativeApi.cef_resource_bundle_get_global());
+			return Wrap(Create, CefNativeApi.cef_resource_bundle_get_global());
 		}
 	}
 }

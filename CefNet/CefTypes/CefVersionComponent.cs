@@ -9,6 +9,6 @@
 		ChromeVersionMajor = 4,
 		ChromeVersionMinor = 5,
 		ChromeVersionBuild = 6,
-		ChromeVersionPatch = 7,
+		ChromeVersionPatch = 7
 	}
 }

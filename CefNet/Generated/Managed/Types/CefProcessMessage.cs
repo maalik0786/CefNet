@@ -12,85 +12,58 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing a message. Can be used on any process and thread.
+	///  Structure representing a message. Can be used on any process and thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
 	public unsafe partial class CefProcessMessage : CefBaseRefCounted<cef_process_message_t>
 	{
-		internal static unsafe CefProcessMessage Create(IntPtr instance)
-		{
-			return new CefProcessMessage((cef_process_message_t*)instance);
-		}
-
 		public CefProcessMessage(cef_process_message_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this object is valid. Do not call any other functions
-		/// if this property returns false.
+		///  Gets a value indicating whether this object is valid. Do not call any other functions
+		///  if this property returns false.
 		/// </summary>
-		public unsafe virtual bool IsValid
+		public virtual bool IsValid => SafeCall(NativeInstance->IsValid() != 0);
+
+		/// <summary>
+		///  Gets a value indicating whether the values of this object are read-only. Some APIs may
+		///  expose read-only objects.
+		/// </summary>
+		public virtual bool IsReadOnly => SafeCall(NativeInstance->IsReadOnly() != 0);
+
+		/// <summary>
+		///  Gets the message name.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string Name => SafeCall(CefString.ReadAndFree(NativeInstance->GetName()));
+
+		/// <summary>
+		///  Gets the list of arguments.
+		/// </summary>
+		public virtual CefListValue ArgumentList =>
+			SafeCall(CefListValue.Wrap(CefListValue.Create, NativeInstance->GetArgumentList()));
+
+		internal static CefProcessMessage Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(NativeInstance->IsValid() != 0);
-			}
+			return new CefProcessMessage((cef_process_message_t*) instance);
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether the values of this object are read-only. Some APIs may
-		/// expose read-only objects.
+		///  Returns a writable copy of this object.
 		/// </summary>
-		public unsafe virtual bool IsReadOnly
+		public virtual CefProcessMessage Copy()
 		{
-			get
-			{
-				return SafeCall(NativeInstance->IsReadOnly() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets the message name.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string Name
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetName()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the list of arguments.
-		/// </summary>
-		public unsafe virtual CefListValue ArgumentList
-		{
-			get
-			{
-				return SafeCall(CefListValue.Wrap(CefListValue.Create, NativeInstance->GetArgumentList()));
-			}
-		}
-
-		/// <summary>
-		/// Returns a writable copy of this object.
-		/// </summary>
-		public unsafe virtual CefProcessMessage Copy()
-		{
-			return SafeCall(CefProcessMessage.Wrap(CefProcessMessage.Create, NativeInstance->Copy()));
+			return SafeCall(Wrap(Create, NativeInstance->Copy()));
 		}
 	}
 }

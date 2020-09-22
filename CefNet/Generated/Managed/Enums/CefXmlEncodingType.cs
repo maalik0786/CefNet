@@ -11,18 +11,13 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported XML encoding types. The parser supports ASCII, ISO-8859-1, and
-	/// UTF16 (LE and BE) by default. All other types must be translated to UTF8
-	/// before being passed to the parser. If a BOM is detected and the correct
-	/// decoder is available then that decoder will be used automatically.
+	///  Supported XML encoding types. The parser supports ASCII, ISO-8859-1, and
+	///  UTF16 (LE and BE) by default. All other types must be translated to UTF8
+	///  before being passed to the parser. If a BOM is detected and the correct
+	///  decoder is available then that decoder will be used automatically.
 	/// </summary>
 	public enum CefXmlEncodingType
 	{
@@ -34,7 +29,6 @@ namespace CefNet
 
 		Utf16be = 3,
 
-		Ascii = 4,
+		Ascii = 4
 	}
 }
-

@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// DOM event category flags.
+	///  DOM event category flags.
 	/// </summary>
 	public enum CefDOMEventCategory
 	{
@@ -55,7 +50,6 @@ namespace CefNet
 
 		Progress = 0x4000,
 
-		XmlhttprequestProgress = 0x8000,
+		XmlhttprequestProgress = 0x8000
 	}
 }
-

@@ -1,15 +1,13 @@
-﻿using CefNet;
-using CefNet.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CefNet;
+using CefNet.JSInterop;
 
 namespace WinFormsCoreApp
 {
-	static class ScriptableObjectTests
+	internal static class ScriptableObjectTests
 	{
 		public static void SendTestScriptableObjectToRenderer(CefFrame frame)
 		{
@@ -24,13 +22,8 @@ namespace WinFormsCoreApp
 		public static async void HandleScriptableObjectTestMessage(object sender, CefProcessMessageReceivedEventArgs e)
 		{
 			if (e.Name == "test scriptableobject")
-			{
 				await ScriptableObjectTestAsync(e.Frame);
-			}
-			else if (e.Name == "call GC.Collect()")
-			{
-				GC.Collect();
-			}
+			else if (e.Name == "call GC.Collect()") GC.Collect();
 		}
 
 		public static async Task ScriptableObjectTestAsync(CefFrame frame)
@@ -39,12 +32,13 @@ namespace WinFormsCoreApp
 				.ConfigureAwait(true);
 			dynamic scriptableObject2 = await frame.GetScriptableObjectAsync(CancellationToken.None)
 				.ConfigureAwait(false);
-			dynamic window = scriptableObject1.window;
-			dynamic document = window.document;
+			var window = scriptableObject1.window;
+			var document = window.document;
 
 			document.title = "document title";
 
-			window.alert(string.Format("Equals: {0}", scriptableObject1 == scriptableObject2 && document == window.document));
+			window.alert(string.Format("Equals: {0}",
+				scriptableObject1 == scriptableObject2 && document == window.document));
 
 			window.alert(document.querySelectorAll("div")[0]);
 

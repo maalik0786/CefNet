@@ -1,14 +1,10 @@
-﻿using CefNet.CApi;
-using System;
-using System.Collections.Generic;
-
-namespace CefNet
+﻿namespace CefNet
 {
-	public unsafe partial class CefExtension
+	public partial class CefExtension
 	{
 #if USESAFECACHE
-
-		private static readonly HashSet<WeakReference<CefExtension>> WeakRefs = new HashSet<WeakReference<CefExtension>>();
+		private static readonly HashSet<WeakReference<CefExtension>> WeakRefs =
+ new HashSet<WeakReference<CefExtension>>();
 
 		public unsafe static CefExtension Wrap(Func<IntPtr, CefExtension> create, cef_extension_t* instance)
 		{
@@ -65,6 +61,5 @@ namespace CefNet
 		}
 
 #endif // USESAFECACHE
-
 	}
 }

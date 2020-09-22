@@ -12,44 +12,41 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Callback structure used for asynchronous continuation of JavaScript dialog
-	/// requests.
+	///  Callback structure used for asynchronous continuation of JavaScript dialog
+	///  requests.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefJSDialogCallback : CefBaseRefCounted<cef_jsdialog_callback_t>
+	public unsafe class CefJSDialogCallback : CefBaseRefCounted<cef_jsdialog_callback_t>
 	{
-		internal static unsafe CefJSDialogCallback Create(IntPtr instance)
+		public CefJSDialogCallback(cef_jsdialog_callback_t* instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
-			return new CefJSDialogCallback((cef_jsdialog_callback_t*)instance);
 		}
 
-		public CefJSDialogCallback(cef_jsdialog_callback_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+		internal static CefJSDialogCallback Create(IntPtr instance)
 		{
+			return new CefJSDialogCallback((cef_jsdialog_callback_t*) instance);
 		}
 
 		/// <summary>
-		/// Continue the JS dialog request. Set |success| to true (1) if the OK button
-		/// was pressed. The |user_input| value should be specified for prompt dialogs.
+		///  Continue the JS dialog request. Set |success| to true (1) if the OK button
+		///  was pressed. The |user_input| value should be specified for prompt dialogs.
 		/// </summary>
-		public unsafe virtual void Continue(bool success, string userInput)
+		public virtual void Continue(bool success, string userInput)
 		{
 			fixed (char* s1 = userInput)
 			{
-				var cstr1 = new cef_string_t { Str = s1, Length = userInput != null ? userInput.Length : 0 };
+				var cstr1 = new cef_string_t {Str = s1, Length = userInput != null ? userInput.Length : 0};
 				NativeInstance->Continue(success ? 1 : 0, &cstr1);
 			}
+
 			GC.KeepAlive(this);
 		}
 	}

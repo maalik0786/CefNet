@@ -11,172 +11,95 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Popup window features.
+	///  Popup window features.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefPopupFeatures
+	public struct CefPopupFeatures
 	{
 		private cef_popup_features_t _instance;
 
 		public int X
 		{
-			get
-			{
-				return _instance.x;
-			}
-			set
-			{
-				_instance.x = value;
-			}
+			get => _instance.x;
+			set => _instance.x = value;
 		}
 
 		public int XSet
 		{
-			get
-			{
-				return _instance.xSet;
-			}
-			set
-			{
-				_instance.xSet = value;
-			}
+			get => _instance.xSet;
+			set => _instance.xSet = value;
 		}
 
 		public int Y
 		{
-			get
-			{
-				return _instance.y;
-			}
-			set
-			{
-				_instance.y = value;
-			}
+			get => _instance.y;
+			set => _instance.y = value;
 		}
 
 		public int YSet
 		{
-			get
-			{
-				return _instance.ySet;
-			}
-			set
-			{
-				_instance.ySet = value;
-			}
+			get => _instance.ySet;
+			set => _instance.ySet = value;
 		}
 
 		public int Width
 		{
-			get
-			{
-				return _instance.width;
-			}
-			set
-			{
-				_instance.width = value;
-			}
+			get => _instance.width;
+			set => _instance.width = value;
 		}
 
 		public int WidthSet
 		{
-			get
-			{
-				return _instance.widthSet;
-			}
-			set
-			{
-				_instance.widthSet = value;
-			}
+			get => _instance.widthSet;
+			set => _instance.widthSet = value;
 		}
 
 		public int Height
 		{
-			get
-			{
-				return _instance.height;
-			}
-			set
-			{
-				_instance.height = value;
-			}
+			get => _instance.height;
+			set => _instance.height = value;
 		}
 
 		public int HeightSet
 		{
-			get
-			{
-				return _instance.heightSet;
-			}
-			set
-			{
-				_instance.heightSet = value;
-			}
+			get => _instance.heightSet;
+			set => _instance.heightSet = value;
 		}
 
 		public int MenuBarVisible
 		{
-			get
-			{
-				return _instance.menuBarVisible;
-			}
-			set
-			{
-				_instance.menuBarVisible = value;
-			}
+			get => _instance.menuBarVisible;
+			set => _instance.menuBarVisible = value;
 		}
 
 		public int StatusBarVisible
 		{
-			get
-			{
-				return _instance.statusBarVisible;
-			}
-			set
-			{
-				_instance.statusBarVisible = value;
-			}
+			get => _instance.statusBarVisible;
+			set => _instance.statusBarVisible = value;
 		}
 
 		public int ToolBarVisible
 		{
-			get
-			{
-				return _instance.toolBarVisible;
-			}
-			set
-			{
-				_instance.toolBarVisible = value;
-			}
+			get => _instance.toolBarVisible;
+			set => _instance.toolBarVisible = value;
 		}
 
 		public int ScrollbarsVisible
 		{
-			get
-			{
-				return _instance.scrollbarsVisible;
-			}
-			set
-			{
-				_instance.scrollbarsVisible = value;
-			}
+			get => _instance.scrollbarsVisible;
+			set => _instance.scrollbarsVisible = value;
 		}
 
 		public static implicit operator CefPopupFeatures(cef_popup_features_t instance)
 		{
-			return new CefPopupFeatures { _instance = instance };
+			return new CefPopupFeatures {_instance = instance};
 		}
 
 		public static implicit operator cef_popup_features_t(CefPopupFeatures instance)

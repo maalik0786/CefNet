@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing;
-using System.Text;
 using Modern.Forms;
 
 namespace CefNet.Modern.Forms
@@ -11,13 +8,12 @@ namespace CefNet.Modern.Forms
 	{
 		public ContextMenuEventArgs(ContextMenu menu, Point location)
 		{
-			this.ContextMenu = menu;
-			this.Location = location;
+			ContextMenu = menu;
+			Location = location;
 		}
 
 		public ContextMenu ContextMenu { get; }
 
 		public Point Location { get; }
-
 	}
 }

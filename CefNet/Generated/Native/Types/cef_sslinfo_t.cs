@@ -11,48 +11,45 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing SSL information.
+	///  Structure representing SSL information.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_sslinfo_t
+	public unsafe struct cef_sslinfo_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// cef_cert_status_t (*)(_cef_sslinfo_t* self)*
+		///  cef_cert_status_t (*)(_cef_sslinfo_t* self)*
 		/// </summary>
 		public void* get_cert_status;
 
 		/// <summary>
-		/// Returns a bitmask containing any and all problems verifying the server
-		/// certificate.
+		///  Returns a bitmask containing any and all problems verifying the server
+		///  certificate.
 		/// </summary>
 		[NativeName("get_cert_status")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern CefCertStatus GetCertStatus();
+		public extern CefCertStatus GetCertStatus();
 
 		/// <summary>
-		/// _cef_x509certificate_t* (*)(_cef_sslinfo_t* self)*
+		///  _cef_x509certificate_t* (*)(_cef_sslinfo_t* self)*
 		/// </summary>
 		public void* get_x509certificate;
 
 		/// <summary>
-		/// Returns the X.509 certificate.
+		///  Returns the X.509 certificate.
 		/// </summary>
 		[NativeName("get_x509certificate")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_x509certificate_t* GetX509certificate();
+		public extern cef_x509certificate_t* GetX509certificate();
 	}
 }
-

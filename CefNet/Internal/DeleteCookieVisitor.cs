@@ -6,8 +6,8 @@ namespace CefNet.Internal
 {
 	internal sealed class DeleteCookieVisitor : CefCookieVisitor
 	{
-		private readonly TaskCompletionSource<int> _completion;
 		private readonly CancellationTokenRegistration _cancellation;
+		private readonly TaskCompletionSource<int> _completion;
 		private readonly string _domain;
 		private readonly string _name;
 		private bool _continue;
@@ -30,21 +30,17 @@ namespace CefNet.Internal
 			_cancellation = cancellationToken.Register(Cancel, new WeakReference<DeleteCookieVisitor>(this));
 		}
 
-		public Task<int> CompletionTask
-		{
-			get { return _completion.Task; }
-		}
+		public Task<int> CompletionTask => _completion.Task;
 
 		protected internal override bool Visit(CefCookie cookie, int count, int total, ref int deleteCookie)
 		{
 			if (string.Equals(cookie.Domain, _domain, StringComparison.OrdinalIgnoreCase))
-			{
 				if (_name is null || _name.Equals(cookie.Name, StringComparison.OrdinalIgnoreCase))
 				{
 					_count++;
 					deleteCookie = 1;
 				}
-			}
+
 			return _continue;
 		}
 
@@ -61,13 +57,12 @@ namespace CefNet.Internal
 
 		private static void Cancel(object state)
 		{
-			if (((WeakReference<DeleteCookieVisitor>)state).TryGetTarget(out DeleteCookieVisitor self))
+			if (((WeakReference<DeleteCookieVisitor>) state).TryGetTarget(out var self))
 			{
 				self._cancellation.Dispose();
 				self._completion.TrySetCanceled();
 				self._continue = false;
 			}
 		}
-
 	}
 }

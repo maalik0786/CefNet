@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Text style types. Should be kepy in sync with gfx::TextStyle.
+	///  Text style types. Should be kepy in sync with gfx::TextStyle.
 	/// </summary>
 	public enum CefTextStyle
 	{
@@ -31,7 +26,6 @@ namespace CefNet
 
 		DiagonalStrike = 3,
 
-		Underline = 4,
+		Underline = 4
 	}
 }
-

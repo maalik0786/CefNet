@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CefNet;
@@ -10,7 +8,7 @@ using CefNet.Net;
 namespace WinFormsCoreApp
 {
 	/// <summary>
-	/// Provides an example of loading data into a file.
+	///  Provides an example of loading data into a file.
 	/// </summary>
 	internal sealed class CustomWebRequest : CefNetWebRequest
 	{
@@ -19,7 +17,8 @@ namespace WinFormsCoreApp
 
 		public bool IgnoreSize { get; internal set; }
 
-		public async Task DownloadFileAsync(CefRequest request, CefRequestContext context, string filename, CancellationToken cancellationToken)
+		public async Task DownloadFileAsync(CefRequest request, CefRequestContext context, string filename,
+			CancellationToken cancellationToken)
 		{
 			if (!Directory.Exists(Path.GetDirectoryName(filename)))
 				throw new DirectoryNotFoundException();
@@ -69,7 +68,5 @@ namespace WinFormsCoreApp
 		{
 			return File.Open(_filename, FileMode.Create, FileAccess.ReadWrite);
 		}
-
-
 	}
 }

@@ -1,21 +1,20 @@
-﻿using CefNet.CApi;
-using CefNet.WinApi;
-using System;
+﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using CefNet.CApi;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing CefExecuteProcess arguments.
+	///  Structure representing CefExecuteProcess arguments.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
 	public unsafe struct CefMainArgs : IDisposable
 	{
 		private cef_main_args_t _instance;
 
-		public unsafe static CefMainArgs Create(Encoding encoding, string[] args)
+		public static CefMainArgs Create(Encoding encoding, string[] args)
 		{
 			if (PlatformInfo.IsWindows)
 				throw new PlatformNotSupportedException();
@@ -32,10 +31,11 @@ namespace CefNet
 				mainArgs._instance.posix.argv = CreateArgv(encoding, args);
 				return mainArgs;
 			}
+
 			return new CefMainArgs();
 		}
 
-		public unsafe static CefMainArgs CreateDefault()
+		public static CefMainArgs CreateDefault()
 		{
 			var mainArgs = new CefMainArgs();
 			if (PlatformInfo.IsWindows)
@@ -44,37 +44,37 @@ namespace CefNet
 			}
 			else
 			{
-				string[] args = Environment.GetCommandLineArgs();
+				var args = Environment.GetCommandLineArgs();
 				mainArgs._instance.posix.argc = args.Length;
 				mainArgs._instance.posix.argv = CreateArgv(Encoding.UTF8, args);
 			}
+
 			return mainArgs;
 		}
 
 		private static byte** CreateArgv(Encoding encoding, string[] args)
 		{
-			int arraySize = IntPtr.Size * (args.Length + 1);
-			int memorySize = arraySize + args.Length;
-			foreach (string arg in args)
-			{
-				memorySize += encoding.GetByteCount(arg);
-			}
+			var arraySize = IntPtr.Size * (args.Length + 1);
+			var memorySize = arraySize + args.Length;
+			foreach (var arg in args) memorySize += encoding.GetByteCount(arg);
 
-			byte** argv = (byte**)Marshal.AllocHGlobal(memorySize);
-			byte* data = (byte*)argv + arraySize;
-			byte* bufferEnd = (byte*)argv + memorySize;
+			var argv = (byte**) Marshal.AllocHGlobal(memorySize);
+			var data = (byte*) argv + arraySize;
+			var bufferEnd = (byte*) argv + memorySize;
 
 			for (var i = 0; i < args.Length; i++)
 			{
 				argv[i] = data;
-				string arg = args[i];
+				var arg = args[i];
 				fixed (char* arg_ptr = arg)
 				{
-					data += encoding.GetBytes(arg_ptr, arg.Length, data, (int)(bufferEnd - data));
+					data += encoding.GetBytes(arg_ptr, arg.Length, data, (int) (bufferEnd - data));
 				}
+
 				data[0] = 0;
 				data++;
 			}
+
 			argv[args.Length] = null;
 			return argv;
 		}
@@ -83,7 +83,7 @@ namespace CefNet
 		{
 			if (PlatformInfo.IsLinux || PlatformInfo.IsMacOS)
 			{
-				byte** argv = _instance.posix.argv;
+				var argv = _instance.posix.argv;
 				if (argv != null)
 				{
 					Marshal.FreeHGlobal(new IntPtr(_instance.posix.argv));
@@ -95,7 +95,7 @@ namespace CefNet
 
 		public static implicit operator CefMainArgs(cef_main_args_t instance)
 		{
-			return new CefMainArgs { _instance = instance };
+			return new CefMainArgs {_instance = instance};
 		}
 
 		public static implicit operator cef_main_args_t(CefMainArgs instance)

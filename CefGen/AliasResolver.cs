@@ -6,46 +6,41 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using CppAst;
 
 namespace CefGen
 {
-	sealed class AliasResolver
+	internal sealed class AliasResolver
 	{
-		private Dictionary<string, string> Aliases;
+		private readonly Dictionary<string, string> Aliases;
 
 		public AliasResolver(CppCompilation compilation)
 		{
 			Aliases = new Dictionary<string, string>();
 
-			foreach (CppTypedef typedef in compilation.Typedefs)
+			foreach (var typedef in compilation.Typedefs)
 			{
-				string name = typedef.ElementType.GetDisplayName();
+				var name = typedef.ElementType.GetDisplayName();
 				if (name.StartsWith("_"))
-				{
 					Aliases.Add(name, typedef.Name);
-				}
 				else if (typedef.Name == "cef_platform_thread_id_t"
-					|| typedef.Name == "cef_platform_thread_handle_t")
-				{
+				         || typedef.Name == "cef_platform_thread_handle_t")
 					Aliases.Add(typedef.Name, name);
-				}
 			}
 
-			foreach (CppEnum enumType in compilation.Enums)
+			foreach (var enumType in compilation.Enums)
 			{
-				string enumName = enumType.Name;
+				var enumName = enumType.Name;
 				if (!enumName.EndsWith("_t"))
 					throw new NotImplementedException();
 
 				Aliases.Add(enumName, enumName.Remove(enumName.Length - 2).ToUpperCamel());
 			}
 		}
-		
+
 		public void HandleResolveEvent(object sender, ResolveTypeNameEventArgs e)
 		{
-			if (TryResolve(e.Type, out string type))
+			if (TryResolve(e.Type, out var type))
 				e.Result = type;
 		}
 
@@ -56,7 +51,7 @@ namespace CefGen
 
 		public string ResolveNonFail(string type)
 		{
-			if (TryResolve(type, out string outtype))
+			if (TryResolve(type, out var outtype))
 				return outtype;
 			return type;
 		}

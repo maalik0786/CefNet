@@ -1,14 +1,14 @@
 ﻿namespace CefNet.Input.MacOS
 {
 	/// <summary>
-	/// Provides static methods to convert keys.
+	///  Provides static methods to convert keys.
 	/// </summary>
 	public static class KeyInterop
 	{
 		/// <summary>
-		/// Converts a macOS virtual keycode into a Windows virtual Key.
+		///  Converts a macOS virtual keycode into a Windows virtual Key.
 		/// </summary>
-		/// <param name="key">The <see cref="MacOSVirtualKey"/> to convert.</param>
+		/// <param name="key">The <see cref="MacOSVirtualKey" /> to convert.</param>
 		/// <returns>The virtual key.</returns>
 		public static VirtualKeys MacOSKeyToWindowsKey(MacOSVirtualKey key)
 		{
@@ -244,11 +244,11 @@
 		}
 
 		/// <summary>
-		/// Converts a Windows virtual key into a macOS virtual keycode.
+		///  Converts a Windows virtual key into a macOS virtual keycode.
 		/// </summary>
-		/// <param name="key">The <see cref="VirtualKeys"/> to convert.</param>
+		/// <param name="key">The <see cref="VirtualKeys" /> to convert.</param>
 		/// <param name="extended">
-		/// A value indicating that the key is pressed on the numeric keypad.
+		///  A value indicating that the key is pressed on the numeric keypad.
 		/// </param>
 		/// <returns>The virtual key.</returns>
 		public static MacOSVirtualKey WindowsKeyToMacOSKey(VirtualKeys key, bool extended)
@@ -475,11 +475,9 @@
 					return MacOSVirtualKey.UpArrow;
 				case VirtualKeys.KanaMode:
 					return MacOSVirtualKey.JISKana;
-
 			}
 
 			return MacOSVirtualKey.Invalid;
 		}
-
 	}
 }

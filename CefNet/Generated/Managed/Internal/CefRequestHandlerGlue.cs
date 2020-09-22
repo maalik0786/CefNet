@@ -11,18 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefRequestHandlerGlue: CefRequestHandler, ICefRequestHandlerPrivate
+	internal sealed class CefRequestHandlerGlue : CefRequestHandler, ICefRequestHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefRequestHandlerGlue(WebViewGlue impl)
 		{
@@ -34,19 +27,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnBeforeBrowse();
 		}
 
-		protected internal unsafe override bool OnBeforeBrowse(CefBrowser browser, CefFrame frame, CefRequest request, bool userGesture, bool isRedirect)
-		{
-			return _implementation.OnBeforeBrowse(browser, frame, request, userGesture, isRedirect);
-		}
-
 		bool ICefRequestHandlerPrivate.AvoidOnOpenUrlFromTab()
 		{
 			return _implementation.AvoidOnOpenUrlFromTab();
-		}
-
-		protected internal unsafe override bool OnOpenUrlFromTab(CefBrowser browser, CefFrame frame, string targetUrl, CefWindowOpenDisposition targetDisposition, bool userGesture)
-		{
-			return _implementation.OnOpenUrlFromTab(browser, frame, targetUrl, targetDisposition, userGesture);
 		}
 
 		bool ICefRequestHandlerPrivate.AvoidGetResourceRequestHandler()
@@ -54,19 +37,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidGetResourceRequestHandler();
 		}
 
-		protected internal unsafe override CefResourceRequestHandler GetResourceRequestHandler(CefBrowser browser, CefFrame frame, CefRequest request, bool isNavigation, bool isDownload, string requestInitiator, ref int disableDefaultHandling)
-		{
-			return _implementation.GetResourceRequestHandler(browser, frame, request, isNavigation, isDownload, requestInitiator, ref disableDefaultHandling);
-		}
-
 		bool ICefRequestHandlerPrivate.AvoidGetAuthCredentials()
 		{
 			return _implementation.AvoidGetAuthCredentials();
-		}
-
-		protected internal unsafe override bool GetAuthCredentials(CefBrowser browser, string originUrl, bool isProxy, string host, int port, string realm, string scheme, CefAuthCallback callback)
-		{
-			return _implementation.GetAuthCredentials(browser, originUrl, isProxy, host, port, realm, scheme, callback);
 		}
 
 		bool ICefRequestHandlerPrivate.AvoidOnQuotaRequest()
@@ -74,19 +47,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnQuotaRequest();
 		}
 
-		protected internal unsafe override bool OnQuotaRequest(CefBrowser browser, string originUrl, long newSize, CefRequestCallback callback)
-		{
-			return _implementation.OnQuotaRequest(browser, originUrl, newSize, callback);
-		}
-
 		bool ICefRequestHandlerPrivate.AvoidOnCertificateError()
 		{
 			return _implementation.AvoidOnCertificateError();
-		}
-
-		protected internal unsafe override bool OnCertificateError(CefBrowser browser, CefErrorCode certError, string requestUrl, CefSSLInfo sSLInfo, CefRequestCallback callback)
-		{
-			return _implementation.OnCertificateError(browser, certError, requestUrl, sSLInfo, callback);
 		}
 
 		bool ICefRequestHandlerPrivate.AvoidOnSelectClientCertificate()
@@ -94,19 +57,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnSelectClientCertificate();
 		}
 
-		protected internal unsafe override bool OnSelectClientCertificate(CefBrowser browser, bool isProxy, string host, int port, CefX509Certificate[] certificates, CefSelectClientCertificateCallback callback)
-		{
-			return _implementation.OnSelectClientCertificate(browser, isProxy, host, port, certificates, callback);
-		}
-
 		bool ICefRequestHandlerPrivate.AvoidOnPluginCrashed()
 		{
 			return _implementation.AvoidOnPluginCrashed();
-		}
-
-		protected internal unsafe override void OnPluginCrashed(CefBrowser browser, string pluginPath)
-		{
-			_implementation.OnPluginCrashed(browser, pluginPath);
 		}
 
 		bool ICefRequestHandlerPrivate.AvoidOnRenderViewReady()
@@ -114,19 +67,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnRenderViewReady();
 		}
 
-		protected internal unsafe override void OnRenderViewReady(CefBrowser browser)
-		{
-			_implementation.OnRenderViewReady(browser);
-		}
-
 		bool ICefRequestHandlerPrivate.AvoidOnRenderProcessTerminated()
 		{
 			return _implementation.AvoidOnRenderProcessTerminated();
-		}
-
-		protected internal unsafe override void OnRenderProcessTerminated(CefBrowser browser, CefTerminationStatus status)
-		{
-			_implementation.OnRenderProcessTerminated(browser, status);
 		}
 
 		bool ICefRequestHandlerPrivate.AvoidOnDocumentAvailableInMainFrame()
@@ -134,10 +77,68 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnDocumentAvailableInMainFrame();
 		}
 
-		protected internal unsafe override void OnDocumentAvailableInMainFrame(CefBrowser browser)
+		protected internal override bool OnBeforeBrowse(CefBrowser browser, CefFrame frame, CefRequest request,
+			bool userGesture, bool isRedirect)
+		{
+			return _implementation.OnBeforeBrowse(browser, frame, request, userGesture, isRedirect);
+		}
+
+		protected internal override bool OnOpenUrlFromTab(CefBrowser browser, CefFrame frame, string targetUrl,
+			CefWindowOpenDisposition targetDisposition, bool userGesture)
+		{
+			return _implementation.OnOpenUrlFromTab(browser, frame, targetUrl, targetDisposition, userGesture);
+		}
+
+		protected internal override CefResourceRequestHandler GetResourceRequestHandler(CefBrowser browser,
+			CefFrame frame, CefRequest request, bool isNavigation, bool isDownload, string requestInitiator,
+			ref int disableDefaultHandling)
+		{
+			return _implementation.GetResourceRequestHandler(browser, frame, request, isNavigation, isDownload,
+				requestInitiator, ref disableDefaultHandling);
+		}
+
+		protected internal override bool GetAuthCredentials(CefBrowser browser, string originUrl, bool isProxy,
+			string host, int port, string realm, string scheme, CefAuthCallback callback)
+		{
+			return _implementation.GetAuthCredentials(browser, originUrl, isProxy, host, port, realm, scheme, callback);
+		}
+
+		protected internal override bool OnQuotaRequest(CefBrowser browser, string originUrl, long newSize,
+			CefRequestCallback callback)
+		{
+			return _implementation.OnQuotaRequest(browser, originUrl, newSize, callback);
+		}
+
+		protected internal override bool OnCertificateError(CefBrowser browser, CefErrorCode certError,
+			string requestUrl, CefSSLInfo sSLInfo, CefRequestCallback callback)
+		{
+			return _implementation.OnCertificateError(browser, certError, requestUrl, sSLInfo, callback);
+		}
+
+		protected internal override bool OnSelectClientCertificate(CefBrowser browser, bool isProxy, string host,
+			int port, CefX509Certificate[] certificates, CefSelectClientCertificateCallback callback)
+		{
+			return _implementation.OnSelectClientCertificate(browser, isProxy, host, port, certificates, callback);
+		}
+
+		protected internal override void OnPluginCrashed(CefBrowser browser, string pluginPath)
+		{
+			_implementation.OnPluginCrashed(browser, pluginPath);
+		}
+
+		protected internal override void OnRenderViewReady(CefBrowser browser)
+		{
+			_implementation.OnRenderViewReady(browser);
+		}
+
+		protected internal override void OnRenderProcessTerminated(CefBrowser browser, CefTerminationStatus status)
+		{
+			_implementation.OnRenderProcessTerminated(browser, status);
+		}
+
+		protected internal override void OnDocumentAvailableInMainFrame(CefBrowser browser)
 		{
 			_implementation.OnDocumentAvailableInMainFrame(browser);
 		}
-
 	}
 }

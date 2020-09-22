@@ -1,4 +1,5 @@
-﻿#if MODERNFORMS
+﻿using System.Runtime.InteropServices;
+#if MODERNFORMS
 using Modern.Forms;
 #else
 using Avalonia;
@@ -6,13 +7,6 @@ using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 #endif
-
-using CefNet.Internal;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
 
 #if MODERNFORMS
 namespace CefNet.Modern.Forms
@@ -22,7 +16,7 @@ namespace CefNet.Avalonia
 {
 	public sealed class CustomCursor
 	{
-		public unsafe static Cursor Create(ref CefCursorInfo cursorInfo)
+		public static Cursor Create(ref CefCursorInfo cursorInfo)
 		{
 			return Cursor.Default; // Not supported
 
@@ -72,69 +66,64 @@ namespace CefNet.Avalonia
 		}
 
 		[StructLayout(LayoutKind.Explicit, Pack = 1, Size = 22)]
-		unsafe struct ICONDIR
+		private unsafe struct ICONDIR
 		{
-			[FieldOffset(0)]
-			public fixed byte _data[22];
+			[FieldOffset(0)] public fixed byte _data[22];
 
 			/// <summary>
-			/// Reserved. Must always be 0.
+			///  Reserved. Must always be 0.
 			/// </summary>
-			[FieldOffset(0)]
-			public short IDReserved;
+			[FieldOffset(0)] public readonly short IDReserved;
+
 			/// <summary>
-			/// Specifies image type: 1 for icon (.ICO) image, 2 for cursor (.CUR) image.
+			///  Specifies image type: 1 for icon (.ICO) image, 2 for cursor (.CUR) image.
 			/// </summary>
-			[FieldOffset(2)]
-			public short IconType;
+			[FieldOffset(2)] public readonly short IconType;
+
 			/// <summary>
-			/// Specifies number of images in the file.
+			///  Specifies number of images in the file.
 			/// </summary>
-			[FieldOffset(4)]
-			public short ImagesCount;
+			[FieldOffset(4)] public readonly short ImagesCount;
+
 			/// <summary>
-			/// Specifies image width in pixels. Can be any number between 0 and 255. Value 0 means image width is 256 pixels.
+			///  Specifies image width in pixels. Can be any number between 0 and 255. Value 0 means image width is 256 pixels.
 			/// </summary>
-			[FieldOffset(6)]
-			public byte Width;
+			[FieldOffset(6)] public readonly byte Width;
+
 			/// <summary>
-			/// Specifies image height in pixels. Can be any number between 0 and 255. Value 0 means image height is 256 pixels.
+			///  Specifies image height in pixels. Can be any number between 0 and 255. Value 0 means image height is 256 pixels.
 			/// </summary>
-			[FieldOffset(7)]
-			public byte Height;
+			[FieldOffset(7)] public readonly byte Height;
+
 			/// <summary>
-			/// Specifies number of colors in the color palette. Should be 0 if the image does not use a color palette.
+			///  Specifies number of colors in the color palette. Should be 0 if the image does not use a color palette.
 			/// </summary>
-			[FieldOffset(8)]
-			public byte ColorCount;
+			[FieldOffset(8)] public readonly byte ColorCount;
+
 			/// <summary>
-			/// Reserved. Should be 0.
+			///  Reserved. Should be 0.
 			/// </summary>
-			[FieldOffset(9)]
-			public byte IDEReserved;
+			[FieldOffset(9)] public readonly byte IDEReserved;
+
 			/// <summary>
-			/// Specifies the horizontal coordinates of the hotspot in number of pixels from the left.
+			///  Specifies the horizontal coordinates of the hotspot in number of pixels from the left.
 			/// </summary>
-			[FieldOffset(10)]
-			public short HotSpotX;
+			[FieldOffset(10)] public readonly short HotSpotX;
+
 			/// <summary>
-			/// Specifies the vertical coordinates of the hotspot in number of pixels from the top.
+			///  Specifies the vertical coordinates of the hotspot in number of pixels from the top.
 			/// </summary>
-			[FieldOffset(12)]
-			public short HotSpotY;
+			[FieldOffset(12)] public readonly short HotSpotY;
+
 			/// <summary>
-			/// Specifies the size of the image's data in bytes
+			///  Specifies the size of the image's data in bytes
 			/// </summary>
-			[FieldOffset(14)]
-			public int BytesInRes;
+			[FieldOffset(14)] public readonly int BytesInRes;
+
 			/// <summary>
-			/// Specifies the offset of BMP or PNG data from the beginning of the ICO/CUR file
+			///  Specifies the offset of BMP or PNG data from the beginning of the ICO/CUR file
 			/// </summary>
-			[FieldOffset(18)]
-			public int ImageOffset;
-			
+			[FieldOffset(18)] public readonly int ImageOffset;
 		}
-
-
 	}
 }

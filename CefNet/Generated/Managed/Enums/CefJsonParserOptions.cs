@@ -11,28 +11,22 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Options that can be passed to CefParseJSON.
+	///  Options that can be passed to CefParseJSON.
 	/// </summary>
 	public enum CefJsonParserOptions
 	{
 		/// <summary>
-		/// Parses the input strictly according to RFC 4627. See comments in Chromium&apos;s
-		/// base/json/json_reader.h file for known limitations/deviations from the RFC.
+		///  Parses the input strictly according to RFC 4627. See comments in Chromium&apos;s
+		///  base/json/json_reader.h file for known limitations/deviations from the RFC.
 		/// </summary>
 		Rfc = 0,
 
 		/// <summary>
-		/// Allows commas to exist after the last element in structures.
+		///  Allows commas to exist after the last element in structures.
 		/// </summary>
-		AllowTrailingCommas = 1 << 0,
+		AllowTrailingCommas = 1 << 0
 	}
 }
-

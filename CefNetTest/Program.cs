@@ -1,27 +1,26 @@
 ﻿#if true
-using CefNet;
 using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
+using CefNet;
 
 namespace CefNetTest
 {
 	public class Program
 	{
+		private static readonly unsafe X11ErrorHandlerDelegate x11_error_handler = HandleX11Error;
+
+		private static readonly X11IOErrorHandlerDelegate x11_io_error_handler = HandleX11IOError;
+
 		[STAThread]
-		public unsafe static void Main(string[] args)
+		public static void Main(string[] args)
 		{
-			string cefPath = Path.Combine(Path.GetDirectoryName(GetProjectPath()), "cef");
+			var cefPath = Path.Combine(Path.GetDirectoryName(GetProjectPath()), "cef");
 			var path = Environment.GetEnvironmentVariable("PATH");
 			Environment.SetEnvironmentVariable("PATH", Path.Combine(cefPath, "Release") + ";" + path);
-			string libname = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "libcef.dll" : "libcef.so";
-			IntPtr pLibCef = NativeMethods.LoadLibrary(Path.Combine(cefPath, "Release", libname));
+			var libname = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "libcef.dll" : "libcef.so";
+			var pLibCef = NativeMethods.LoadLibrary(Path.Combine(cefPath, "Release", libname));
 
 			// This executable is called many times, because it
 			// is also used for subprocesses. Let's print args
@@ -40,19 +39,18 @@ namespace CefNetTest
 			else
 			{
 				Console.WriteLine();
-				for (int i = 0; i < args.Length; i++)
-				{
+				for (var i = 0; i < args.Length; i++)
 					if (args[i].Length > 128)
 						Console.WriteLine(args[i].Remove(128) + "...");
 					else
 						Console.WriteLine(args[i]);
-				}
 			}
+
 			Console.Write("\n\n");
 
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-				&& !args.Any(arg => arg.StartsWith("--type="))
-				&& !args.Contains("--no-zygote"))
+			    && !args.Any(arg => arg.StartsWith("--type="))
+			    && !args.Contains("--no-zygote"))
 			{
 				Console.WriteLine("Please run with --no-zygote");
 				return;
@@ -62,15 +60,12 @@ namespace CefNetTest
 			if (args.Length == 0)
 			{
 				var version = new int[8];
-				for (int i = 0; i < version.Length; i++)
-				{
-					version[i] = CefApi.CefVersionInfo((CefVersionComponent)i);
-				}
+				for (var i = 0; i < version.Length; i++) version[i] = CefApi.CefVersionInfo((CefVersionComponent) i);
 				Console.Write("CEF version: {0}\n", string.Join(".", version));
 			}
 
 			// Main args
-			CefMainArgs main_args = CefMainArgs.CreateDefault();
+			var main_args = CefMainArgs.CreateDefault();
 
 			// Cef app
 			var app = new CefApp();
@@ -145,54 +140,50 @@ namespace CefNetTest
 			Console.WriteLine("cef_shutdown\n");
 			CefApi.Shutdown();
 
-			
+
 			GC.KeepAlive(client);
 		}
 
 		private static string GetProjectPath()
 		{
-			string projectPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
-			string rootPath = Path.GetPathRoot(projectPath);
+			var projectPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+			var rootPath = Path.GetPathRoot(projectPath);
 			while (Path.GetFileName(projectPath) != "CefNetTest")
 			{
 				if (projectPath == rootPath)
 					throw new DirectoryNotFoundException("Could not find the project directory.");
 				projectPath = Path.GetDirectoryName(projectPath);
 			}
+
 			return projectPath;
 		}
 
-		private unsafe static X11ErrorHandlerDelegate x11_error_handler = HandleX11Error;
-
-		private unsafe static int HandleX11Error(IntPtr display, XErrorEvent* e)
+		private static unsafe int HandleX11Error(IntPtr display, XErrorEvent* e)
 		{
 			Console.WriteLine("X11 error: type={0}, serial={1}, code={2}", e->type, e->serial, e->error_code);
-    		return 0;
+			return 0;
 		}
-
-		private static X11IOErrorHandlerDelegate x11_io_error_handler = HandleX11IOError;
 
 
 		private static int HandleX11IOError(IntPtr display)
 		{
-    		return 0;
+			return 0;
 		}
-
 	}
 
-	sealed class CefClientClass : CefClient
+	internal sealed class CefClientClass : CefClient
 	{
-		private CefLifeSpanHandlerClass CefLifeSpan = new CefLifeSpanHandlerClass();
+		private readonly CefLifeSpanHandlerClass CefLifeSpan = new CefLifeSpanHandlerClass();
 
-		public override CefLifeSpanHandler GetLifeSpanHandler()
+		protected override CefLifeSpanHandler GetLifeSpanHandler()
 		{
 			return CefLifeSpan;
 		}
 	}
 
-	sealed class CefLifeSpanHandlerClass : CefLifeSpanHandler
+	internal sealed class CefLifeSpanHandlerClass : CefLifeSpanHandler
 	{
-		public override void OnBeforeClose(CefBrowser browser)
+		protected override void OnBeforeClose(CefBrowser browser)
 		{
 			// TODO: Check how many browsers do exist and quit message
 			//       loop only when last browser is closed. Otherwise
@@ -200,10 +191,6 @@ namespace CefNetTest
 			//       window shouldn't be closed.
 			CefApi.QuitMessageLoop();
 		}
-	
 	}
-
-
-
 }
 #endif

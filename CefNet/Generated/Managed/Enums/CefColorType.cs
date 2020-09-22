@@ -11,27 +11,21 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Describes how to interpret the components of a pixel.
+	///  Describes how to interpret the components of a pixel.
 	/// </summary>
 	public enum CefColorType
 	{
 		/// <summary>
-		/// RGBA with 8 bits per pixel (32bits total).
+		///  RGBA with 8 bits per pixel (32bits total).
 		/// </summary>
 		Rgba8888 = 0,
 
 		/// <summary>
-		/// BGRA with 8 bits per pixel (32bits total).
+		///  BGRA with 8 bits per pixel (32bits total).
 		/// </summary>
-		Bgra8888 = 1,
+		Bgra8888 = 1
 	}
 }
-

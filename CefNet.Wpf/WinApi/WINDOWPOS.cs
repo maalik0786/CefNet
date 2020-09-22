@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace CefNet.WinApi
 {
@@ -16,5 +14,4 @@ namespace CefNet.WinApi
 		public int cy;
 		public int flags;
 	}
-
 }

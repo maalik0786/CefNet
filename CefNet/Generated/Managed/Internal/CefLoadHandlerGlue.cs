@@ -11,18 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefLoadHandlerGlue: CefLoadHandler, ICefLoadHandlerPrivate
+	internal sealed class CefLoadHandlerGlue : CefLoadHandler, ICefLoadHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefLoadHandlerGlue(WebViewGlue impl)
 		{
@@ -34,19 +27,9 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnLoadingStateChange();
 		}
 
-		protected internal unsafe override void OnLoadingStateChange(CefBrowser browser, bool isLoading, bool canGoBack, bool canGoForward)
-		{
-			_implementation.OnLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
-		}
-
 		bool ICefLoadHandlerPrivate.AvoidOnLoadStart()
 		{
 			return _implementation.AvoidOnLoadStart();
-		}
-
-		protected internal unsafe override void OnLoadStart(CefBrowser browser, CefFrame frame, CefTransitionType transitionType)
-		{
-			_implementation.OnLoadStart(browser, frame, transitionType);
 		}
 
 		bool ICefLoadHandlerPrivate.AvoidOnLoadEnd()
@@ -54,20 +37,32 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnLoadEnd();
 		}
 
-		protected internal unsafe override void OnLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode)
-		{
-			_implementation.OnLoadEnd(browser, frame, httpStatusCode);
-		}
-
 		bool ICefLoadHandlerPrivate.AvoidOnLoadError()
 		{
 			return _implementation.AvoidOnLoadError();
 		}
 
-		protected internal unsafe override void OnLoadError(CefBrowser browser, CefFrame frame, CefErrorCode errorCode, string errorText, string failedUrl)
+		protected internal override void OnLoadingStateChange(CefBrowser browser, bool isLoading, bool canGoBack,
+			bool canGoForward)
+		{
+			_implementation.OnLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
+		}
+
+		protected internal override void OnLoadStart(CefBrowser browser, CefFrame frame,
+			CefTransitionType transitionType)
+		{
+			_implementation.OnLoadStart(browser, frame, transitionType);
+		}
+
+		protected internal override void OnLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode)
+		{
+			_implementation.OnLoadEnd(browser, frame, httpStatusCode);
+		}
+
+		protected internal override void OnLoadError(CefBrowser browser, CefFrame frame, CefErrorCode errorCode,
+			string errorText, string failedUrl)
 		{
 			_implementation.OnLoadError(browser, frame, errorCode, errorText, failedUrl);
 		}
-
 	}
 }

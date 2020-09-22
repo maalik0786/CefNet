@@ -1,7 +1,4 @@
 ﻿using Avalonia.Interactivity;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace AvaloniaApp
 {
@@ -10,7 +7,7 @@ namespace AvaloniaApp
 		public FullscreenModeChangeEventArgs(IInteractive source, bool fullscreen)
 			: base(CustomWebView.FullscreenEvent, source)
 		{
-			this.Fullscreen = fullscreen;
+			Fullscreen = fullscreen;
 		}
 
 		public bool Fullscreen { get; }

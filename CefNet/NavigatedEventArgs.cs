@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CefNet
 {
@@ -8,8 +6,8 @@ namespace CefNet
 	{
 		public NavigatedEventArgs(CefFrame frame, string url)
 		{
-			this.Frame = frame;
-			this.Url = url;
+			Frame = frame;
+			Url = url;
 		}
 
 		public CefFrame Frame { get; }

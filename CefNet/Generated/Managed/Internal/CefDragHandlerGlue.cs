@@ -11,18 +11,11 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-using CefNet.CApi;
-using CefNet.Internal;
-
 namespace CefNet.Internal
 {
-	sealed partial class CefDragHandlerGlue: CefDragHandler, ICefDragHandlerPrivate
+	internal sealed class CefDragHandlerGlue : CefDragHandler, ICefDragHandlerPrivate
 	{
-		private WebViewGlue _implementation;
+		private readonly WebViewGlue _implementation;
 
 		public CefDragHandlerGlue(WebViewGlue impl)
 		{
@@ -34,20 +27,21 @@ namespace CefNet.Internal
 			return _implementation.AvoidOnDragEnter();
 		}
 
-		protected internal unsafe override bool OnDragEnter(CefBrowser browser, CefDragData dragData, CefDragOperationsMask mask)
-		{
-			return _implementation.OnDragEnter(browser, dragData, mask);
-		}
-
 		bool ICefDragHandlerPrivate.AvoidOnDraggableRegionsChanged()
 		{
 			return _implementation.AvoidOnDraggableRegionsChanged();
 		}
 
-		protected internal unsafe override void OnDraggableRegionsChanged(CefBrowser browser, CefFrame frame, CefDraggableRegion[] regions)
+		protected internal override bool OnDragEnter(CefBrowser browser, CefDragData dragData,
+			CefDragOperationsMask mask)
+		{
+			return _implementation.OnDragEnter(browser, dragData, mask);
+		}
+
+		protected internal override void OnDraggableRegionsChanged(CefBrowser browser, CefFrame frame,
+			CefDraggableRegion[] regions)
 		{
 			_implementation.OnDraggableRegionsChanged(browser, frame, regions);
 		}
-
 	}
 }

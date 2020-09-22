@@ -4,16 +4,14 @@
 // See the licence file in the project root for full license information.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.CodeAnalysis;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
+using Microsoft.CodeAnalysis;
 
 namespace CefGen
 {
 	[DebuggerDisplay("{Name}")]
-	sealed class CefProperty
+	internal sealed class CefProperty
 	{
 		public IMethodSymbol Getter { get; set; }
 		public IMethodSymbol Setter { get; set; }
@@ -44,22 +42,14 @@ namespace CefGen
 			{
 				string name;
 				if (Getter == null)
-				{
 					name = Setter.Name.Substring(Math.Max(Setter.Name.IndexOf(char.IsUpper, 1), 0));
-				}
 				else if (Getter.Name.StartsWith("Get"))
-				{
 					name = Getter.Name.Substring(3);
-				}
 				else if (Setter == null)
-				{
 					name = Getter.Name;
-				}
 				else
-				{
 					name = Getter.Name.Substring(Math.Max(Getter.Name.IndexOf(char.IsUpper, 1), 0));
-				}
-				return (name == "CefType" ? "Type" : name);
+				return name == "CefType" ? "Type" : name;
 			}
 		}
 	}

@@ -11,73 +11,50 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing the audio parameters for setting up the audio handler.
+	///  Structure representing the audio parameters for setting up the audio handler.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefAudioParameters
+	public struct CefAudioParameters
 	{
 		private cef_audio_parameters_t _instance;
 
 		/// <summary>
-		/// Layout of the audio channels
+		///  Layout of the audio channels
 		/// </summary>
 		public CefChannelLayout ChannelLayout
 		{
-			get
-			{
-				return _instance.channel_layout;
-			}
-			set
-			{
-				_instance.channel_layout = value;
-			}
+			get => _instance.channel_layout;
+			set => _instance.channel_layout = value;
 		}
 
 		/// <summary>
-		/// Sample rate
+		///  Sample rate
 		/// </summary>
 		public int SampleRate
 		{
-			get
-			{
-				return _instance.sample_rate;
-			}
-			set
-			{
-				_instance.sample_rate = value;
-			}
+			get => _instance.sample_rate;
+			set => _instance.sample_rate = value;
 		}
 
 		/// <summary>
-		/// Number of frames per buffer
+		///  Number of frames per buffer
 		/// </summary>
 		public int FramesPerBuffer
 		{
-			get
-			{
-				return _instance.frames_per_buffer;
-			}
-			set
-			{
-				_instance.frames_per_buffer = value;
-			}
+			get => _instance.frames_per_buffer;
+			set => _instance.frames_per_buffer = value;
 		}
 
 		public static implicit operator CefAudioParameters(cef_audio_parameters_t instance)
 		{
-			return new CefAudioParameters { _instance = instance };
+			return new CefAudioParameters {_instance = instance};
 		}
 
 		public static implicit operator cef_audio_parameters_t(CefAudioParameters instance)

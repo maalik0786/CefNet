@@ -1,41 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 
 namespace CefNet.Windows.Forms
 {
 	/// <summary>
-	/// See: https://stackoverflow.com/a/52271345
+	///  See: https://stackoverflow.com/a/52271345
 	/// </summary>
 	internal sealed class ToolStripRadioMenuItem : ToolStripMenuItem
 	{
+		private bool mouseDownState;
+
+		private bool mouseHoverState;
+
 		public ToolStripRadioMenuItem()
 		{
 			Initialize();
 		}
 
 		public ToolStripRadioMenuItem(string text)
-			: base(text, null, (EventHandler)null)
+			: base(text, null, (EventHandler) null)
 		{
 			Initialize();
 		}
 
 		public ToolStripRadioMenuItem(Image image)
-			: base(null, image, (EventHandler)null)
+			: base(null, image, (EventHandler) null)
 		{
 			Initialize();
 		}
 
-		public ToolStripRadioMenuItem(string text, Image image) 
-			: base(text, image, (EventHandler)null)
+		public ToolStripRadioMenuItem(string text, Image image)
+			: base(text, image, (EventHandler) null)
 		{
 			Initialize();
 		}
 
-		public ToolStripRadioMenuItem(string text, Image image, EventHandler onClick) 
+		public ToolStripRadioMenuItem(string text, Image image, EventHandler onClick)
 			: base(text, image, onClick)
 		{
 			Initialize();
@@ -53,11 +55,29 @@ namespace CefNet.Windows.Forms
 			Initialize();
 		}
 
-		public ToolStripRadioMenuItem(string text, Image image, EventHandler onClick, Keys shortcutKeys) 
+		public ToolStripRadioMenuItem(string text, Image image, EventHandler onClick, Keys shortcutKeys)
 			: base(text, image, onClick)
 		{
 			Initialize();
-			this.ShortcutKeys = shortcutKeys;
+			ShortcutKeys = shortcutKeys;
+		}
+
+		// Enable the item only if its parent item is in the checked state 
+		// and its Enabled property has not been explicitly set to false. 
+		public override bool Enabled
+		{
+			get
+			{
+				var ownerMenuItem = OwnerItem as ToolStripMenuItem;
+
+				// Use the base value in design mode to prevent the designer
+				// from setting the base value to the calculated value.
+				if (!DesignMode && ownerMenuItem != null && ownerMenuItem.CheckOnClick)
+					return base.Enabled && ownerMenuItem.Checked;
+				return base.Enabled;
+			}
+
+			set => base.Enabled = value;
 		}
 
 		// Called by all constructors to initialize CheckOnClick.
@@ -74,7 +94,7 @@ namespace CefNet.Windows.Forms
 			if (!Checked)
 				return;
 
-			ToolStrip parent = this.Parent;
+			var parent = Parent;
 			if (parent == null)
 				return;
 
@@ -82,7 +102,7 @@ namespace CefNet.Windows.Forms
 			foreach (ToolStripItem item in parent.Items)
 			{
 				var radioItem = item as ToolStripRadioMenuItem;
-				if (radioItem != null && radioItem != (this) && radioItem.Checked)
+				if (radioItem != null && radioItem != this && radioItem.Checked)
 				{
 					radioItem.Checked = false;
 
@@ -95,7 +115,6 @@ namespace CefNet.Windows.Forms
 
 		protected override void OnClick(EventArgs e)
 		{
-
 			// If the item is already in the checked state, do not call 
 			// the base method, which would toggle the value. 
 			if (Checked)
@@ -119,7 +138,7 @@ namespace CefNet.Windows.Forms
 			}
 
 			// Determine the correct state of the RadioButton.
-			RadioButtonState buttonState = RadioButtonState.UncheckedNormal;
+			var buttonState = RadioButtonState.UncheckedNormal;
 			if (Enabled)
 			{
 				if (mouseDownState)
@@ -137,26 +156,34 @@ namespace CefNet.Windows.Forms
 						buttonState = RadioButtonState.UncheckedHot;
 				}
 				else if (Checked)
+				{
 					buttonState = RadioButtonState.CheckedNormal;
+				}
 			}
 			else if (Checked)
+			{
 				buttonState = RadioButtonState.CheckedDisabled;
+			}
 			else
+			{
 				buttonState = RadioButtonState.UncheckedDisabled;
+			}
 
 			// Calculate the rectangle at which to display the RadioButton.
-			Size glyphSize = RadioButtonRenderer.GetGlyphSize(e.Graphics, buttonState);
-			Rectangle contentRect = this.ContentRectangle;
-			Point imageLocation = contentRect.Location;
-			float scale = e.Graphics.DpiX / 96f;
-			imageLocation.Offset((int)Math.Round(5f * scale, MidpointRounding.AwayFromZero), (contentRect.Height - glyphSize.Height) / 2);
+			var glyphSize = RadioButtonRenderer.GetGlyphSize(e.Graphics, buttonState);
+			var contentRect = ContentRectangle;
+			var imageLocation = contentRect.Location;
+			var scale = e.Graphics.DpiX / 96f;
+			imageLocation.Offset((int) Math.Round(5f * scale, MidpointRounding.AwayFromZero),
+				(contentRect.Height - glyphSize.Height) / 2);
 
-			ToolStripRenderer renderer = Owner?.Renderer;
+			var renderer = Owner?.Renderer;
 			if (renderer != null)
 			{
 				renderer.DrawMenuItemBackground(new ToolStripItemRenderEventArgs(e.Graphics, this));
-				int x = (int)(32 * scale);
-				e.Graphics.SetClip(new Rectangle(x, contentRect.Y, Math.Max(contentRect.Width - x, 0), contentRect.Height));
+				var x = (int) (32 * scale);
+				e.Graphics.SetClip(new Rectangle(x, contentRect.Y, Math.Max(contentRect.Width - x, 0),
+					contentRect.Height));
 				base.OnPaint(e);
 				e.Graphics.ResetClip();
 			}
@@ -170,14 +197,11 @@ namespace CefNet.Windows.Forms
 			// shows through the RadioButton image. In this case, paint a 
 			// non-transparent background first to cover the check mark.
 			if (Checked && RadioButtonRenderer.IsBackgroundPartiallyTransparent(buttonState))
-			{
-				e.Graphics.FillEllipse(SystemBrushes.Control, new Rectangle(imageLocation.X, imageLocation.Y, glyphSize.Width - 1, glyphSize.Height - 1));
-			}
+				e.Graphics.FillEllipse(SystemBrushes.Control,
+					new Rectangle(imageLocation.X, imageLocation.Y, glyphSize.Width - 1, glyphSize.Height - 1));
 
 			RadioButtonRenderer.DrawRadioButton(e.Graphics, imageLocation, buttonState);
 		}
-
-		private bool mouseHoverState = false;
 
 		protected override void OnMouseEnter(EventArgs e)
 		{
@@ -195,8 +219,6 @@ namespace CefNet.Windows.Forms
 			base.OnMouseLeave(e);
 		}
 
-		private bool mouseDownState = false;
-
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			mouseDownState = true;
@@ -213,28 +235,6 @@ namespace CefNet.Windows.Forms
 			base.OnMouseUp(e);
 		}
 
-		// Enable the item only if its parent item is in the checked state 
-		// and its Enabled property has not been explicitly set to false. 
-		public override bool Enabled
-		{
-			get
-			{
-				var ownerMenuItem = OwnerItem as ToolStripMenuItem;
-
-				// Use the base value in design mode to prevent the designer
-				// from setting the base value to the calculated value.
-				if (!DesignMode && ownerMenuItem != null && ownerMenuItem.CheckOnClick)
-					return base.Enabled && ownerMenuItem.Checked;
-				else
-					return base.Enabled;
-			}
-
-			set
-			{
-				base.Enabled = value;
-			}
-		}
-
 		// When OwnerItem becomes available, if it is a ToolStripMenuItem 
 		// with a CheckOnClick property value of true, subscribe to its 
 		// CheckedChanged event. 
@@ -243,7 +243,7 @@ namespace CefNet.Windows.Forms
 			var ownerMenuItem = OwnerItem as ToolStripMenuItem;
 
 			if (ownerMenuItem != null && ownerMenuItem.CheckOnClick)
-				ownerMenuItem.CheckedChanged += new EventHandler(OwnerMenuItem_CheckedChanged);
+				ownerMenuItem.CheckedChanged += OwnerMenuItem_CheckedChanged;
 
 			base.OnOwnerChanged(e);
 		}
@@ -255,5 +255,4 @@ namespace CefNet.Windows.Forms
 			Invalidate();
 		}
 	}
-
 }

@@ -1,38 +1,34 @@
-﻿using CefNet.Internal;
-using CefNet.Wpf;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Windows;
+using CefNet.Internal;
+using CefNet.Wpf;
 
 namespace WpfCoreApp
 {
-	sealed class CustomWebView : WebView
+	internal sealed class CustomWebView : WebView
 	{
-		public static RoutedEvent FullscreenEvent = EventManager.RegisterRoutedEvent("Fullscreen", RoutingStrategy.Bubble, typeof(EventHandler<FullscreenModeChangeEventArgs>), typeof(WebView));
-
-		public event EventHandler<FullscreenModeChangeEventArgs> Fullscreen
-		{
-			add { AddHandler(FullscreenEvent, value); }
-			remove { RemoveHandler(FullscreenEvent, value); }
-		}
+		public static RoutedEvent FullscreenEvent = EventManager.RegisterRoutedEvent("Fullscreen",
+			RoutingStrategy.Bubble, typeof(EventHandler<FullscreenModeChangeEventArgs>), typeof(WebView));
 
 		public CustomWebView()
 		{
-
 		}
 
 		public CustomWebView(WebView opener)
 			: base(opener)
 		{
+		}
 
+		public event EventHandler<FullscreenModeChangeEventArgs> Fullscreen
+		{
+			add => AddHandler(FullscreenEvent, value);
+			remove => RemoveHandler(FullscreenEvent, value);
 		}
 
 		protected override WebViewGlue CreateWebViewGlue()
 		{
 			return new CustomWebViewGlue(this);
 		}
-
 
 
 		internal void RaiseFullscreenModeChange(bool fullscreen)
@@ -42,10 +38,7 @@ namespace WpfCoreApp
 
 		private void OnFullScreenModeChange(FullscreenModeChangeEventArgs e)
 		{
-
 			RaiseEvent(e);
 		}
-
-
 	}
 }

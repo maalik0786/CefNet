@@ -12,101 +12,112 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Implement this structure to handle events related to keyboard input. The
-	/// functions of this structure will be called on the UI thread.
+	///  Implement this structure to handle events related to keyboard input. The
+	///  functions of this structure will be called on the UI thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefKeyboardHandler : CefBaseRefCounted<cef_keyboard_handler_t>, ICefKeyboardHandlerPrivate
+	public unsafe class CefKeyboardHandler : CefBaseRefCounted<cef_keyboard_handler_t>, ICefKeyboardHandlerPrivate
 	{
 		private static readonly OnPreKeyEventDelegate fnOnPreKeyEvent = OnPreKeyEventImpl;
 
 		private static readonly OnKeyEventDelegate fnOnKeyEvent = OnKeyEventImpl;
 
-		internal static unsafe CefKeyboardHandler Create(IntPtr instance)
-		{
-			return new CefKeyboardHandler((cef_keyboard_handler_t*)instance);
-		}
-
 		public CefKeyboardHandler()
 		{
-			cef_keyboard_handler_t* self = this.NativeInstance;
-			self->on_pre_key_event = (void*)Marshal.GetFunctionPointerForDelegate(fnOnPreKeyEvent);
-			self->on_key_event = (void*)Marshal.GetFunctionPointerForDelegate(fnOnKeyEvent);
+			var self = NativeInstance;
+			self->on_pre_key_event = (void*) Marshal.GetFunctionPointerForDelegate(fnOnPreKeyEvent);
+			self->on_key_event = (void*) Marshal.GetFunctionPointerForDelegate(fnOnKeyEvent);
 		}
 
 		public CefKeyboardHandler(cef_keyboard_handler_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefKeyboardHandlerPrivate.AvoidOnPreKeyEvent();
 
-		/// <summary>
-		/// Called before a keyboard event is sent to the renderer. |event| contains
-		/// information about the keyboard event. |os_event| is the operating system
-		/// event message, if any. Return true (1) if the event was handled or false
-		/// (0) otherwise. If the event will be handled in on_key_event() as a keyboard
-		/// shortcut set |is_keyboard_shortcut| to true (1) and return false (0).
-		/// </summary>
-		protected internal unsafe virtual bool OnPreKeyEvent(CefBrowser browser, CefKeyEvent @event, CefEventHandle osEvent, ref int isKeyboardShortcut)
-		{
-			return default;
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int OnPreKeyEventDelegate(cef_keyboard_handler_t* self, cef_browser_t* browser, cef_key_event_t* @event, CefEventHandle os_event, int* is_keyboard_shortcut);
-
-		// int (*)(_cef_keyboard_handler_t* self, _cef_browser_t* browser, const const _cef_key_event_t* event, CefEventHandle os_event, int* is_keyboard_shortcut)*
-		private static unsafe int OnPreKeyEventImpl(cef_keyboard_handler_t* self, cef_browser_t* browser, cef_key_event_t* @event, CefEventHandle os_event, int* is_keyboard_shortcut)
-		{
-			var instance = GetInstance((IntPtr)self) as CefKeyboardHandler;
-			if (instance == null || ((ICefKeyboardHandlerPrivate)instance).AvoidOnPreKeyEvent())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				return default;
-			}
-			return instance.OnPreKeyEvent(CefBrowser.Wrap(CefBrowser.Create, browser), *(CefKeyEvent*)@event, os_event, ref *is_keyboard_shortcut) ? 1 : 0;
-		}
-
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefKeyboardHandlerPrivate.AvoidOnKeyEvent();
 
+		internal static CefKeyboardHandler Create(IntPtr instance)
+		{
+			return new CefKeyboardHandler((cef_keyboard_handler_t*) instance);
+		}
+
 		/// <summary>
-		/// Called after the renderer and JavaScript in the page has had a chance to
-		/// handle the event. |event| contains information about the keyboard event.
-		/// |os_event| is the operating system event message, if any. Return true (1)
-		/// if the keyboard event was handled or false (0) otherwise.
+		///  Called before a keyboard event is sent to the renderer. |event| contains
+		///  information about the keyboard event. |os_event| is the operating system
+		///  event message, if any. Return true (1) if the event was handled or false
+		///  (0) otherwise. If the event will be handled in on_key_event() as a keyboard
+		///  shortcut set |is_keyboard_shortcut| to true (1) and return false (0).
 		/// </summary>
-		protected internal unsafe virtual bool OnKeyEvent(CefBrowser browser, CefKeyEvent @event, CefEventHandle osEvent)
+		protected internal virtual bool OnPreKeyEvent(CefBrowser browser, CefKeyEvent @event, CefEventHandle osEvent,
+			ref int isKeyboardShortcut)
 		{
 			return default;
 		}
 
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate int OnKeyEventDelegate(cef_keyboard_handler_t* self, cef_browser_t* browser, cef_key_event_t* @event, CefEventHandle os_event);
-
-		// int (*)(_cef_keyboard_handler_t* self, _cef_browser_t* browser, const const _cef_key_event_t* event, CefEventHandle os_event)*
-		private static unsafe int OnKeyEventImpl(cef_keyboard_handler_t* self, cef_browser_t* browser, cef_key_event_t* @event, CefEventHandle os_event)
+		// int (*)(_cef_keyboard_handler_t* self, _cef_browser_t* browser, const const _cef_key_event_t* event, CefEventHandle os_event, int* is_keyboard_shortcut)*
+		private static int OnPreKeyEventImpl(cef_keyboard_handler_t* self, cef_browser_t* browser,
+			cef_key_event_t* @event, CefEventHandle os_event, int* is_keyboard_shortcut)
 		{
-			var instance = GetInstance((IntPtr)self) as CefKeyboardHandler;
-			if (instance == null || ((ICefKeyboardHandlerPrivate)instance).AvoidOnKeyEvent())
+			var instance = GetInstance((IntPtr) self) as CefKeyboardHandler;
+			if (instance == null || ((ICefKeyboardHandlerPrivate) instance).AvoidOnPreKeyEvent())
 			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
 				return default;
 			}
-			return instance.OnKeyEvent(CefBrowser.Wrap(CefBrowser.Create, browser), *(CefKeyEvent*)@event, os_event) ? 1 : 0;
+
+			return instance.OnPreKeyEvent(CefBrowser.Wrap(CefBrowser.Create, browser), *(CefKeyEvent*) @event, os_event,
+				ref *is_keyboard_shortcut)
+				? 1
+				: 0;
 		}
+
+		/// <summary>
+		///  Called after the renderer and JavaScript in the page has had a chance to
+		///  handle the event. |event| contains information about the keyboard event.
+		///  |os_event| is the operating system event message, if any. Return true (1)
+		///  if the keyboard event was handled or false (0) otherwise.
+		/// </summary>
+		protected internal virtual bool OnKeyEvent(CefBrowser browser, CefKeyEvent @event, CefEventHandle osEvent)
+		{
+			return default;
+		}
+
+		// int (*)(_cef_keyboard_handler_t* self, _cef_browser_t* browser, const const _cef_key_event_t* event, CefEventHandle os_event)*
+		private static int OnKeyEventImpl(cef_keyboard_handler_t* self, cef_browser_t* browser, cef_key_event_t* @event,
+			CefEventHandle os_event)
+		{
+			var instance = GetInstance((IntPtr) self) as CefKeyboardHandler;
+			if (instance == null || ((ICefKeyboardHandlerPrivate) instance).AvoidOnKeyEvent())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				return default;
+			}
+
+			return instance.OnKeyEvent(CefBrowser.Wrap(CefBrowser.Create, browser), *(CefKeyEvent*) @event, os_event)
+				? 1
+				: 0;
+		}
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int OnPreKeyEventDelegate(cef_keyboard_handler_t* self, cef_browser_t* browser,
+			cef_key_event_t* @event, CefEventHandle os_event, int* is_keyboard_shortcut);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate int OnKeyEventDelegate(cef_keyboard_handler_t* self, cef_browser_t* browser,
+			cef_key_event_t* @event, CefEventHandle os_event);
 	}
 }

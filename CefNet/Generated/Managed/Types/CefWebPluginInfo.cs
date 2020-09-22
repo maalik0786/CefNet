@@ -12,78 +12,50 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Information about a specific web plugin.
+	///  Information about a specific web plugin.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefWebPluginInfo : CefBaseRefCounted<cef_web_plugin_info_t>
+	public unsafe class CefWebPluginInfo : CefBaseRefCounted<cef_web_plugin_info_t>
 	{
-		internal static unsafe CefWebPluginInfo Create(IntPtr instance)
-		{
-			return new CefWebPluginInfo((cef_web_plugin_info_t*)instance);
-		}
-
 		public CefWebPluginInfo(cef_web_plugin_info_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets the plugin name (i.e. Flash).
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the plugin name (i.e. Flash).
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string Name
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetName()));
-			}
-		}
+		public virtual string Name => SafeCall(CefString.ReadAndFree(NativeInstance->GetName()));
 
 		/// <summary>
-		/// Gets the plugin file path (DLL/bundle/library).
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the plugin file path (DLL/bundle/library).
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string Path
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetPath()));
-			}
-		}
+		public virtual string Path => SafeCall(CefString.ReadAndFree(NativeInstance->GetPath()));
 
 		/// <summary>
-		/// Gets the version of the plugin (may be OS-specific).
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the version of the plugin (may be OS-specific).
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string Version
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetVersion()));
-			}
-		}
+		public virtual string Version => SafeCall(CefString.ReadAndFree(NativeInstance->GetVersion()));
 
 		/// <summary>
-		/// Gets a description of the plugin from the version information.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets a description of the plugin from the version information.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string Description
+		public virtual string Description => SafeCall(CefString.ReadAndFree(NativeInstance->GetDescription()));
+
+		internal static CefWebPluginInfo Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetDescription()));
-			}
+			return new CefWebPluginInfo((cef_web_plugin_info_t*) instance);
 		}
 	}
 }

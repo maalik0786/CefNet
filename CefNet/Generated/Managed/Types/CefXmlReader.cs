@@ -12,345 +12,245 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure that supports the reading of XML data via the libxml streaming API.
-	/// The functions of this structure should only be called on the thread that
-	/// creates the object.
+	///  Structure that supports the reading of XML data via the libxml streaming API.
+	///  The functions of this structure should only be called on the thread that
+	///  creates the object.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
 	public unsafe partial class CefXmlReader : CefBaseRefCounted<cef_xml_reader_t>
 	{
-		internal static unsafe CefXmlReader Create(IntPtr instance)
-		{
-			return new CefXmlReader((cef_xml_reader_t*)instance);
-		}
-
 		public CefXmlReader(cef_xml_reader_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets the error string.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the error string.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string Error
+		public virtual string Error => SafeCall(CefString.ReadAndFree(NativeInstance->GetError()));
+
+		/// <summary>
+		///  Gets the node type.
+		/// </summary>
+		public virtual CefXmlNodeType Type => SafeCall(NativeInstance->GetCefType());
+
+		/// <summary>
+		///  Gets the node depth. Depth starts at 0 for the root node.
+		/// </summary>
+		public virtual int Depth => SafeCall(NativeInstance->GetDepth());
+
+		/// <summary>
+		///  Gets the local name. See http://www.w3.org/TR/REC-xml-names/#NT-
+		///  LocalPart for additional details.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string LocalName => SafeCall(CefString.ReadAndFree(NativeInstance->GetLocalName()));
+
+		/// <summary>
+		///  Gets the namespace prefix. See http://www.w3.org/TR/REC-xml-names/ for
+		///  additional details.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string Prefix => SafeCall(CefString.ReadAndFree(NativeInstance->GetPrefix()));
+
+		/// <summary>
+		///  Gets the qualified name, equal to (Prefix:)LocalName. See
+		///  http://www.w3.org/TR/REC-xml-names/#ns-qualnames for additional details.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string QualifiedName => SafeCall(CefString.ReadAndFree(NativeInstance->GetQualifiedName()));
+
+		/// <summary>
+		///  Gets the URI defining the namespace associated with the node. See
+		///  http://www.w3.org/TR/REC-xml-names/ for additional details.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string NamespaceUri => SafeCall(CefString.ReadAndFree(NativeInstance->GetNamespaceUri()));
+
+		/// <summary>
+		///  Gets the base URI of the node. See http://www.w3.org/TR/xmlbase/ for
+		///  additional details.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string BaseUri => SafeCall(CefString.ReadAndFree(NativeInstance->GetBaseUri()));
+
+		/// <summary>
+		///  Gets the xml:lang scope within which the node resides. See
+		///  http://www.w3.org/TR/REC-xml/#sec-lang-tag for additional details.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string XmlLang => SafeCall(CefString.ReadAndFree(NativeInstance->GetXmlLang()));
+
+		/// <summary>
+		///  Gets a value indicating whether the node represents an NULL element. &lt;a /&gt;is considered
+		///  NULL but &lt;a&gt;&lt;/a&gt;is not.
+		/// </summary>
+		public virtual bool IsEmptyElement => SafeCall(NativeInstance->IsEmptyElement() != 0);
+
+		/// <summary>
+		///  Gets the text value.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string Value => SafeCall(CefString.ReadAndFree(NativeInstance->GetValue()));
+
+		/// <summary>
+		///  Gets a value indicating whether the node has attributes.
+		/// </summary>
+		public virtual bool HasAttributes => SafeCall(NativeInstance->HasAttributes() != 0);
+
+		/// <summary>
+		///  Gets the number of attributes.
+		/// </summary>
+		public virtual long AttributeCount => SafeCall((long) NativeInstance->GetAttributeCount());
+
+		/// <summary>
+		///  Gets an XML representation of the current node&apos;s children.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string InnerXml => SafeCall(CefString.ReadAndFree(NativeInstance->GetInnerXml()));
+
+		/// <summary>
+		///  Gets an XML representation of the current node including its children.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string OuterXml => SafeCall(CefString.ReadAndFree(NativeInstance->GetOuterXml()));
+
+		/// <summary>
+		///  Gets the line number for the current node.
+		/// </summary>
+		public virtual int LineNumber => SafeCall(NativeInstance->GetLineNumber());
+
+		internal static CefXmlReader Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetError()));
-			}
+			return new CefXmlReader((cef_xml_reader_t*) instance);
 		}
 
 		/// <summary>
-		/// Gets the node type.
+		///  Moves the cursor to the next node in the document. This function must be
+		///  called at least once to set the current cursor position. Returns true (1)
+		///  if the cursor position was set successfully.
 		/// </summary>
-		public unsafe virtual CefXmlNodeType Type
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetCefType());
-			}
-		}
-
-		/// <summary>
-		/// Gets the node depth. Depth starts at 0 for the root node.
-		/// </summary>
-		public unsafe virtual int Depth
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetDepth());
-			}
-		}
-
-		/// <summary>
-		/// Gets the local name. See http://www.w3.org/TR/REC-xml-names/#NT-
-		/// LocalPart for additional details.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string LocalName
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetLocalName()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the namespace prefix. See http://www.w3.org/TR/REC-xml-names/ for
-		/// additional details.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string Prefix
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetPrefix()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the qualified name, equal to (Prefix:)LocalName. See
-		/// http://www.w3.org/TR/REC-xml-names/#ns-qualnames for additional details.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string QualifiedName
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetQualifiedName()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the URI defining the namespace associated with the node. See
-		/// http://www.w3.org/TR/REC-xml-names/ for additional details.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string NamespaceUri
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetNamespaceUri()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the base URI of the node. See http://www.w3.org/TR/xmlbase/ for
-		/// additional details.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string BaseUri
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetBaseUri()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the xml:lang scope within which the node resides. See
-		/// http://www.w3.org/TR/REC-xml/#sec-lang-tag for additional details.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string XmlLang
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetXmlLang()));
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the node represents an NULL element. &lt;a /&gt;is considered
-		/// NULL but &lt;a&gt;&lt;/a&gt;is not.
-		/// </summary>
-		public unsafe virtual bool IsEmptyElement
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsEmptyElement() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets the text value.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string Value
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetValue()));
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the node has attributes.
-		/// </summary>
-		public unsafe virtual bool HasAttributes
-		{
-			get
-			{
-				return SafeCall(NativeInstance->HasAttributes() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets the number of attributes.
-		/// </summary>
-		public unsafe virtual long AttributeCount
-		{
-			get
-			{
-				return SafeCall((long)NativeInstance->GetAttributeCount());
-			}
-		}
-
-		/// <summary>
-		/// Gets an XML representation of the current node&apos;s children.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string InnerXml
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetInnerXml()));
-			}
-		}
-
-		/// <summary>
-		/// Gets an XML representation of the current node including its children.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string OuterXml
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetOuterXml()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the line number for the current node.
-		/// </summary>
-		public unsafe virtual int LineNumber
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetLineNumber());
-			}
-		}
-
-		/// <summary>
-		/// Moves the cursor to the next node in the document. This function must be
-		/// called at least once to set the current cursor position. Returns true (1)
-		/// if the cursor position was set successfully.
-		/// </summary>
-		public unsafe virtual bool MoveToNextNode()
+		public virtual bool MoveToNextNode()
 		{
 			return SafeCall(NativeInstance->MoveToNextNode() != 0);
 		}
 
 		/// <summary>
-		/// Close the document. This should be called directly to ensure that cleanup
-		/// occurs on the correct thread.
+		///  Close the document. This should be called directly to ensure that cleanup
+		///  occurs on the correct thread.
 		/// </summary>
-		public unsafe virtual int Close()
+		public virtual int Close()
 		{
 			return SafeCall(NativeInstance->Close());
 		}
 
 		/// <summary>
-		/// Returns the value of the attribute at the specified 0-based index.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the value of the attribute at the specified 0-based index.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string GetAttributeByIndex(int index)
+		public virtual string GetAttributeByIndex(int index)
 		{
 			return SafeCall(CefString.ReadAndFree(NativeInstance->GetAttributeByIndex(index)));
 		}
 
 		/// <summary>
-		/// Returns the value of the attribute with the specified qualified name.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the value of the attribute with the specified qualified name.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string GetAttributeByQName(string qualifiedName)
+		public virtual string GetAttributeByQName(string qualifiedName)
 		{
 			fixed (char* s0 = qualifiedName)
 			{
-				var cstr0 = new cef_string_t { Str = s0, Length = qualifiedName != null ? qualifiedName.Length : 0 };
+				var cstr0 = new cef_string_t {Str = s0, Length = qualifiedName != null ? qualifiedName.Length : 0};
 				return SafeCall(CefString.ReadAndFree(NativeInstance->GetAttributeByQName(&cstr0)));
 			}
 		}
 
 		/// <summary>
-		/// Returns the value of the attribute with the specified local name and
-		/// namespace URI.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the value of the attribute with the specified local name and
+		///  namespace URI.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string GetAttributeByLName(string localName, string namespaceURI)
+		public virtual string GetAttributeByLName(string localName, string namespaceURI)
 		{
 			fixed (char* s0 = localName)
 			fixed (char* s1 = namespaceURI)
 			{
-				var cstr0 = new cef_string_t { Str = s0, Length = localName != null ? localName.Length : 0 };
-				var cstr1 = new cef_string_t { Str = s1, Length = namespaceURI != null ? namespaceURI.Length : 0 };
+				var cstr0 = new cef_string_t {Str = s0, Length = localName != null ? localName.Length : 0};
+				var cstr1 = new cef_string_t {Str = s1, Length = namespaceURI != null ? namespaceURI.Length : 0};
 				return SafeCall(CefString.ReadAndFree(NativeInstance->GetAttributeByLName(&cstr0, &cstr1)));
 			}
 		}
 
 		/// <summary>
-		/// Moves the cursor to the attribute at the specified 0-based index. Returns
-		/// true (1) if the cursor position was set successfully.
+		///  Moves the cursor to the attribute at the specified 0-based index. Returns
+		///  true (1) if the cursor position was set successfully.
 		/// </summary>
-		public unsafe virtual bool MoveToAttributeByIndex(int index)
+		public virtual bool MoveToAttributeByIndex(int index)
 		{
 			return SafeCall(NativeInstance->MoveToAttributeByIndex(index) != 0);
 		}
 
 		/// <summary>
-		/// Moves the cursor to the attribute with the specified qualified name.
-		/// Returns true (1) if the cursor position was set successfully.
+		///  Moves the cursor to the attribute with the specified qualified name.
+		///  Returns true (1) if the cursor position was set successfully.
 		/// </summary>
-		public unsafe virtual bool MoveToAttributeByQName(string qualifiedName)
+		public virtual bool MoveToAttributeByQName(string qualifiedName)
 		{
 			fixed (char* s0 = qualifiedName)
 			{
-				var cstr0 = new cef_string_t { Str = s0, Length = qualifiedName != null ? qualifiedName.Length : 0 };
+				var cstr0 = new cef_string_t {Str = s0, Length = qualifiedName != null ? qualifiedName.Length : 0};
 				return SafeCall(NativeInstance->MoveToAttributeByQName(&cstr0) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Moves the cursor to the attribute with the specified local name and
-		/// namespace URI. Returns true (1) if the cursor position was set
-		/// successfully.
+		///  Moves the cursor to the attribute with the specified local name and
+		///  namespace URI. Returns true (1) if the cursor position was set
+		///  successfully.
 		/// </summary>
-		public unsafe virtual bool MoveToAttributeByLName(string localName, string namespaceURI)
+		public virtual bool MoveToAttributeByLName(string localName, string namespaceURI)
 		{
 			fixed (char* s0 = localName)
 			fixed (char* s1 = namespaceURI)
 			{
-				var cstr0 = new cef_string_t { Str = s0, Length = localName != null ? localName.Length : 0 };
-				var cstr1 = new cef_string_t { Str = s1, Length = namespaceURI != null ? namespaceURI.Length : 0 };
+				var cstr0 = new cef_string_t {Str = s0, Length = localName != null ? localName.Length : 0};
+				var cstr1 = new cef_string_t {Str = s1, Length = namespaceURI != null ? namespaceURI.Length : 0};
 				return SafeCall(NativeInstance->MoveToAttributeByLName(&cstr0, &cstr1) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Moves the cursor to the first attribute in the current element. Returns
-		/// true (1) if the cursor position was set successfully.
+		///  Moves the cursor to the first attribute in the current element. Returns
+		///  true (1) if the cursor position was set successfully.
 		/// </summary>
-		public unsafe virtual bool MoveToFirstAttribute()
+		public virtual bool MoveToFirstAttribute()
 		{
 			return SafeCall(NativeInstance->MoveToFirstAttribute() != 0);
 		}
 
 		/// <summary>
-		/// Moves the cursor to the next attribute in the current element. Returns true
-		/// (1) if the cursor position was set successfully.
+		///  Moves the cursor to the next attribute in the current element. Returns true
+		///  (1) if the cursor position was set successfully.
 		/// </summary>
-		public unsafe virtual bool MoveToNextAttribute()
+		public virtual bool MoveToNextAttribute()
 		{
 			return SafeCall(NativeInstance->MoveToNextAttribute() != 0);
 		}
 
 		/// <summary>
-		/// Moves the cursor back to the carrying element. Returns true (1) if the
-		/// cursor position was set successfully.
+		///  Moves the cursor back to the carrying element. Returns true (1) if the
+		///  cursor position was set successfully.
 		/// </summary>
-		public unsafe virtual bool MoveToCarryingElement()
+		public virtual bool MoveToCarryingElement()
 		{
 			return SafeCall(NativeInstance->MoveToCarryingElement() != 0);
 		}

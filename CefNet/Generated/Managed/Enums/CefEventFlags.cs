@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported event bit flags.
+	///  Supported event bit flags.
 	/// </summary>
 	public enum CefEventFlags
 	{
@@ -40,34 +35,33 @@ namespace CefNet
 		RightMouseButton = 1 << 6,
 
 		/// <summary>
-		/// Mac OS-X command key.
+		///  Mac OS-X command key.
 		/// </summary>
 		CommandDown = 1 << 7,
 
 		/// <summary>
-		/// Mac OS-X command key.
+		///  Mac OS-X command key.
 		/// </summary>
 		NumLockOn = 1 << 8,
 
 		/// <summary>
-		/// Mac OS-X command key.
+		///  Mac OS-X command key.
 		/// </summary>
 		IsKeyPad = 1 << 9,
 
 		/// <summary>
-		/// Mac OS-X command key.
+		///  Mac OS-X command key.
 		/// </summary>
 		IsLeft = 1 << 10,
 
 		/// <summary>
-		/// Mac OS-X command key.
+		///  Mac OS-X command key.
 		/// </summary>
 		IsRight = 1 << 11,
 
 		/// <summary>
-		/// Mac OS-X command key.
+		///  Mac OS-X command key.
 		/// </summary>
-		AltgrDown = 1 << 12,
+		AltgrDown = 1 << 12
 	}
 }
-

@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Print job duplex mode values.
+	///  Print job duplex mode values.
 	/// </summary>
 	public enum CefDuplexMode
 	{
@@ -29,7 +24,6 @@ namespace CefNet
 
 		LongEdge = 1,
 
-		ShortEdge = 2,
+		ShortEdge = 2
 	}
 }
-

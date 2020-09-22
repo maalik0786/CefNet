@@ -4,47 +4,36 @@
 // See the licence file in the project root for full license information.
 // --------------------------------------------------------------------------------------------
 
-using CefGen.CodeDom;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using CefGen.CodeDom;
 
 namespace CefGen
 {
-	abstract class CefCodeGenBase : CodeGenBase
+	internal abstract class CefCodeGenBase : CodeGenBase
 	{
-
 		public event EventHandler<ResolveTypeNameEventArgs> ResolveTypeName;
-
-		public CefCodeGenBase()
-		{
-
-		}
 
 		public void GenerateCode(CodeFile fileDecl, TextWriter output)
 		{
 			ResetIndent();
 
-			this.Output = output;
+			Output = output;
 			try
 			{
-				foreach (CodeComment commentDecl in fileDecl.Comments)
-				{
-					GenerateCommentCode(commentDecl);
-				}
+				foreach (var commentDecl in fileDecl.Comments) GenerateCommentCode(commentDecl);
 
 				GenerateGlobalDirectivesCode();
 
-				bool insertline = true;
-				foreach (CodeNamespaceImport importDecl in fileDecl.Imports)
+				var insertline = true;
+				foreach (var importDecl in fileDecl.Imports)
 				{
 					if (insertline) Output.WriteLine();
 					GenerateNamespaceImportCode(importDecl);
 					insertline = false;
 				}
 
-				foreach (CodeNamespace nsDecl in fileDecl.Namespaces)
+				foreach (var nsDecl in fileDecl.Namespaces)
 				{
 					Output.WriteLine();
 					GenerateNamespaceCode(nsDecl);
@@ -52,7 +41,7 @@ namespace CefGen
 			}
 			finally
 			{
-				this.Output = null;
+				Output = null;
 			}
 		}
 

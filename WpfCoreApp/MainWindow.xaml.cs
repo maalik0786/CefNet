@@ -1,43 +1,36 @@
-﻿using CefNet;
-using CefNet.Wpf;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using CefNet;
+using CefNet.Wpf;
 
 namespace WpfCoreApp
 {
 	/// <summary>
-	/// Interaction logic for MainWindow.xaml
+	///  Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		bool isFirstLoad = true;
+		private Style defaultTabsStyle;
+
+		private WindowStyle defaultWindowStyle;
+		private bool isFirstLoad = true;
 
 		public MainWindow()
 		{
 			InitializeComponent();
-			this.Loaded += MainWindow_Loaded;
-			EventManager.RegisterClassHandler(typeof(WebView), CustomWebView.FullscreenEvent, new EventHandler<FullscreenModeChangeEventArgs>(HandleFullscreenEvent));
+			Loaded += MainWindow_Loaded;
+			EventManager.RegisterClassHandler(typeof(WebView), CustomWebView.FullscreenEvent,
+				new EventHandler<FullscreenModeChangeEventArgs>(HandleFullscreenEvent));
 		}
 
-		private WindowStyle defaultWindowStyle;
-		private Style defaultTabsStyle; 
+		private IChromiumWebView SelectedView => (tabs.SelectedItem as WebViewTab)?.WebView;
 
 		private void HandleFullscreenEvent(object sender, FullscreenModeChangeEventArgs e)
 		{
-			TabPanel tabHeaders = tabs.FindChild<TabPanel>(null);
+			var tabHeaders = tabs.FindChild<TabPanel>(null);
 			if (e.Fullscreen)
 			{
 				Visibility = Visibility.Collapsed;
@@ -86,24 +79,11 @@ namespace WpfCoreApp
 				viewTab.Title = "about:blank";
 				tabs.SelectedItem = viewTab;
 			}
-			else
-			{
-				//var cx = new CefRequestContext(new CefRequestContextSettings());
-				//tabs.Controls.Add(new WebViewTab(new CefBrowserSettings(), cx));
-			}
 		}
 
 		private void WebView_Navigated(object sender, NavigatedEventArgs e)
 		{
-			txtAddress.Text = e.Url.ToString();
-		}
-
-		private IChromiumWebView SelectedView
-		{
-			get
-			{
-				return (tabs.SelectedItem as WebViewTab)?.WebView;
-			}
+			txtAddress.Text = e.Url;
 		}
 
 
@@ -121,32 +101,21 @@ namespace WpfCoreApp
 		private void txtAddress_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Enter)
-			{
-				if (Uri.TryCreate(txtAddress.Text, UriKind.Absolute, out Uri url))
-				{
+				if (Uri.TryCreate(txtAddress.Text, UriKind.Absolute, out var url))
 					SelectedView?.Navigate(url.AbsoluteUri);
-				}
-			}
 		}
 
-		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		private void Window_Closing(object sender, CancelEventArgs e)
 		{
-			ItemCollection tabItems = tabs.Items;
-			for (int i = tabItems.Count - 1; i >= 0; i--)
-			{
+			var tabItems = tabs.Items;
+			for (var i = tabItems.Count - 1; i >= 0; i--)
 				if (tabItems[i] is WebViewTab tab)
-				{
 					tab.Close();
-				}
-			}
 		}
 
 		private void WebView_TextFound(object sender, ITextFoundEventArgs e)
 		{
-			if (e.FinalUpdate)
-			{
-				SelectedView?.StopFinding(false);
-			}
+			if (e.FinalUpdate) SelectedView?.StopFinding(false);
 		}
 
 		private void Find_Click(object sender, RoutedEventArgs e)

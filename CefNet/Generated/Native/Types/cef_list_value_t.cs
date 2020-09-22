@@ -12,398 +12,396 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure representing a list value. Can be used on any process and thread.
+	///  Structure representing a list value. Can be used on any process and thread.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_list_value_t
+	public unsafe struct cef_list_value_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self)*
+		///  int (*)(_cef_list_value_t* self)*
 		/// </summary>
 		public void* is_valid;
 
 		/// <summary>
-		/// Returns true (1) if this object is valid. This object may become invalid if
-		/// the underlying data is owned by another object (e.g. list or dictionary)
-		/// and that other object is then modified or destroyed. Do not call any other
-		/// functions if this function returns false (0).
+		///  Returns true (1) if this object is valid. This object may become invalid if
+		///  the underlying data is owned by another object (e.g. list or dictionary)
+		///  and that other object is then modified or destroyed. Do not call any other
+		///  functions if this function returns false (0).
 		/// </summary>
 		[NativeName("is_valid")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsValid();
+		public extern int IsValid();
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self)*
+		///  int (*)(_cef_list_value_t* self)*
 		/// </summary>
 		public void* is_owned;
 
 		/// <summary>
-		/// Returns true (1) if this object is currently owned by another object.
+		///  Returns true (1) if this object is currently owned by another object.
 		/// </summary>
 		[NativeName("is_owned")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsOwned();
+		public extern int IsOwned();
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self)*
+		///  int (*)(_cef_list_value_t* self)*
 		/// </summary>
 		public void* is_read_only;
 
 		/// <summary>
-		/// Returns true (1) if the values of this object are read-only. Some APIs may
-		/// expose read-only objects.
+		///  Returns true (1) if the values of this object are read-only. Some APIs may
+		///  expose read-only objects.
 		/// </summary>
 		[NativeName("is_read_only")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsReadOnly();
+		public extern int IsReadOnly();
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, _cef_list_value_t* that)*
+		///  int (*)(_cef_list_value_t* self, _cef_list_value_t* that)*
 		/// </summary>
 		public void* is_same;
 
 		/// <summary>
-		/// Returns true (1) if this object and |that| object have the same underlying
-		/// data. If true (1) modifications to this object will also affect |that|
-		/// object and vice-versa.
+		///  Returns true (1) if this object and |that| object have the same underlying
+		///  data. If true (1) modifications to this object will also affect |that|
+		///  object and vice-versa.
 		/// </summary>
 		[NativeName("is_same")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsSame(cef_list_value_t* that);
+		public extern int IsSame(cef_list_value_t* that);
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, _cef_list_value_t* that)*
+		///  int (*)(_cef_list_value_t* self, _cef_list_value_t* that)*
 		/// </summary>
 		public void* is_equal;
 
 		/// <summary>
-		/// Returns true (1) if this object and |that| object have an equivalent
-		/// underlying value but are not necessarily the same object.
+		///  Returns true (1) if this object and |that| object have an equivalent
+		///  underlying value but are not necessarily the same object.
 		/// </summary>
 		[NativeName("is_equal")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int IsEqual(cef_list_value_t* that);
+		public extern int IsEqual(cef_list_value_t* that);
 
 		/// <summary>
-		/// _cef_list_value_t* (*)(_cef_list_value_t* self)*
+		///  _cef_list_value_t* (*)(_cef_list_value_t* self)*
 		/// </summary>
 		public void* copy;
 
 		/// <summary>
-		/// Returns a writable copy of this object.
+		///  Returns a writable copy of this object.
 		/// </summary>
 		[NativeName("copy")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_list_value_t* Copy();
+		public extern cef_list_value_t* Copy();
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t size)*
+		///  int (*)(_cef_list_value_t* self, size_t size)*
 		/// </summary>
 		public void* set_size;
 
 		/// <summary>
-		/// Sets the number of values. If the number of values is expanded all new
-		/// value slots will default to type null. Returns true (1) on success.
+		///  Sets the number of values. If the number of values is expanded all new
+		///  value slots will default to type null. Returns true (1) on success.
 		/// </summary>
 		[NativeName("set_size")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int SetSize(UIntPtr size);
+		public extern int SetSize(UIntPtr size);
 
 		/// <summary>
-		/// size_t (*)(_cef_list_value_t* self)*
+		///  size_t (*)(_cef_list_value_t* self)*
 		/// </summary>
 		public void* get_size;
 
 		/// <summary>
-		/// Returns the number of values.
+		///  Returns the number of values.
 		/// </summary>
 		[NativeName("get_size")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern UIntPtr GetSize();
+		public extern UIntPtr GetSize();
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self)*
+		///  int (*)(_cef_list_value_t* self)*
 		/// </summary>
 		public void* clear;
 
 		/// <summary>
-		/// Removes all values. Returns true (1) on success.
+		///  Removes all values. Returns true (1) on success.
 		/// </summary>
 		[NativeName("clear")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int Clear();
+		public extern int Clear();
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t index)*
+		///  int (*)(_cef_list_value_t* self, size_t index)*
 		/// </summary>
 		public void* remove;
 
 		/// <summary>
-		/// Removes the value at the specified index.
+		///  Removes the value at the specified index.
 		/// </summary>
 		[NativeName("remove")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int Remove(UIntPtr index);
+		public extern int Remove(UIntPtr index);
 
 		/// <summary>
-		/// cef_value_type_t (*)(_cef_list_value_t* self, size_t index)*
+		///  cef_value_type_t (*)(_cef_list_value_t* self, size_t index)*
 		/// </summary>
 		public void* get_type;
 
 		/// <summary>
-		/// Returns the value type at the specified index.
+		///  Returns the value type at the specified index.
 		/// </summary>
 		[NativeName("get_type")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern CefValueType GetType(UIntPtr index);
+		public extern CefValueType GetType(UIntPtr index);
 
 		/// <summary>
-		/// _cef_value_t* (*)(_cef_list_value_t* self, size_t index)*
+		///  _cef_value_t* (*)(_cef_list_value_t* self, size_t index)*
 		/// </summary>
 		public void* get_value;
 
 		/// <summary>
-		/// Returns the value at the specified index. For simple types the returned
-		/// value will copy existing data and modifications to the value will not
-		/// modify this object. For complex types (binary, dictionary and list) the
-		/// returned value will reference existing data and modifications to the value
-		/// will modify this object.
+		///  Returns the value at the specified index. For simple types the returned
+		///  value will copy existing data and modifications to the value will not
+		///  modify this object. For complex types (binary, dictionary and list) the
+		///  returned value will reference existing data and modifications to the value
+		///  will modify this object.
 		/// </summary>
 		[NativeName("get_value")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_value_t* GetValue(UIntPtr index);
+		public extern cef_value_t* GetValue(UIntPtr index);
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t index)*
+		///  int (*)(_cef_list_value_t* self, size_t index)*
 		/// </summary>
 		public void* get_bool;
 
 		/// <summary>
-		/// Returns the value at the specified index as type bool.
+		///  Returns the value at the specified index as type bool.
 		/// </summary>
 		[NativeName("get_bool")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int GetBool(UIntPtr index);
+		public extern int GetBool(UIntPtr index);
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t index)*
+		///  int (*)(_cef_list_value_t* self, size_t index)*
 		/// </summary>
 		public void* get_int;
 
 		/// <summary>
-		/// Returns the value at the specified index as type int.
+		///  Returns the value at the specified index as type int.
 		/// </summary>
 		[NativeName("get_int")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int GetInt(UIntPtr index);
+		public extern int GetInt(UIntPtr index);
 
 		/// <summary>
-		/// double (*)(_cef_list_value_t* self, size_t index)*
+		///  double (*)(_cef_list_value_t* self, size_t index)*
 		/// </summary>
 		public void* get_double;
 
 		/// <summary>
-		/// Returns the value at the specified index as type double.
+		///  Returns the value at the specified index as type double.
 		/// </summary>
 		[NativeName("get_double")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern double GetDouble(UIntPtr index);
+		public extern double GetDouble(UIntPtr index);
 
 		/// <summary>
-		/// cef_string_userfree_t (*)(_cef_list_value_t* self, size_t index)*
+		///  cef_string_userfree_t (*)(_cef_list_value_t* self, size_t index)*
 		/// </summary>
 		public void* get_string;
 
 		/// <summary>
-		/// Returns the value at the specified index as type string.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the value at the specified index as type string.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
 		[NativeName("get_string")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_string_userfree_t GetString(UIntPtr index);
+		public extern cef_string_userfree_t GetString(UIntPtr index);
 
 		/// <summary>
-		/// _cef_binary_value_t* (*)(_cef_list_value_t* self, size_t index)*
+		///  _cef_binary_value_t* (*)(_cef_list_value_t* self, size_t index)*
 		/// </summary>
 		public void* get_binary;
 
 		/// <summary>
-		/// Returns the value at the specified index as type binary. The returned value
-		/// will reference existing data.
+		///  Returns the value at the specified index as type binary. The returned value
+		///  will reference existing data.
 		/// </summary>
 		[NativeName("get_binary")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_binary_value_t* GetBinary(UIntPtr index);
+		public extern cef_binary_value_t* GetBinary(UIntPtr index);
 
 		/// <summary>
-		/// _cef_dictionary_value_t* (*)(_cef_list_value_t* self, size_t index)*
+		///  _cef_dictionary_value_t* (*)(_cef_list_value_t* self, size_t index)*
 		/// </summary>
 		public void* get_dictionary;
 
 		/// <summary>
-		/// Returns the value at the specified index as type dictionary. The returned
-		/// value will reference existing data and modifications to the value will
-		/// modify this object.
+		///  Returns the value at the specified index as type dictionary. The returned
+		///  value will reference existing data and modifications to the value will
+		///  modify this object.
 		/// </summary>
 		[NativeName("get_dictionary")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_dictionary_value_t* GetDictionary(UIntPtr index);
+		public extern cef_dictionary_value_t* GetDictionary(UIntPtr index);
 
 		/// <summary>
-		/// _cef_list_value_t* (*)(_cef_list_value_t* self, size_t index)*
+		///  _cef_list_value_t* (*)(_cef_list_value_t* self, size_t index)*
 		/// </summary>
 		public void* get_list;
 
 		/// <summary>
-		/// Returns the value at the specified index as type list. The returned value
-		/// will reference existing data and modifications to the value will modify
-		/// this object.
+		///  Returns the value at the specified index as type list. The returned value
+		///  will reference existing data and modifications to the value will modify
+		///  this object.
 		/// </summary>
 		[NativeName("get_list")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_list_value_t* GetList(UIntPtr index);
+		public extern cef_list_value_t* GetList(UIntPtr index);
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t index, _cef_value_t* value)*
+		///  int (*)(_cef_list_value_t* self, size_t index, _cef_value_t* value)*
 		/// </summary>
 		public void* set_value;
 
 		/// <summary>
-		/// Sets the value at the specified index. Returns true (1) if the value was
-		/// set successfully. If |value| represents simple data then the underlying
-		/// data will be copied and modifications to |value| will not modify this
-		/// object. If |value| represents complex data (binary, dictionary or list)
-		/// then the underlying data will be referenced and modifications to |value|
-		/// will modify this object.
+		///  Sets the value at the specified index. Returns true (1) if the value was
+		///  set successfully. If |value| represents simple data then the underlying
+		///  data will be copied and modifications to |value| will not modify this
+		///  object. If |value| represents complex data (binary, dictionary or list)
+		///  then the underlying data will be referenced and modifications to |value|
+		///  will modify this object.
 		/// </summary>
 		[NativeName("set_value")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int SetValue(UIntPtr index, cef_value_t* value);
+		public extern int SetValue(UIntPtr index, cef_value_t* value);
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t index)*
+		///  int (*)(_cef_list_value_t* self, size_t index)*
 		/// </summary>
 		public void* set_null;
 
 		/// <summary>
-		/// Sets the value at the specified index as type null. Returns true (1) if the
-		/// value was set successfully.
+		///  Sets the value at the specified index as type null. Returns true (1) if the
+		///  value was set successfully.
 		/// </summary>
 		[NativeName("set_null")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int SetNull(UIntPtr index);
+		public extern int SetNull(UIntPtr index);
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t index, int value)*
+		///  int (*)(_cef_list_value_t* self, size_t index, int value)*
 		/// </summary>
 		public void* set_bool;
 
 		/// <summary>
-		/// Sets the value at the specified index as type bool. Returns true (1) if the
-		/// value was set successfully.
+		///  Sets the value at the specified index as type bool. Returns true (1) if the
+		///  value was set successfully.
 		/// </summary>
 		[NativeName("set_bool")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int SetBool(UIntPtr index, int value);
+		public extern int SetBool(UIntPtr index, int value);
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t index, int value)*
+		///  int (*)(_cef_list_value_t* self, size_t index, int value)*
 		/// </summary>
 		public void* set_int;
 
 		/// <summary>
-		/// Sets the value at the specified index as type int. Returns true (1) if the
-		/// value was set successfully.
+		///  Sets the value at the specified index as type int. Returns true (1) if the
+		///  value was set successfully.
 		/// </summary>
 		[NativeName("set_int")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int SetInt(UIntPtr index, int value);
+		public extern int SetInt(UIntPtr index, int value);
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t index, double value)*
+		///  int (*)(_cef_list_value_t* self, size_t index, double value)*
 		/// </summary>
 		public void* set_double;
 
 		/// <summary>
-		/// Sets the value at the specified index as type double. Returns true (1) if
-		/// the value was set successfully.
+		///  Sets the value at the specified index as type double. Returns true (1) if
+		///  the value was set successfully.
 		/// </summary>
 		[NativeName("set_double")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int SetDouble(UIntPtr index, double value);
+		public extern int SetDouble(UIntPtr index, double value);
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t index, const cef_string_t* value)*
+		///  int (*)(_cef_list_value_t* self, size_t index, const cef_string_t* value)*
 		/// </summary>
 		public void* set_string;
 
 		/// <summary>
-		/// Sets the value at the specified index as type string. Returns true (1) if
-		/// the value was set successfully.
+		///  Sets the value at the specified index as type string. Returns true (1) if
+		///  the value was set successfully.
 		/// </summary>
 		[NativeName("set_string")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int SetString(UIntPtr index, [Immutable]cef_string_t* value);
+		public extern int SetString(UIntPtr index, [Immutable] cef_string_t* value);
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t index, _cef_binary_value_t* value)*
+		///  int (*)(_cef_list_value_t* self, size_t index, _cef_binary_value_t* value)*
 		/// </summary>
 		public void* set_binary;
 
 		/// <summary>
-		/// Sets the value at the specified index as type binary. Returns true (1) if
-		/// the value was set successfully. If |value| is currently owned by another
-		/// object then the value will be copied and the |value| reference will not
-		/// change. Otherwise, ownership will be transferred to this object and the
-		/// |value| reference will be invalidated.
+		///  Sets the value at the specified index as type binary. Returns true (1) if
+		///  the value was set successfully. If |value| is currently owned by another
+		///  object then the value will be copied and the |value| reference will not
+		///  change. Otherwise, ownership will be transferred to this object and the
+		///  |value| reference will be invalidated.
 		/// </summary>
 		[NativeName("set_binary")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int SetBinary(UIntPtr index, cef_binary_value_t* value);
+		public extern int SetBinary(UIntPtr index, cef_binary_value_t* value);
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t index, _cef_dictionary_value_t* value)*
+		///  int (*)(_cef_list_value_t* self, size_t index, _cef_dictionary_value_t* value)*
 		/// </summary>
 		public void* set_dictionary;
 
 		/// <summary>
-		/// Sets the value at the specified index as type dict. Returns true (1) if the
-		/// value was set successfully. If |value| is currently owned by another object
-		/// then the value will be copied and the |value| reference will not change.
-		/// Otherwise, ownership will be transferred to this object and the |value|
-		/// reference will be invalidated.
+		///  Sets the value at the specified index as type dict. Returns true (1) if the
+		///  value was set successfully. If |value| is currently owned by another object
+		///  then the value will be copied and the |value| reference will not change.
+		///  Otherwise, ownership will be transferred to this object and the |value|
+		///  reference will be invalidated.
 		/// </summary>
 		[NativeName("set_dictionary")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int SetDictionary(UIntPtr index, cef_dictionary_value_t* value);
+		public extern int SetDictionary(UIntPtr index, cef_dictionary_value_t* value);
 
 		/// <summary>
-		/// int (*)(_cef_list_value_t* self, size_t index, _cef_list_value_t* value)*
+		///  int (*)(_cef_list_value_t* self, size_t index, _cef_list_value_t* value)*
 		/// </summary>
 		public void* set_list;
 
 		/// <summary>
-		/// Sets the value at the specified index as type list. Returns true (1) if the
-		/// value was set successfully. If |value| is currently owned by another object
-		/// then the value will be copied and the |value| reference will not change.
-		/// Otherwise, ownership will be transferred to this object and the |value|
-		/// reference will be invalidated.
+		///  Sets the value at the specified index as type list. Returns true (1) if the
+		///  value was set successfully. If |value| is currently owned by another object
+		///  then the value will be copied and the |value| reference will not change.
+		///  Otherwise, ownership will be transferred to this object and the |value|
+		///  reference will be invalidated.
 		/// </summary>
 		[NativeName("set_list")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern int SetList(UIntPtr index, cef_list_value_t* value);
+		public extern int SetList(UIntPtr index, cef_list_value_t* value);
 	}
 }
-

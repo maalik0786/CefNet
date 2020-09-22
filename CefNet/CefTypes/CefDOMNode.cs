@@ -1,10 +1,6 @@
-﻿using CefNet.CApi;
-using System;
-using System.Collections.Generic;
-
-namespace CefNet
+﻿namespace CefNet
 {
-	public unsafe partial class CefDOMNode
+	public partial class CefDOMNode
 	{
 #if USESAFECACHE
 		private static readonly HashSet<WeakReference<CefDOMNode>> WeakRefs = new HashSet<WeakReference<CefDOMNode>>();
@@ -64,6 +60,5 @@ namespace CefNet
 		}
 
 #endif // USESAFECACHE
-
 	}
 }

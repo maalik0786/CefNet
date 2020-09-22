@@ -12,322 +12,207 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure used to represent a DOM node. The functions of this structure
-	/// should only be called on the render process main thread.
+	///  Structure used to represent a DOM node. The functions of this structure
+	///  should only be called on the render process main thread.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
 	public unsafe partial class CefDOMNode : CefBaseRefCounted<cef_domnode_t>
 	{
-		internal static unsafe CefDOMNode Create(IntPtr instance)
-		{
-			return new CefDOMNode((cef_domnode_t*)instance);
-		}
-
 		public CefDOMNode(cef_domnode_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets the type for this node.
+		///  Gets the type for this node.
 		/// </summary>
-		public unsafe virtual CefDOMNodeType Type
+		public virtual CefDOMNodeType Type => SafeCall(NativeInstance->GetCefType());
+
+		/// <summary>
+		///  Gets a value indicating whether this is a text node.
+		/// </summary>
+		public virtual bool IsText => SafeCall(NativeInstance->IsText() != 0);
+
+		/// <summary>
+		///  Gets a value indicating whether this is an element node.
+		/// </summary>
+		public virtual bool IsElement => SafeCall(NativeInstance->IsElement() != 0);
+
+		/// <summary>
+		///  Gets a value indicating whether this is an editable node.
+		/// </summary>
+		public virtual bool IsEditable => SafeCall(NativeInstance->IsEditable() != 0);
+
+		/// <summary>
+		///  Gets a value indicating whether this is a form control element node.
+		/// </summary>
+		public virtual bool IsFormControlElement => SafeCall(NativeInstance->IsFormControlElement() != 0);
+
+		/// <summary>
+		///  Gets the type of this form control element node.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string FormControlElementType =>
+			SafeCall(CefString.ReadAndFree(NativeInstance->GetFormControlElementType()));
+
+		/// <summary>
+		///  Gets the name of this node.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string Name => SafeCall(CefString.ReadAndFree(NativeInstance->GetName()));
+
+		/// <summary>
+		///  Gets the contents of this node as markup.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string AsMarkup => SafeCall(CefString.ReadAndFree(NativeInstance->GetAsMarkup()));
+
+		/// <summary>
+		///  Gets the document associated with this node.
+		/// </summary>
+		public virtual CefDOMDocument Document =>
+			SafeCall(CefDOMDocument.Wrap(CefDOMDocument.Create, NativeInstance->GetDocument()));
+
+		/// <summary>
+		///  Gets the parent node.
+		/// </summary>
+		public virtual CefDOMNode Parent => SafeCall(Wrap(Create, NativeInstance->GetParent()));
+
+		/// <summary>
+		///  Gets the previous sibling node.
+		/// </summary>
+		public virtual CefDOMNode PreviousSibling => SafeCall(Wrap(Create, NativeInstance->GetPreviousSibling()));
+
+		/// <summary>
+		///  Gets the next sibling node.
+		/// </summary>
+		public virtual CefDOMNode NextSibling => SafeCall(Wrap(Create, NativeInstance->GetNextSibling()));
+
+		/// <summary>
+		///  Gets a value indicating whether this node has child nodes.
+		/// </summary>
+		public virtual bool HasChildren => SafeCall(NativeInstance->HasChildren() != 0);
+
+		/// <summary>
+		///  Return the first child node.
+		/// </summary>
+		public virtual CefDOMNode FirstChild => SafeCall(Wrap(Create, NativeInstance->GetFirstChild()));
+
+		/// <summary>
+		///  Gets the last child node.
+		/// </summary>
+		public virtual CefDOMNode LastChild => SafeCall(Wrap(Create, NativeInstance->GetLastChild()));
+
+		/// <summary>
+		///  Gets the tag name of this element.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string ElementTagName => SafeCall(CefString.ReadAndFree(NativeInstance->GetElementTagName()));
+
+		/// <summary>
+		///  Gets a value indicating whether this element has attributes.
+		/// </summary>
+		public virtual bool HasElementAttributes => SafeCall(NativeInstance->HasElementAttributes() != 0);
+
+		/// <summary>
+		///  Gets the inner text of the element.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string ElementInnerText =>
+			SafeCall(CefString.ReadAndFree(NativeInstance->GetElementInnerText()));
+
+		/// <summary>
+		///  Gets the bounds of the element.
+		/// </summary>
+		public virtual CefRect ElementBounds => SafeCall(NativeInstance->GetElementBounds());
+
+		internal static CefDOMNode Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(NativeInstance->GetCefType());
-			}
+			return new CefDOMNode((cef_domnode_t*) instance);
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this is a text node.
+		///  Returns true (1) if this object is pointing to the same handle as |that|
+		///  object.
 		/// </summary>
-		public unsafe virtual bool IsText
+		public virtual bool IsSame(CefDOMNode that)
 		{
-			get
-			{
-				return SafeCall(NativeInstance->IsText() != 0);
-			}
+			return SafeCall(NativeInstance->IsSame(that != null ? that.GetNativeInstance() : null) != 0);
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this is an element node.
+		///  Set the value of this node. Returns true (1) on success.
 		/// </summary>
-		public unsafe virtual bool IsElement
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsElement() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this is an editable node.
-		/// </summary>
-		public unsafe virtual bool IsEditable
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsEditable() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this is a form control element node.
-		/// </summary>
-		public unsafe virtual bool IsFormControlElement
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsFormControlElement() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets the type of this form control element node.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string FormControlElementType
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetFormControlElementType()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the name of this node.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string Name
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetName()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the contents of this node as markup.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string AsMarkup
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetAsMarkup()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the document associated with this node.
-		/// </summary>
-		public unsafe virtual CefDOMDocument Document
-		{
-			get
-			{
-				return SafeCall(CefDOMDocument.Wrap(CefDOMDocument.Create, NativeInstance->GetDocument()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the parent node.
-		/// </summary>
-		public unsafe virtual CefDOMNode Parent
-		{
-			get
-			{
-				return SafeCall(CefDOMNode.Wrap(CefDOMNode.Create, NativeInstance->GetParent()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the previous sibling node.
-		/// </summary>
-		public unsafe virtual CefDOMNode PreviousSibling
-		{
-			get
-			{
-				return SafeCall(CefDOMNode.Wrap(CefDOMNode.Create, NativeInstance->GetPreviousSibling()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the next sibling node.
-		/// </summary>
-		public unsafe virtual CefDOMNode NextSibling
-		{
-			get
-			{
-				return SafeCall(CefDOMNode.Wrap(CefDOMNode.Create, NativeInstance->GetNextSibling()));
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this node has child nodes.
-		/// </summary>
-		public unsafe virtual bool HasChildren
-		{
-			get
-			{
-				return SafeCall(NativeInstance->HasChildren() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Return the first child node.
-		/// </summary>
-		public unsafe virtual CefDOMNode FirstChild
-		{
-			get
-			{
-				return SafeCall(CefDOMNode.Wrap(CefDOMNode.Create, NativeInstance->GetFirstChild()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the last child node.
-		/// </summary>
-		public unsafe virtual CefDOMNode LastChild
-		{
-			get
-			{
-				return SafeCall(CefDOMNode.Wrap(CefDOMNode.Create, NativeInstance->GetLastChild()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the tag name of this element.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string ElementTagName
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetElementTagName()));
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this element has attributes.
-		/// </summary>
-		public unsafe virtual bool HasElementAttributes
-		{
-			get
-			{
-				return SafeCall(NativeInstance->HasElementAttributes() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets the inner text of the element.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string ElementInnerText
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetElementInnerText()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the bounds of the element.
-		/// </summary>
-		public unsafe virtual CefRect ElementBounds
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetElementBounds());
-			}
-		}
-
-		/// <summary>
-		/// Returns true (1) if this object is pointing to the same handle as |that|
-		/// object.
-		/// </summary>
-		public unsafe virtual bool IsSame(CefDOMNode that)
-		{
-			return SafeCall(NativeInstance->IsSame((that != null) ? that.GetNativeInstance() : null) != 0);
-		}
-
-		/// <summary>
-		/// Set the value of this node. Returns true (1) on success.
-		/// </summary>
-		public unsafe virtual bool SetValue(string value)
+		public virtual bool SetValue(string value)
 		{
 			fixed (char* s0 = value)
 			{
-				var cstr0 = new cef_string_t { Str = s0, Length = value != null ? value.Length : 0 };
+				var cstr0 = new cef_string_t {Str = s0, Length = value != null ? value.Length : 0};
 				return SafeCall(NativeInstance->SetValue(&cstr0) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Returns true (1) if this element has an attribute named |attrName|.
+		///  Returns true (1) if this element has an attribute named |attrName|.
 		/// </summary>
-		public unsafe virtual bool HasElementAttribute(string attrName)
+		public virtual bool HasElementAttribute(string attrName)
 		{
 			fixed (char* s0 = attrName)
 			{
-				var cstr0 = new cef_string_t { Str = s0, Length = attrName != null ? attrName.Length : 0 };
+				var cstr0 = new cef_string_t {Str = s0, Length = attrName != null ? attrName.Length : 0};
 				return SafeCall(NativeInstance->HasElementAttribute(&cstr0) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Returns the element attribute named |attrName|.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the element attribute named |attrName|.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string GetElementAttribute(string attrName)
+		public virtual string GetElementAttribute(string attrName)
 		{
 			fixed (char* s0 = attrName)
 			{
-				var cstr0 = new cef_string_t { Str = s0, Length = attrName != null ? attrName.Length : 0 };
+				var cstr0 = new cef_string_t {Str = s0, Length = attrName != null ? attrName.Length : 0};
 				return SafeCall(CefString.ReadAndFree(NativeInstance->GetElementAttribute(&cstr0)));
 			}
 		}
 
 		/// <summary>
-		/// Returns a map of all element attributes.
+		///  Returns a map of all element attributes.
 		/// </summary>
-		public unsafe virtual void GetElementAttributes(CefStringMap attrMap)
+		public virtual void GetElementAttributes(CefStringMap attrMap)
 		{
 			NativeInstance->GetElementAttributes(attrMap);
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Set the value for the element attribute named |attrName|. Returns true (1)
-		/// on success.
+		///  Set the value for the element attribute named |attrName|. Returns true (1)
+		///  on success.
 		/// </summary>
-		public unsafe virtual bool SetElementAttribute(string attrName, string value)
+		public virtual bool SetElementAttribute(string attrName, string value)
 		{
 			fixed (char* s0 = attrName)
 			fixed (char* s1 = value)
 			{
-				var cstr0 = new cef_string_t { Str = s0, Length = attrName != null ? attrName.Length : 0 };
-				var cstr1 = new cef_string_t { Str = s1, Length = value != null ? value.Length : 0 };
+				var cstr0 = new cef_string_t {Str = s0, Length = attrName != null ? attrName.Length : 0};
+				var cstr1 = new cef_string_t {Str = s1, Length = value != null ? value.Length : 0};
 				return SafeCall(NativeInstance->SetElementAttribute(&cstr0, &cstr1) != 0);
 			}
 		}
 
 		/// <summary>
-		/// Returns the value of this node.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Returns the value of this node.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string GetValue()
+		public virtual string GetValue()
 		{
 			return SafeCall(CefString.ReadAndFree(NativeInstance->GetValue()));
 		}

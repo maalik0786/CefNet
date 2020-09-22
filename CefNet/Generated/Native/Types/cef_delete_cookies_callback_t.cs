@@ -11,37 +11,34 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Structure to implement to be notified of asynchronous completion via
-	/// cef_cookie_manager_t::delete_cookies().
+	///  Structure to implement to be notified of asynchronous completion via
+	///  cef_cookie_manager_t::delete_cookies().
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_delete_cookies_callback_t
+	public unsafe struct cef_delete_cookies_callback_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_delete_cookies_callback_t* self, int num_deleted)*
+		///  void (*)(_cef_delete_cookies_callback_t* self, int num_deleted)*
 		/// </summary>
 		public void* on_complete;
 
 		/// <summary>
-		/// Method that will be called upon completion. |num_deleted| will be the
-		/// number of cookies that were deleted.
+		///  Method that will be called upon completion. |num_deleted| will be the
+		///  number of cookies that were deleted.
 		/// </summary>
 		[NativeName("on_complete")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void OnComplete(int num_deleted);
+		public extern void OnComplete(int num_deleted);
 	}
 }
-

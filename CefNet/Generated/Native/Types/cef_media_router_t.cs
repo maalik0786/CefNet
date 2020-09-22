@@ -11,99 +11,98 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Supports discovery of and communication with media devices on the local
-	/// network via the Cast and DIAL protocols. The functions of this structure may
-	/// be called on any browser process thread unless otherwise indicated.
+	///  Supports discovery of and communication with media devices on the local
+	///  network via the Cast and DIAL protocols. The functions of this structure may
+	///  be called on any browser process thread unless otherwise indicated.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_media_router_t
+	public unsafe struct cef_media_router_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// _cef_registration_t* (*)(_cef_media_router_t* self, _cef_media_observer_t* observer)*
+		///  _cef_registration_t* (*)(_cef_media_router_t* self, _cef_media_observer_t* observer)*
 		/// </summary>
 		public void* add_observer;
 
 		/// <summary>
-		/// Add an observer for MediaRouter events. The observer will remain registered
-		/// until the returned Registration object is destroyed.
+		///  Add an observer for MediaRouter events. The observer will remain registered
+		///  until the returned Registration object is destroyed.
 		/// </summary>
 		[NativeName("add_observer")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_registration_t* AddObserver(cef_media_observer_t* observer);
+		public extern cef_registration_t* AddObserver(cef_media_observer_t* observer);
 
 		/// <summary>
-		/// _cef_media_source_t* (*)(_cef_media_router_t* self, const cef_string_t* urn)*
+		///  _cef_media_source_t* (*)(_cef_media_router_t* self, const cef_string_t* urn)*
 		/// </summary>
 		public void* get_source;
 
 		/// <summary>
-		/// Returns a MediaSource object for the specified media source URN. Supported
-		/// URN schemes include &quot;cast:&quot; and &quot;dial:&quot;, and will be already known by the
-		/// client application (e.g. &quot;cast:
-		/// &lt;appId
-		/// &gt;?clientId=
-		/// &lt;clientId
-		/// &gt;&quot;).
+		///  Returns a MediaSource object for the specified media source URN. Supported
+		///  URN schemes include &quot;cast:&quot; and &quot;dial:&quot;, and will be already known by the
+		///  client application (e.g. &quot;cast:
+		///  &lt;appId
+		///  &gt;?clientId=
+		///  &lt;clientId
+		///  &gt;&quot;).
 		/// </summary>
 		[NativeName("get_source")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern cef_media_source_t* GetSource([Immutable]cef_string_t* urn);
+		public extern cef_media_source_t* GetSource([Immutable] cef_string_t* urn);
 
 		/// <summary>
-		/// void (*)(_cef_media_router_t* self)*
+		///  void (*)(_cef_media_router_t* self)*
 		/// </summary>
 		public void* notify_current_sinks;
 
 		/// <summary>
-		/// Trigger an asynchronous call to cef_media_observer_t::OnSinks on all
-		/// registered observers.
+		///  Trigger an asynchronous call to cef_media_observer_t::OnSinks on all
+		///  registered observers.
 		/// </summary>
 		[NativeName("notify_current_sinks")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void NotifyCurrentSinks();
+		public extern void NotifyCurrentSinks();
 
 		/// <summary>
-		/// void (*)(_cef_media_router_t* self, _cef_media_source_t* source, _cef_media_sink_t* sink, _cef_media_route_create_callback_t* callback)*
+		///  void (*)(_cef_media_router_t* self, _cef_media_source_t* source, _cef_media_sink_t* sink,
+		///  _cef_media_route_create_callback_t* callback)*
 		/// </summary>
 		public void* create_route;
 
 		/// <summary>
-		/// Create a new route between |source| and |sink|. Source and sink must be
-		/// valid, compatible (as reported by cef_media_sink_t::IsCompatibleWith), and
-		/// a route between them must not already exist. |callback| will be executed on
-		/// success or failure. If route creation succeeds it will also trigger an
-		/// asynchronous call to cef_media_observer_t::OnRoutes on all registered
-		/// observers.
+		///  Create a new route between |source| and |sink|. Source and sink must be
+		///  valid, compatible (as reported by cef_media_sink_t::IsCompatibleWith), and
+		///  a route between them must not already exist. |callback| will be executed on
+		///  success or failure. If route creation succeeds it will also trigger an
+		///  asynchronous call to cef_media_observer_t::OnRoutes on all registered
+		///  observers.
 		/// </summary>
 		[NativeName("create_route")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void CreateRoute(cef_media_source_t* source, cef_media_sink_t* sink, cef_media_route_create_callback_t* callback);
+		public extern void CreateRoute(cef_media_source_t* source, cef_media_sink_t* sink,
+			cef_media_route_create_callback_t* callback);
 
 		/// <summary>
-		/// void (*)(_cef_media_router_t* self)*
+		///  void (*)(_cef_media_router_t* self)*
 		/// </summary>
 		public void* notify_current_routes;
 
 		/// <summary>
-		/// Trigger an asynchronous call to cef_media_observer_t::OnRoutes on all
-		/// registered observers.
+		///  Trigger an asynchronous call to cef_media_observer_t::OnRoutes on all
+		///  registered observers.
 		/// </summary>
 		[NativeName("notify_current_routes")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void NotifyCurrentRoutes();
+		public extern void NotifyCurrentRoutes();
 	}
 }
-

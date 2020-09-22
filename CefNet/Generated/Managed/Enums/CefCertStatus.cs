@@ -11,17 +11,12 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported certificate status code values. See net@cert @cert _status_flags.h
-	/// for more information. CERT_STATUS_NONE is new in CEF because we use an
-	/// enum while cert_status_flags.h uses a typedef and static const variables.
+	///  Supported certificate status code values. See net@cert @cert _status_flags.h
+	///  for more information. CERT_STATUS_NONE is new in CEF because we use an
+	///  enum while cert_status_flags.h uses a typedef and static const variables.
 	/// </summary>
 	public enum CefCertStatus
 	{
@@ -34,104 +29,103 @@ namespace CefNet
 		AuthorityInvalid = 1 << 2,
 
 		/// <summary>
-		/// 1 
-		/// &lt;
-		/// &lt;
-		/// 3 is reserved for ERR_CERT_CONTAINS_ERRORS (not useful with WinHTTP).
+		///  1
+		///  &lt;
+		///  &lt;
+		///  3 is reserved for ERR_CERT_CONTAINS_ERRORS (not useful with WinHTTP).
 		/// </summary>
 		NoRevocationMechanism = 1 << 4,
 
 		/// <summary>
-		/// 1 
-		/// &lt;
-		/// &lt;
-		/// 3 is reserved for ERR_CERT_CONTAINS_ERRORS (not useful with WinHTTP).
+		///  1
+		///  &lt;
+		///  &lt;
+		///  3 is reserved for ERR_CERT_CONTAINS_ERRORS (not useful with WinHTTP).
 		/// </summary>
 		UnableToCheckRevocation = 1 << 5,
 
 		/// <summary>
-		/// 1 
-		/// &lt;
-		/// &lt;
-		/// 3 is reserved for ERR_CERT_CONTAINS_ERRORS (not useful with WinHTTP).
+		///  1
+		///  &lt;
+		///  &lt;
+		///  3 is reserved for ERR_CERT_CONTAINS_ERRORS (not useful with WinHTTP).
 		/// </summary>
 		Revoked = 1 << 6,
 
 		/// <summary>
-		/// 1 
-		/// &lt;
-		/// &lt;
-		/// 3 is reserved for ERR_CERT_CONTAINS_ERRORS (not useful with WinHTTP).
+		///  1
+		///  &lt;
+		///  &lt;
+		///  3 is reserved for ERR_CERT_CONTAINS_ERRORS (not useful with WinHTTP).
 		/// </summary>
 		Invalid = 1 << 7,
 
 		/// <summary>
-		/// 1 
-		/// &lt;
-		/// &lt;
-		/// 3 is reserved for ERR_CERT_CONTAINS_ERRORS (not useful with WinHTTP).
+		///  1
+		///  &lt;
+		///  &lt;
+		///  3 is reserved for ERR_CERT_CONTAINS_ERRORS (not useful with WinHTTP).
 		/// </summary>
 		WeakSignatureAlgorithm = 1 << 8,
 
 		/// <summary>
-		/// 1 
-		/// &lt;
-		/// &lt;
-		/// 9 was used for CERT_STATUS_NOT_IN_DNS
+		///  1
+		///  &lt;
+		///  &lt;
+		///  9 was used for CERT_STATUS_NOT_IN_DNS
 		/// </summary>
 		NonUniqueName = 1 << 10,
 
 		/// <summary>
-		/// 1 
-		/// &lt;
-		/// &lt;
-		/// 9 was used for CERT_STATUS_NOT_IN_DNS
+		///  1
+		///  &lt;
+		///  &lt;
+		///  9 was used for CERT_STATUS_NOT_IN_DNS
 		/// </summary>
 		WeakKey = 1 << 11,
 
 		/// <summary>
-		/// 1 
-		/// &lt;
-		/// &lt;
-		/// 12 was used for CERT_STATUS_WEAK_DH_KEY
+		///  1
+		///  &lt;
+		///  &lt;
+		///  12 was used for CERT_STATUS_WEAK_DH_KEY
 		/// </summary>
 		PinnedKeyMissing = 1 << 13,
 
 		/// <summary>
-		/// 1 
-		/// &lt;
-		/// &lt;
-		/// 12 was used for CERT_STATUS_WEAK_DH_KEY
+		///  1
+		///  &lt;
+		///  &lt;
+		///  12 was used for CERT_STATUS_WEAK_DH_KEY
 		/// </summary>
 		NameConstraintViolation = 1 << 14,
 
 		/// <summary>
-		/// 1 
-		/// &lt;
-		/// &lt;
-		/// 12 was used for CERT_STATUS_WEAK_DH_KEY
+		///  1
+		///  &lt;
+		///  &lt;
+		///  12 was used for CERT_STATUS_WEAK_DH_KEY
 		/// </summary>
 		ValidityTooLong = 1 << 15,
 
 		/// <summary>
-		/// Bits 16 to 31 are for non-error statuses.
+		///  Bits 16 to 31 are for non-error statuses.
 		/// </summary>
 		IsEv = 1 << 16,
 
 		/// <summary>
-		/// Bits 16 to 31 are for non-error statuses.
+		///  Bits 16 to 31 are for non-error statuses.
 		/// </summary>
 		RevCheckingEnabled = 1 << 17,
 
 		/// <summary>
-		/// Bit 18 was CERT_STATUS_IS_DNSSEC
+		///  Bit 18 was CERT_STATUS_IS_DNSSEC
 		/// </summary>
 		Sha1SignaturePresent = 1 << 19,
 
 		/// <summary>
-		/// Bit 18 was CERT_STATUS_IS_DNSSEC
+		///  Bit 18 was CERT_STATUS_IS_DNSSEC
 		/// </summary>
-		CtComplianceFailed = 1 << 20,
+		CtComplianceFailed = 1 << 20
 	}
 }
-

@@ -1,15 +1,10 @@
-﻿using CefNet.CApi;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace CefNet
 {
 	partial class CefBrowser
 	{
 #if USESAFECACHE
-
 		private static readonly HashSet<WeakReference<CefBrowser>> WeakRefs = new HashSet<WeakReference<CefBrowser>>();
 
 		private WeakReference<CefBrowser> _weakRef;
@@ -70,8 +65,8 @@ namespace CefNet
 
 		public long[] GetFrameIdentifiers()
 		{
-			long count = FrameCount << 1;
-			long[] identifiers = new long[count];
+			var count = FrameCount << 1;
+			var identifiers = new long[count];
 			GetFrameIdentifiers(ref count, ref identifiers);
 			return identifiers;
 		}
@@ -81,6 +76,5 @@ namespace CefNet
 		{
 			return GetFrameByIdent(identifier);
 		}
-
 	}
 }

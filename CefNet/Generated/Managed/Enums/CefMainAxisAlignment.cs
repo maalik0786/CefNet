@@ -11,33 +11,27 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Specifies where along the main axis the CefBoxLayout child views should be
-	/// laid out.
+	///  Specifies where along the main axis the CefBoxLayout child views should be
+	///  laid out.
 	/// </summary>
 	public enum CefMainAxisAlignment
 	{
 		/// <summary>
-		/// Child views will be left-aligned.
+		///  Child views will be left-aligned.
 		/// </summary>
 		Start = 0,
 
 		/// <summary>
-		/// Child views will be center-aligned.
+		///  Child views will be center-aligned.
 		/// </summary>
 		Center = 1,
 
 		/// <summary>
-		/// Child views will be right-aligned.
+		///  Child views will be right-aligned.
 		/// </summary>
-		End = 2,
+		End = 2
 	}
 }
-

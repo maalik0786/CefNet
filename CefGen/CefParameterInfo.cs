@@ -6,17 +6,14 @@
 
 using CefGen.CodeDom;
 using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CefGen
 {
-	sealed class CefParameterInfo
+	internal sealed class CefParameterInfo
 	{
 		public CefParameterInfo(ISymbol parameterSymbol)
 		{
-			this.Symbol = parameterSymbol;
+			Symbol = parameterSymbol;
 		}
 
 		public ISymbol Symbol { get; }
@@ -27,12 +24,7 @@ namespace CefGen
 
 		public bool IsArray { get; set; }
 
-		public string NativeTypeName
-		{
-			get
-			{
-				return ((IParameterSymbol)Symbol).Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
-			}
-		}
+		public string NativeTypeName =>
+			((IParameterSymbol) Symbol).Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 	}
 }

@@ -12,35 +12,33 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// CEF string type definitions. Whomever allocates |str| is responsible for
-	/// providing an appropriate |dtor| implementation that will free the string in
-	/// the same memory space. When reusing an existing string structure make sure
-	/// to call |dtor| for the old value before assigning new |str| and |dtor|
-	/// values. Static strings will have a NULL |dtor| value. Using the below
-	/// functions if you want this managed for you.
+	///  CEF string type definitions. Whomever allocates |str| is responsible for
+	///  providing an appropriate |dtor| implementation that will free the string in
+	///  the same memory space. When reusing an existing string structure make sure
+	///  to call |dtor| for the old value before assigning new |str| and |dtor|
+	///  values. Static strings will have a NULL |dtor| value. Using the below
+	///  functions if you want this managed for you.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_string_wide_t
+	public unsafe struct cef_string_wide_t
 	{
 		public char* str;
 
 		public UIntPtr length;
 
 		/// <summary>
-		/// void (*)(wchar* str)*
+		///  void (*)(wchar* str)*
 		/// </summary>
 		public void* dtor;
 
 		[NativeName("dtor")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Dtor(char* str);
+		public extern void Dtor(char* str);
 	}
 }
-

@@ -11,7 +11,7 @@ namespace CefGen.CodeDom
 		public CodeEnumItem(string name, string value)
 			: base(name)
 		{
-			this.Value = value;
+			Value = value;
 		}
 
 		public string Value { get; }

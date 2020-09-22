@@ -11,47 +11,44 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Callback structure for asynchronous continuation of print dialog requests.
+	///  Callback structure for asynchronous continuation of print dialog requests.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_print_dialog_callback_t
+	public unsafe struct cef_print_dialog_callback_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_print_dialog_callback_t* self, _cef_print_settings_t* settings)*
+		///  void (*)(_cef_print_dialog_callback_t* self, _cef_print_settings_t* settings)*
 		/// </summary>
 		public void* cont;
 
 		/// <summary>
-		/// Continue printing with the specified |settings|.
+		///  Continue printing with the specified |settings|.
 		/// </summary>
 		[NativeName("cont")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Continue(cef_print_settings_t* settings);
+		public extern void Continue(cef_print_settings_t* settings);
 
 		/// <summary>
-		/// void (*)(_cef_print_dialog_callback_t* self)*
+		///  void (*)(_cef_print_dialog_callback_t* self)*
 		/// </summary>
 		public void* cancel;
 
 		/// <summary>
-		/// Cancel the printing.
+		///  Cancel the printing.
 		/// </summary>
 		[NativeName("cancel")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Cancel();
+		public extern void Cancel();
 	}
 }
-

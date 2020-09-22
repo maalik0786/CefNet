@@ -4,17 +4,15 @@
 // See the licence file in the project root for full license information.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.CodeAnalysis;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 
 namespace CefGen
 {
 	public class GetAllSymbolsVisitor : SymbolVisitor
 	{
-		private List<INamedTypeSymbol> _symbols = new List<INamedTypeSymbol>();
+		private readonly List<INamedTypeSymbol> _symbols = new List<INamedTypeSymbol>();
 
 		public override void VisitNamespace(INamespaceSymbol symbol)
 		{

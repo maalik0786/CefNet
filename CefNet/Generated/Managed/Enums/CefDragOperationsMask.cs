@@ -11,17 +11,12 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// &quot;Verb&quot; of a drag-and-drop operation as negotiated between the source and
-	/// destination. These constants match their equivalents in WebCore&apos;s
-	/// DragActions.h and should not be renumbered.
+	///  &quot;Verb&quot; of a drag-and-drop operation as negotiated between the source and
+	///  destination. These constants match their equivalents in WebCore&apos;s
+	///  DragActions.h and should not be renumbered.
 	/// </summary>
 	public enum CefDragOperationsMask
 	{
@@ -39,7 +34,6 @@ namespace CefNet
 
 		Delete = 32,
 
-		Every = -1,
+		Every = -1
 	}
 }
-

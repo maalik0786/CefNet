@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Input;
 
 namespace CefNet.Wpf
@@ -9,8 +7,8 @@ namespace CefNet.Wpf
 	{
 		public CursorChangeEventArgs(Cursor cursor, CefCursorType cursorType)
 		{
-			this.Cursor = cursor;
-			this.CursorType = cursorType;
+			Cursor = cursor;
+			CursorType = cursorType;
 		}
 
 		public Cursor Cursor { get; }

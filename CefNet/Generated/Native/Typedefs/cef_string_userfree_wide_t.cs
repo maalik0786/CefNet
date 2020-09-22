@@ -11,22 +11,18 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// It is sometimes necessary for the system to allocate string structures with
-	/// the expectation that the user will free them. The userfree types act as a
-	/// hint that the user is responsible for freeing the structure.
+	///  It is sometimes necessary for the system to allocate string structures with
+	///  the expectation that the user will free them. The userfree types act as a
+	///  hint that the user is responsible for freeing the structure.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_string_userfree_wide_t
+	public unsafe struct cef_string_userfree_wide_t
 	{
 		public cef_string_wide_t* Base;
 	}
 }
-

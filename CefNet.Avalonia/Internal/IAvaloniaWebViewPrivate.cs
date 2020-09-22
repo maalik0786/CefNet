@@ -1,7 +1,4 @@
 ﻿using CefNet.Avalonia;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CefNet.Internal
 {

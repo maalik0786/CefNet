@@ -11,17 +11,12 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// The manner in which a link click should be opened. These constants match
-	/// their equivalents in Chromium&apos;s window_open_disposition.h and should not be
-	/// renumbered.
+	///  The manner in which a link click should be opened. These constants match
+	///  their equivalents in Chromium&apos;s window_open_disposition.h and should not be
+	///  renumbered.
 	/// </summary>
 	public enum CefWindowOpenDisposition
 	{
@@ -43,7 +38,6 @@ namespace CefNet
 
 		OffTheRecord = 8,
 
-		IgnoreAction = 9,
+		IgnoreAction = 9
 	}
 }
-

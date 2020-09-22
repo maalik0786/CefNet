@@ -11,40 +11,37 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// Implement this structure for asynchronous task execution. If the task is
-	/// posted successfully and if the associated message loop is still running then
-	/// the execute() function will be called on the target thread. If the task fails
-	/// to post then the task object may be destroyed on the source thread instead of
-	/// the target thread. For this reason be cautious when performing work in the
-	/// task object destructor.
+	///  Implement this structure for asynchronous task execution. If the task is
+	///  posted successfully and if the associated message loop is still running then
+	///  the execute() function will be called on the target thread. If the task fails
+	///  to post then the task object may be destroyed on the source thread instead of
+	///  the target thread. For this reason be cautious when performing work in the
+	///  task object destructor.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_task_t
+	public unsafe struct cef_task_t
 	{
 		/// <summary>
-		/// Base structure.
+		///  Base structure.
 		/// </summary>
 		public cef_base_ref_counted_t @base;
 
 		/// <summary>
-		/// void (*)(_cef_task_t* self)*
+		///  void (*)(_cef_task_t* self)*
 		/// </summary>
 		public void* execute;
 
 		/// <summary>
-		/// Method that will be executed on the target thread.
+		///  Method that will be executed on the target thread.
 		/// </summary>
 		[NativeName("execute")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Execute();
+		public extern void Execute();
 	}
 }
-

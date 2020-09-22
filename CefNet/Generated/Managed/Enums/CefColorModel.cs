@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Print job color mode values.
+	///  Print job color mode values.
 	/// </summary>
 	public enum CefColorModel
 	{
@@ -36,7 +31,7 @@ namespace CefNet
 		Kcmy = 5,
 
 		/// <summary>
-		/// CMY_K represents CMY+K.
+		///  CMY_K represents CMY+K.
 		/// </summary>
 		CmyK = 6,
 
@@ -51,49 +46,48 @@ namespace CefNet
 		Rgba = 11,
 
 		/// <summary>
-		/// Used in samsung printer ppds.
+		///  Used in samsung printer ppds.
 		/// </summary>
 		ColormodeColor = 12,
 
 		/// <summary>
-		/// Used in samsung printer ppds.
+		///  Used in samsung printer ppds.
 		/// </summary>
 		ColormodeMonochrome = 13,
 
 		/// <summary>
-		/// Used in HP color printer ppds.
+		///  Used in HP color printer ppds.
 		/// </summary>
 		HpColorColor = 14,
 
 		/// <summary>
-		/// Used in HP color printer ppds.
+		///  Used in HP color printer ppds.
 		/// </summary>
 		HpColorBlack = 15,
 
 		/// <summary>
-		/// Used in foomatic ppds.
+		///  Used in foomatic ppds.
 		/// </summary>
 		PrintoutmodeNormal = 16,
 
 		/// <summary>
-		/// Used in foomatic ppds.
+		///  Used in foomatic ppds.
 		/// </summary>
 		PrintoutmodeNormalGray = 17,
 
 		/// <summary>
-		/// Used in canon printer ppds.
+		///  Used in canon printer ppds.
 		/// </summary>
 		ProcesscolormodelCmyk = 18,
 
 		/// <summary>
-		/// Used in canon printer ppds.
+		///  Used in canon printer ppds.
 		/// </summary>
 		ProcesscolormodelGreyscale = 19,
 
 		/// <summary>
-		/// Used in canon printer ppds
+		///  Used in canon printer ppds
 		/// </summary>
-		ProcesscolormodelRgb = 20,
+		ProcesscolormodelRgb = 20
 	}
 }
-

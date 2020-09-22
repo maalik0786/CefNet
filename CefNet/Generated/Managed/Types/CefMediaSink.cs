@@ -12,118 +12,78 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Represents a sink to which media can be routed. Instances of this object are
-	/// retrieved via cef_media_observer_t::OnSinks. The functions of this structure
-	/// may be called on any browser process thread unless otherwise indicated.
+	///  Represents a sink to which media can be routed. Instances of this object are
+	///  retrieved via cef_media_observer_t::OnSinks. The functions of this structure
+	///  may be called on any browser process thread unless otherwise indicated.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial class CefMediaSink : CefBaseRefCounted<cef_media_sink_t>
+	public unsafe class CefMediaSink : CefBaseRefCounted<cef_media_sink_t>
 	{
-		internal static unsafe CefMediaSink Create(IntPtr instance)
-		{
-			return new CefMediaSink((cef_media_sink_t*)instance);
-		}
-
 		public CefMediaSink(cef_media_sink_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		/// <summary>
-		/// Gets the ID for this sink.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Gets the ID for this sink.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
 		/// </summary>
-		public unsafe virtual string Id
+		public virtual string Id => SafeCall(CefString.ReadAndFree(NativeInstance->GetId()));
+
+		/// <summary>
+		///  Gets the name of this sink.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string Name => SafeCall(CefString.ReadAndFree(NativeInstance->GetName()));
+
+		/// <summary>
+		///  Gets the description of this sink.
+		///  The resulting string must be freed by calling cef_string_userfree_free().
+		/// </summary>
+		public virtual string Description => SafeCall(CefString.ReadAndFree(NativeInstance->GetDescription()));
+
+		/// <summary>
+		///  Gets the icon type for this sink.
+		/// </summary>
+		public virtual CefMediaSinkIconType IconType => SafeCall(NativeInstance->GetIconType());
+
+		/// <summary>
+		///  Gets a value indicating whether this sink accepts content via Cast.
+		/// </summary>
+		public virtual bool IsCastSink => SafeCall(NativeInstance->IsCastSink() != 0);
+
+		/// <summary>
+		///  Gets a value indicating whether this sink accepts content via DIAL.
+		/// </summary>
+		public virtual bool IsDialSink => SafeCall(NativeInstance->IsDialSink() != 0);
+
+		internal static CefMediaSink Create(IntPtr instance)
 		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetId()));
-			}
+			return new CefMediaSink((cef_media_sink_t*) instance);
 		}
 
 		/// <summary>
-		/// Gets the name of this sink.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
+		///  Asynchronously retrieves device info.
 		/// </summary>
-		public unsafe virtual string Name
+		public virtual void GetDeviceInfo(CefMediaSinkDeviceInfoCallback callback)
 		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetName()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the description of this sink.
-		/// The resulting string must be freed by calling cef_string_userfree_free().
-		/// </summary>
-		public unsafe virtual string Description
-		{
-			get
-			{
-				return SafeCall(CefString.ReadAndFree(NativeInstance->GetDescription()));
-			}
-		}
-
-		/// <summary>
-		/// Gets the icon type for this sink.
-		/// </summary>
-		public unsafe virtual CefMediaSinkIconType IconType
-		{
-			get
-			{
-				return SafeCall(NativeInstance->GetIconType());
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this sink accepts content via Cast.
-		/// </summary>
-		public unsafe virtual bool IsCastSink
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsCastSink() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this sink accepts content via DIAL.
-		/// </summary>
-		public unsafe virtual bool IsDialSink
-		{
-			get
-			{
-				return SafeCall(NativeInstance->IsDialSink() != 0);
-			}
-		}
-
-		/// <summary>
-		/// Asynchronously retrieves device info.
-		/// </summary>
-		public unsafe virtual void GetDeviceInfo(CefMediaSinkDeviceInfoCallback callback)
-		{
-			NativeInstance->GetDeviceInfo((callback != null) ? callback.GetNativeInstance() : null);
+			NativeInstance->GetDeviceInfo(callback != null ? callback.GetNativeInstance() : null);
 			GC.KeepAlive(this);
 		}
 
 		/// <summary>
-		/// Returns true (1) if this sink is compatible with |source|.
+		///  Returns true (1) if this sink is compatible with |source|.
 		/// </summary>
-		public unsafe virtual bool IsCompatibleWith(CefMediaSource source)
+		public virtual bool IsCompatibleWith(CefMediaSource source)
 		{
-			return SafeCall(NativeInstance->IsCompatibleWith((source != null) ? source.GetNativeInstance() : null) != 0);
+			return SafeCall(NativeInstance->IsCompatibleWith(source != null ? source.GetNativeInstance() : null) != 0);
 		}
 	}
 }

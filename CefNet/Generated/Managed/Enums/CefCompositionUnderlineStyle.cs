@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Composition underline style.
+	///  Composition underline style.
 	/// </summary>
 	public enum CefCompositionUnderlineStyle
 	{
@@ -29,7 +24,6 @@ namespace CefNet
 
 		Dash = 2,
 
-		None = 3,
+		None = 3
 	}
 }
-

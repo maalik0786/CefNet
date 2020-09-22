@@ -11,74 +11,51 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
 using CefNet.CApi;
-using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Structure representing mouse event information.
+	///  Structure representing mouse event information.
 	/// </summary>
 	/// <remarks>
-	/// Role: Proxy
+	///  Role: Proxy
 	/// </remarks>
-	public unsafe partial struct CefMouseEvent
+	public struct CefMouseEvent
 	{
 		private cef_mouse_event_t _instance;
 
 		/// <summary>
-		/// X coordinate relative to the left side of the view.
+		///  X coordinate relative to the left side of the view.
 		/// </summary>
 		public int X
 		{
-			get
-			{
-				return _instance.x;
-			}
-			set
-			{
-				_instance.x = value;
-			}
+			get => _instance.x;
+			set => _instance.x = value;
 		}
 
 		/// <summary>
-		/// Y coordinate relative to the top side of the view.
+		///  Y coordinate relative to the top side of the view.
 		/// </summary>
 		public int Y
 		{
-			get
-			{
-				return _instance.y;
-			}
-			set
-			{
-				_instance.y = value;
-			}
+			get => _instance.y;
+			set => _instance.y = value;
 		}
 
 		/// <summary>
-		/// Bit flags describing any pressed modifier keys. See
-		/// cef_event_flags_t for values.
+		///  Bit flags describing any pressed modifier keys. See
+		///  cef_event_flags_t for values.
 		/// </summary>
 		public uint Modifiers
 		{
-			get
-			{
-				return _instance.modifiers;
-			}
-			set
-			{
-				_instance.modifiers = value;
-			}
+			get => _instance.modifiers;
+			set => _instance.modifiers = value;
 		}
 
 		public static implicit operator CefMouseEvent(cef_mouse_event_t instance)
 		{
-			return new CefMouseEvent { _instance = instance };
+			return new CefMouseEvent {_instance = instance};
 		}
 
 		public static implicit operator cef_mouse_event_t(CefMouseEvent instance)

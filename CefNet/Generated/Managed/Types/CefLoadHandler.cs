@@ -12,23 +12,22 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 using CefNet.CApi;
 using CefNet.Internal;
 
 namespace CefNet
 {
 	/// <summary>
-	/// Implement this structure to handle events related to browser load status. The
-	/// functions of this structure will be called on the browser process UI thread
-	/// or render process main thread (TID_RENDERER).
+	///  Implement this structure to handle events related to browser load status. The
+	///  functions of this structure will be called on the browser process UI thread
+	///  or render process main thread (TID_RENDERER).
 	/// </summary>
 	/// <remarks>
-	/// Role: Handler
+	///  Role: Handler
 	/// </remarks>
-	public unsafe partial class CefLoadHandler : CefBaseRefCounted<cef_load_handler_t>, ICefLoadHandlerPrivate
+	public unsafe class CefLoadHandler : CefBaseRefCounted<cef_load_handler_t>, ICefLoadHandlerPrivate
 	{
 		private static readonly OnLoadingStateChangeDelegate fnOnLoadingStateChange = OnLoadingStateChangeImpl;
 
@@ -38,150 +37,169 @@ namespace CefNet
 
 		private static readonly OnLoadErrorDelegate fnOnLoadError = OnLoadErrorImpl;
 
-		internal static unsafe CefLoadHandler Create(IntPtr instance)
-		{
-			return new CefLoadHandler((cef_load_handler_t*)instance);
-		}
-
 		public CefLoadHandler()
 		{
-			cef_load_handler_t* self = this.NativeInstance;
-			self->on_loading_state_change = (void*)Marshal.GetFunctionPointerForDelegate(fnOnLoadingStateChange);
-			self->on_load_start = (void*)Marshal.GetFunctionPointerForDelegate(fnOnLoadStart);
-			self->on_load_end = (void*)Marshal.GetFunctionPointerForDelegate(fnOnLoadEnd);
-			self->on_load_error = (void*)Marshal.GetFunctionPointerForDelegate(fnOnLoadError);
+			var self = NativeInstance;
+			self->on_loading_state_change = (void*) Marshal.GetFunctionPointerForDelegate(fnOnLoadingStateChange);
+			self->on_load_start = (void*) Marshal.GetFunctionPointerForDelegate(fnOnLoadStart);
+			self->on_load_end = (void*) Marshal.GetFunctionPointerForDelegate(fnOnLoadEnd);
+			self->on_load_error = (void*) Marshal.GetFunctionPointerForDelegate(fnOnLoadError);
 		}
 
 		public CefLoadHandler(cef_load_handler_t* instance)
-			: base((cef_base_ref_counted_t*)instance)
+			: base((cef_base_ref_counted_t*) instance)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefLoadHandlerPrivate.AvoidOnLoadingStateChange();
 
-		/// <summary>
-		/// Called when the loading state has changed. This callback will be executed
-		/// twice -- once when loading is initiated either programmatically or by user
-		/// action, and once when loading is terminated due to completion, cancellation
-		/// of failure. It will be called before any calls to OnLoadStart and after all
-		/// calls to OnLoadError and/or OnLoadEnd.
-		/// </summary>
-		protected internal unsafe virtual void OnLoadingStateChange(CefBrowser browser, bool isLoading, bool canGoBack, bool canGoForward)
-		{
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnLoadingStateChangeDelegate(cef_load_handler_t* self, cef_browser_t* browser, int isLoading, int canGoBack, int canGoForward);
-
-		// void (*)(_cef_load_handler_t* self, _cef_browser_t* browser, int isLoading, int canGoBack, int canGoForward)*
-		private static unsafe void OnLoadingStateChangeImpl(cef_load_handler_t* self, cef_browser_t* browser, int isLoading, int canGoBack, int canGoForward)
-		{
-			var instance = GetInstance((IntPtr)self) as CefLoadHandler;
-			if (instance == null || ((ICefLoadHandlerPrivate)instance).AvoidOnLoadingStateChange())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				return;
-			}
-			instance.OnLoadingStateChange(CefBrowser.Wrap(CefBrowser.Create, browser), isLoading != 0, canGoBack != 0, canGoForward != 0);
-		}
-
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefLoadHandlerPrivate.AvoidOnLoadStart();
-
-		/// <summary>
-		/// Called after a navigation has been committed and before the browser begins
-		/// loading contents in the frame. The |frame| value will never be NULL -- call
-		/// the is_main() function to check if this frame is the main frame.
-		/// |transition_type| provides information about the source of the navigation
-		/// and an accurate value is only available in the browser process. Multiple
-		/// frames may be loading at the same time. Sub-frames may start or continue
-		/// loading after the main frame load has ended. This function will not be
-		/// called for same page navigations (fragments, history state, etc.) or for
-		/// navigations that fail or are canceled before commit. For notification of
-		/// overall browser load status use OnLoadingStateChange instead.
-		/// </summary>
-		protected internal unsafe virtual void OnLoadStart(CefBrowser browser, CefFrame frame, CefTransitionType transitionType)
-		{
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnLoadStartDelegate(cef_load_handler_t* self, cef_browser_t* browser, cef_frame_t* frame, CefTransitionType transition_type);
-
-		// void (*)(_cef_load_handler_t* self, _cef_browser_t* browser, _cef_frame_t* frame, cef_transition_type_t transition_type)*
-		private static unsafe void OnLoadStartImpl(cef_load_handler_t* self, cef_browser_t* browser, cef_frame_t* frame, CefTransitionType transition_type)
-		{
-			var instance = GetInstance((IntPtr)self) as CefLoadHandler;
-			if (instance == null || ((ICefLoadHandlerPrivate)instance).AvoidOnLoadStart())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				ReleaseIfNonNull((cef_base_ref_counted_t*)frame);
-				return;
-			}
-			instance.OnLoadStart(CefBrowser.Wrap(CefBrowser.Create, browser), CefFrame.Wrap(CefFrame.Create, frame), transition_type);
-		}
 
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefLoadHandlerPrivate.AvoidOnLoadEnd();
 
-		/// <summary>
-		/// Called when the browser is done loading a frame. The |frame| value will
-		/// never be NULL -- call the is_main() function to check if this frame is the
-		/// main frame. Multiple frames may be loading at the same time. Sub-frames may
-		/// start or continue loading after the main frame load has ended. This
-		/// function will not be called for same page navigations (fragments, history
-		/// state, etc.) or for navigations that fail or are canceled before commit.
-		/// For notification of overall browser load status use OnLoadingStateChange
-		/// instead.
-		/// </summary>
-		protected internal unsafe virtual void OnLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode)
-		{
-		}
-
-		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnLoadEndDelegate(cef_load_handler_t* self, cef_browser_t* browser, cef_frame_t* frame, int httpStatusCode);
-
-		// void (*)(_cef_load_handler_t* self, _cef_browser_t* browser, _cef_frame_t* frame, int httpStatusCode)*
-		private static unsafe void OnLoadEndImpl(cef_load_handler_t* self, cef_browser_t* browser, cef_frame_t* frame, int httpStatusCode)
-		{
-			var instance = GetInstance((IntPtr)self) as CefLoadHandler;
-			if (instance == null || ((ICefLoadHandlerPrivate)instance).AvoidOnLoadEnd())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				ReleaseIfNonNull((cef_base_ref_counted_t*)frame);
-				return;
-			}
-			instance.OnLoadEnd(CefBrowser.Wrap(CefBrowser.Create, browser), CefFrame.Wrap(CefFrame.Create, frame), httpStatusCode);
-		}
-
 		[MethodImpl(MethodImplOptions.ForwardRef)]
 		extern bool ICefLoadHandlerPrivate.AvoidOnLoadError();
 
-		/// <summary>
-		/// Called when a navigation fails or is canceled. This function may be called
-		/// by itself if before commit or in combination with OnLoadStart/OnLoadEnd if
-		/// after commit. |errorCode| is the error code number, |errorText| is the
-		/// error text and |failedUrl| is the URL that failed to load. See
-		/// net@base @net _error_list.h for complete descriptions of the error codes.
-		/// </summary>
-		protected internal unsafe virtual void OnLoadError(CefBrowser browser, CefFrame frame, CefErrorCode errorCode, string errorText, string failedUrl)
+		internal static CefLoadHandler Create(IntPtr instance)
 		{
+			return new CefLoadHandler((cef_load_handler_t*) instance);
+		}
+
+		/// <summary>
+		///  Called when the loading state has changed. This callback will be executed
+		///  twice -- once when loading is initiated either programmatically or by user
+		///  action, and once when loading is terminated due to completion, cancellation
+		///  of failure. It will be called before any calls to OnLoadStart and after all
+		///  calls to OnLoadError and/or OnLoadEnd.
+		/// </summary>
+		protected internal virtual void OnLoadingStateChange(CefBrowser browser, bool isLoading, bool canGoBack,
+			bool canGoForward)
+		{
+		}
+
+		// void (*)(_cef_load_handler_t* self, _cef_browser_t* browser, int isLoading, int canGoBack, int canGoForward)*
+		private static void OnLoadingStateChangeImpl(cef_load_handler_t* self, cef_browser_t* browser, int isLoading,
+			int canGoBack, int canGoForward)
+		{
+			var instance = GetInstance((IntPtr) self) as CefLoadHandler;
+			if (instance == null || ((ICefLoadHandlerPrivate) instance).AvoidOnLoadingStateChange())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				return;
+			}
+
+			instance.OnLoadingStateChange(CefBrowser.Wrap(CefBrowser.Create, browser), isLoading != 0, canGoBack != 0,
+				canGoForward != 0);
+		}
+
+		/// <summary>
+		///  Called after a navigation has been committed and before the browser begins
+		///  loading contents in the frame. The |frame| value will never be NULL -- call
+		///  the is_main() function to check if this frame is the main frame.
+		///  |transition_type| provides information about the source of the navigation
+		///  and an accurate value is only available in the browser process. Multiple
+		///  frames may be loading at the same time. Sub-frames may start or continue
+		///  loading after the main frame load has ended. This function will not be
+		///  called for same page navigations (fragments, history state, etc.) or for
+		///  navigations that fail or are canceled before commit. For notification of
+		///  overall browser load status use OnLoadingStateChange instead.
+		/// </summary>
+		protected internal virtual void OnLoadStart(CefBrowser browser, CefFrame frame,
+			CefTransitionType transitionType)
+		{
+		}
+
+		// void (*)(_cef_load_handler_t* self, _cef_browser_t* browser, _cef_frame_t* frame, cef_transition_type_t transition_type)*
+		private static void OnLoadStartImpl(cef_load_handler_t* self, cef_browser_t* browser, cef_frame_t* frame,
+			CefTransitionType transition_type)
+		{
+			var instance = GetInstance((IntPtr) self) as CefLoadHandler;
+			if (instance == null || ((ICefLoadHandlerPrivate) instance).AvoidOnLoadStart())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) frame);
+				return;
+			}
+
+			instance.OnLoadStart(CefBrowser.Wrap(CefBrowser.Create, browser), CefFrame.Wrap(CefFrame.Create, frame),
+				transition_type);
+		}
+
+		/// <summary>
+		///  Called when the browser is done loading a frame. The |frame| value will
+		///  never be NULL -- call the is_main() function to check if this frame is the
+		///  main frame. Multiple frames may be loading at the same time. Sub-frames may
+		///  start or continue loading after the main frame load has ended. This
+		///  function will not be called for same page navigations (fragments, history
+		///  state, etc.) or for navigations that fail or are canceled before commit.
+		///  For notification of overall browser load status use OnLoadingStateChange
+		///  instead.
+		/// </summary>
+		protected internal virtual void OnLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode)
+		{
+		}
+
+		// void (*)(_cef_load_handler_t* self, _cef_browser_t* browser, _cef_frame_t* frame, int httpStatusCode)*
+		private static void OnLoadEndImpl(cef_load_handler_t* self, cef_browser_t* browser, cef_frame_t* frame,
+			int httpStatusCode)
+		{
+			var instance = GetInstance((IntPtr) self) as CefLoadHandler;
+			if (instance == null || ((ICefLoadHandlerPrivate) instance).AvoidOnLoadEnd())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) frame);
+				return;
+			}
+
+			instance.OnLoadEnd(CefBrowser.Wrap(CefBrowser.Create, browser), CefFrame.Wrap(CefFrame.Create, frame),
+				httpStatusCode);
+		}
+
+		/// <summary>
+		///  Called when a navigation fails or is canceled. This function may be called
+		///  by itself if before commit or in combination with OnLoadStart/OnLoadEnd if
+		///  after commit. |errorCode| is the error code number, |errorText| is the
+		///  error text and |failedUrl| is the URL that failed to load. See
+		///  net@base @net _error_list.h for complete descriptions of the error codes.
+		/// </summary>
+		protected internal virtual void OnLoadError(CefBrowser browser, CefFrame frame, CefErrorCode errorCode,
+			string errorText, string failedUrl)
+		{
+		}
+
+		// void (*)(_cef_load_handler_t* self, _cef_browser_t* browser, _cef_frame_t* frame, cef_errorcode_t errorCode, const cef_string_t* errorText, const cef_string_t* failedUrl)*
+		private static void OnLoadErrorImpl(cef_load_handler_t* self, cef_browser_t* browser, cef_frame_t* frame,
+			CefErrorCode errorCode, cef_string_t* errorText, cef_string_t* failedUrl)
+		{
+			var instance = GetInstance((IntPtr) self) as CefLoadHandler;
+			if (instance == null || ((ICefLoadHandlerPrivate) instance).AvoidOnLoadError())
+			{
+				ReleaseIfNonNull((cef_base_ref_counted_t*) browser);
+				ReleaseIfNonNull((cef_base_ref_counted_t*) frame);
+				return;
+			}
+
+			instance.OnLoadError(CefBrowser.Wrap(CefBrowser.Create, browser), CefFrame.Wrap(CefFrame.Create, frame),
+				errorCode, CefString.Read(errorText), CefString.Read(failedUrl));
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
-		private unsafe delegate void OnLoadErrorDelegate(cef_load_handler_t* self, cef_browser_t* browser, cef_frame_t* frame, CefErrorCode errorCode, cef_string_t* errorText, cef_string_t* failedUrl);
+		private delegate void OnLoadingStateChangeDelegate(cef_load_handler_t* self, cef_browser_t* browser,
+			int isLoading, int canGoBack, int canGoForward);
 
-		// void (*)(_cef_load_handler_t* self, _cef_browser_t* browser, _cef_frame_t* frame, cef_errorcode_t errorCode, const cef_string_t* errorText, const cef_string_t* failedUrl)*
-		private static unsafe void OnLoadErrorImpl(cef_load_handler_t* self, cef_browser_t* browser, cef_frame_t* frame, CefErrorCode errorCode, cef_string_t* errorText, cef_string_t* failedUrl)
-		{
-			var instance = GetInstance((IntPtr)self) as CefLoadHandler;
-			if (instance == null || ((ICefLoadHandlerPrivate)instance).AvoidOnLoadError())
-			{
-				ReleaseIfNonNull((cef_base_ref_counted_t*)browser);
-				ReleaseIfNonNull((cef_base_ref_counted_t*)frame);
-				return;
-			}
-			instance.OnLoadError(CefBrowser.Wrap(CefBrowser.Create, browser), CefFrame.Wrap(CefFrame.Create, frame), errorCode, CefString.Read(errorText), CefString.Read(failedUrl));
-		}
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnLoadStartDelegate(cef_load_handler_t* self, cef_browser_t* browser, cef_frame_t* frame,
+			CefTransitionType transition_type);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnLoadEndDelegate(cef_load_handler_t* self, cef_browser_t* browser, cef_frame_t* frame,
+			int httpStatusCode);
+
+		[UnmanagedFunctionPointer(CallingConvention.Winapi)]
+		private delegate void OnLoadErrorDelegate(cef_load_handler_t* self, cef_browser_t* browser, cef_frame_t* frame,
+			CefErrorCode errorCode, cef_string_t* errorText, cef_string_t* failedUrl);
 	}
 }

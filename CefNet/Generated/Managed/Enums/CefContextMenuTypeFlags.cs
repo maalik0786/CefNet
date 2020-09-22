@@ -11,52 +11,46 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// Supported context menu type flags.
+	///  Supported context menu type flags.
 	/// </summary>
 	public enum CefContextMenuTypeFlags
 	{
 		/// <summary>
-		/// No node is selected.
+		///  No node is selected.
 		/// </summary>
 		None = 0,
 
 		/// <summary>
-		/// The top page is selected.
+		///  The top page is selected.
 		/// </summary>
 		Page = 1 << 0,
 
 		/// <summary>
-		/// A subframe page is selected.
+		///  A subframe page is selected.
 		/// </summary>
 		Frame = 1 << 1,
 
 		/// <summary>
-		/// A link is selected.
+		///  A link is selected.
 		/// </summary>
 		Link = 1 << 2,
 
 		/// <summary>
-		/// A media node is selected.
+		///  A media node is selected.
 		/// </summary>
 		Media = 1 << 3,
 
 		/// <summary>
-		/// There is a textual or mixed selection that is selected.
+		///  There is a textual or mixed selection that is selected.
 		/// </summary>
 		Selection = 1 << 4,
 
 		/// <summary>
-		/// An editable element is selected.
+		///  An editable element is selected.
 		/// </summary>
-		Editable = 1 << 5,
+		Editable = 1 << 5
 	}
 }
-

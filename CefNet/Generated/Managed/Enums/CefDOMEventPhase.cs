@@ -11,15 +11,10 @@
 
 #pragma warning disable 0169, 1591, 1573
 
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using CefNet.WinApi;
-
 namespace CefNet
 {
 	/// <summary>
-	/// DOM event processing phases.
+	///  DOM event processing phases.
 	/// </summary>
 	public enum CefDOMEventPhase
 	{
@@ -29,7 +24,6 @@ namespace CefNet
 
 		AtTarget = 2,
 
-		Bubbling = 3,
+		Bubbling = 3
 	}
 }
-

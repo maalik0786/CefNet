@@ -12,34 +12,32 @@
 #pragma warning disable 0169, 1591, 1573
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using CefNet.WinApi;
+using System.Runtime.InteropServices;
 
 namespace CefNet.CApi
 {
 	/// <summary>
-	/// All scoped framework structures must include this structure first.
+	///  All scoped framework structures must include this structure first.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe partial struct cef_base_scoped_t
+	public unsafe struct cef_base_scoped_t
 	{
 		/// <summary>
-		/// Size of the data structure.
+		///  Size of the data structure.
 		/// </summary>
 		public UIntPtr size;
 
 		/// <summary>
-		/// void (*)(_cef_base_scoped_t* self)*
+		///  void (*)(_cef_base_scoped_t* self)*
 		/// </summary>
 		public void* del;
 
 		/// <summary>
-		/// Called to delete this object. May be NULL if the object is not owned.
+		///  Called to delete this object. May be NULL if the object is not owned.
 		/// </summary>
 		[NativeName("del")]
 		[MethodImpl(MethodImplOptions.ForwardRef)]
-		public unsafe extern void Del();
+		public extern void Del();
 	}
 }
-

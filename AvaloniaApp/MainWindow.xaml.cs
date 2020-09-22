@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -7,30 +8,31 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using CefNet;
 using CefNet.Avalonia;
-using System;
 
 namespace AvaloniaApp
 {
 	public class MainWindow : Window
 	{
-		bool isFirstLoad = true;
+		private DockPanel controlsPanel;
+		private bool isFirstLoad = true;
+		private Menu menu;
+		private TabControl tabs;
 
-		private TextBox txtAddress = null;
-		private TabControl tabs = null;
-		private Menu menu = null;
-		private DockPanel controlsPanel = null;
+		private TextBox txtAddress;
 
 		public MainWindow()
 		{
 			InitializeComponent();
 
-			this.Opened += MainWindow_Opened;
+			Opened += MainWindow_Opened;
 			CustomWebView.FullscreenEvent.AddClassHandler(typeof(WebView), HandleFullscreenEvent);
 
 #if DEBUG
 			this.AttachDevTools();
 #endif
 		}
+
+		private IChromiumWebView SelectedView => (tabs.SelectedItem as WebViewTab)?.WebView;
 
 		private void InitializeComponent()
 		{
@@ -45,13 +47,13 @@ namespace AvaloniaApp
 
 		private void HandleFullscreenEvent(object sender, RoutedEventArgs e)
 		{
-			WrapPanel tabHeaders = tabs.FindChild<WrapPanel>(null);
-			if (((FullscreenModeChangeEventArgs)e).Fullscreen)
+			var tabHeaders = tabs.FindChild<WrapPanel>(null);
+			if (((FullscreenModeChangeEventArgs) e).Fullscreen)
 			{
 				menu.IsVisible = false;
 				controlsPanel.IsVisible = false;
 				tabHeaders.IsVisible = false;
-				this.HasSystemDecorations = false;
+				HasSystemDecorations = false;
 				WindowState = WindowState.Maximized;
 				Topmost = true;
 			}
@@ -60,7 +62,7 @@ namespace AvaloniaApp
 				menu.IsVisible = true;
 				controlsPanel.IsVisible = true;
 				tabHeaders.IsVisible = true;
-				this.HasSystemDecorations = true;
+				HasSystemDecorations = true;
 				WindowState = WindowState.Normal;
 				Topmost = false;
 			}
@@ -82,31 +84,17 @@ namespace AvaloniaApp
 			{
 				viewTab = new WebViewTab();
 				viewTab.WebView.Navigated += WebView_Navigated;
-				((AvaloniaList<object>)tabs.Items).Add(viewTab);
+				((AvaloniaList<object>) tabs.Items).Add(viewTab);
 				viewTab.Title = "about:blank";
 
 				tabs.SelectedItem = viewTab;
-			}
-			else
-			{
-				//var cx = new CefRequestContext(new CefRequestContextSettings());
-				//tabs.Controls.Add(new WebViewTab(new CefBrowserSettings(), cx));
 			}
 		}
 
 		private void WebView_Navigated(object sender, NavigatedEventArgs e)
 		{
-			txtAddress.Text = e.Url.ToString();
+			txtAddress.Text = e.Url;
 		}
-
-		private IChromiumWebView SelectedView
-		{
-			get
-			{
-				return (tabs.SelectedItem as WebViewTab)?.WebView;
-			}
-		}
-
 
 
 		private void AddTab_Click(object sender, RoutedEventArgs e)
@@ -123,20 +111,13 @@ namespace AvaloniaApp
 		private void txtAddress_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Enter)
-			{
-				if (Uri.TryCreate(txtAddress.Text, UriKind.Absolute, out Uri url))
-				{
+				if (Uri.TryCreate(txtAddress.Text, UriKind.Absolute, out var url))
 					SelectedView?.Navigate(url.AbsoluteUri);
-				}
-			}
 		}
 
 		private void WebView_TextFound(object sender, TextFoundRoutedEventArgs e)
 		{
-			if (e.FinalUpdate)
-			{
-				SelectedView?.StopFinding(false);
-			}
+			if (e.FinalUpdate) SelectedView?.StopFinding(false);
 		}
 
 		private void Find_Click(object sender, RoutedEventArgs e)
@@ -150,15 +131,16 @@ namespace AvaloniaApp
 			if (tab == null)
 				return;
 
-			IChromiumWebView webView = tab.WebView;
+			var webView = tab.WebView;
 			if (webView == null)
 				return;
 
 			tab.PopupHandlingDisabled = true;
 			EventHandler<CreateWindowEventArgs> callback = null;
-			callback = (a, b) => {
+			callback = (a, b) =>
+			{
 				tab.PopupHandlingDisabled = false;
-				Dispatcher.UIThread.Post(() => webView.CreateWindow -= callback, DispatcherPriority.Normal);
+				Dispatcher.UIThread.Post(() => webView.CreateWindow -= callback);
 			};
 			webView.CreateWindow += callback;
 			webView.GetMainFrame().ExecuteJavaScript("window.open('http://example.com')", null, 1);
